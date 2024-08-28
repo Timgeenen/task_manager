@@ -11,9 +11,10 @@ function Login() {
   const [data, setData] = useState("");
  
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
+    <div className="w-screen h-screen flex flex-col justify-center gap-20 items-center">
+      <h1 className="text-5xl font-bold text-blue-600">Welcome Back!</h1>
       <form 
-      className="flex flex-col justify-center gap-4"
+      className="flex flex-col justify-center gap-4 border p-8 rounded-md"
       onSubmit={handleSubmit((data) => console.log(data))}>
         <Textbox 
         label="Email Adress"
