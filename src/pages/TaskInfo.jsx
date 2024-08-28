@@ -1,7 +1,7 @@
 function TaskInfo() {
   return (
     <div>
-      
+      Taskinfo
     </div>
   )
 }

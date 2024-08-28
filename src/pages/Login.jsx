@@ -1,11 +1,7 @@
 function Login() {
   return (
     <div>
-      <form>
-        {/* email input */}
-        {/* password input */}
-        {/* login button */}
-      </form>
+      Login Form
       {/* forgot password */}
       {/* register new user */}
     </div>

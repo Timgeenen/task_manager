@@ -1,7 +1,7 @@
 function Trash() {
   return (
     <div>
-      
+      Trash
     </div>
   )
 }
