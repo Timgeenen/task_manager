@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Textbox from "../components/Textbox";
 import { Navigate } from "react-router-dom";
-import { user } from "../redux/state/authSlice";
+import { user } from "../library/fakedata";//TODO: change to fetch user from authSlice
 import SubmitButton from "../components/SubmitButton";
 
 function Login() {
