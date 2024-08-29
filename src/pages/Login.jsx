@@ -11,6 +11,7 @@ function Login() {
     formState: { errors }
    } = useForm();
   const [data, setData] = useState("");
+  //TODO: update handle submit to handle login logic
  
   return user ? ( <Navigate to="/dashboard" replace /> ) : (
     <div className="w-screen h-screen flex flex-col justify-center gap-20 items-center">
