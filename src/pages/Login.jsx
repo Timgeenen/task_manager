@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import Textbox from "../components/Textbox";
 import { Navigate } from "react-router-dom";
 import { user } from "../redux/state/authSlice";
+import SubmitButton from "../components/SubmitButton";
 
 function Login() {
   const { 
@@ -33,7 +34,7 @@ function Login() {
         register={register("password", {required: "Password Is Required!"})}
         error={errors.password ? errors.password.message : ""} />
 
-        <input type="submit" className="shadow rounded-full h-8 bg-blue-600 text-gray-100 hover:cursor-pointer" />
+        <SubmitButton />
       </form>
 
       {/* forgot password */}
