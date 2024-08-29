@@ -8,7 +8,7 @@ function Checkbox({value, register}) {
       value={value}
       type="checkbox"
       {...register} />
-      <label for={value}>{value}</label>
+      <label>{value}</label>
     </span>
   )
 }

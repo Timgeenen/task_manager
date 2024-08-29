@@ -1,7 +1,10 @@
+import NewTask from "../components/NewTask"
+
 function Dashboard() {
   return (
     <div>
       Dashboard
+      <NewTask />
     </div>
   )
 }
