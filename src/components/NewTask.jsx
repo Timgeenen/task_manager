@@ -10,7 +10,7 @@ import { IoClose } from "react-icons/io5"; //TODO: add functionality to close th
 //TODO: handle submit logic to post to database
 //TODO: add local state for error handling when no team or team member is selected
 
-function NewTask() {
+function NewTask({ close }) {
   const {
     register,
     control,
@@ -41,7 +41,11 @@ function NewTask() {
   }
 
   return (
-    <div className="bg-gray-400 w-screen h-screen absolute top-0 left-0 z-50 bg-opacity-60 flex justify-center items-center">
+    <div className="bg-white w-screen h-screen absolute top-0 left-0 z-50 bg-opacity-80 flex justify-center items-center">
+
+      <button className="absolute top-20 right-20" onClick={close}>
+        <IoClose size="2em" />
+      </button>
 
       <form 
       className="flex flex-col gap-2"
