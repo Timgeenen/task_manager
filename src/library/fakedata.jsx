@@ -32,74 +32,92 @@ export const tasks = [
   {
     title: "Review codebase",
     priority: "high",
-    status: "pending"
+    status: "pending",
+    deadline: "18-10-2024"
   }, {
     title: "Review codebase",
     priority: "high",
-    status: "in progress"
+    status: "in progress",
+    deadline: "1-12-2024"
   }, {
     title: "Review codebase",
     priority: "medium",
-    status: "pending"
+    status: "pending",
+    deadline: "7-9-2025"
   }, {
     title: "Review codebase",
     priority: "low",
-    status: "pending"
+    status: "pending",
+    deadline: "1-1-2025"
   }, {
     title: "Review codebase",
     priority: "high",
-    status: "completed"
+    status: "completed",
+    deadline: "12-1-2025"
   }, {
     title: "Review codebase",
     priority: "medium",
-    status: "pending"
+    status: "pending",
+    deadline: "12-12-2025"
   }, {
     title: "Review codebase",
     priority: "medium",
-    status: "pending"
+    status: "pending",
+    deadline: "22-3-2025"
   }, {
     title: "Review codebase",
     priority: "high",
-    status: "in progress"
+    status: "in progress",
+    deadline: "18-8-2025"
   }, {
     title: "Review codebase",
     priority: "low",
-    status: "in progress"
+    status: "in progress",
+    deadline: "11-4-2025"
   }, {
     title: "Review codebase",
     priority: "low",
-    status: "in progress"
+    status: "in progress",
+    deadline: "3-2-2025"
   }, {
     title: "Review codebase",
     priority: "low",
-    status: "in progress"
+    status: "in progress",
+    deadline: "7-3-2025"
   }, {
     title: "Review codebase",
     priority: "medium",
-    status: "in progress"
+    status: "in progress",
+    deadline: "7-3-2025"
   }, {
     title: "Review codebase",
     priority: "medium",
-    status: "in progress"
+    status: "in progress",
+    deadline: "7-3-2025"
   }, {
     title: "Review codebase",
     priority: "high",
-    status: "completed"
+    status: "completed",
+    deadline: "23-6-2025"
   }, {
     title: "Review codebase",
     priority: "medium",
-    status: "completed"
+    status: "completed",
+    deadline: "23-6-2025"
   }, {
     title: "Review codebase",
     priority: "medium",
-    status: "completed"
+    status: "completed",
+    deadline: "23-6-2025"
   }, {
     title: "Review codebase",
     priority: "high",
-    status: "completed"
+    status: "completed",
+    deadline: "23-6-2025"
   }, {
     title: "Review codebase",
     priority: "low",
-    status: "pending"
+    status: "pending",
+    deadline: "23-6-2025"
   }
 ]
