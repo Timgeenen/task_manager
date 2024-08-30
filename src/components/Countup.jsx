@@ -6,7 +6,7 @@ function Countup({actual, total, parameter, radius}) {
   const offset = radius / 5;
   const boxSize = (radius * 2) + (offset * 2)
   return (
-    <div>
+    <div className="flex items-center gap-2 border-2 border-slate-300 p-2">
       <CountUp
       isCounting
       end={actual}
@@ -29,6 +29,7 @@ function Countup({actual, total, parameter, radius}) {
             fill="transparent"
             />
             <text
+            className="font-bold"
             x={boxSize / 2}
             y={boxSize / 2}
             dominantBaseline="middle"
@@ -40,6 +41,7 @@ function Countup({actual, total, parameter, radius}) {
           ))
         }
       </CountUp>
+      <text className="text-xl">{parameter}</text>
     </div>
   )
 }
