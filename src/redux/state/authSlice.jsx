@@ -16,10 +16,12 @@ export const authSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.user = action.payload;
+      state.isSidebarOpen = true; //TODO
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
     },
     logout: (state) => {
       state.user = null;
+      state.isSidebarOpen = false; //TODO
       localStorage.removeItem('userInfo');
     },
     setOpenSidebar: (state, action) => {

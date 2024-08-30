@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import TaskInfo from "./pages/TaskInfo";
@@ -8,6 +8,10 @@ import Teams from "./pages/Teams";
 import Trash from "./pages/Trash";
 import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { setOpenSidebar } from "./redux/state/authSlice";
+
 
 function App() {
   return (
@@ -27,13 +31,25 @@ function App() {
 }
 
 function Layout() {
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector(state => state.auth);
+  const { isSidebarOpen } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
   const location = useLocation();
 
   return user ? (
-    <div>
+    <div className="flex flex-col">
       <Navbar />
-      <Outlet />
+      <div>
+        {
+        isSidebarOpen ? 
+        <Sidebar /> : 
+        <RxHamburgerMenu 
+        className="left-5 top-20 absolute"
+        size="2em" 
+        onClick={() => { dispatch(setOpenSidebar(true)) }}/>
+        }
+        <Outlet />
+      </div>
     </div>
   ) : (
     <Navigate to="/login" replace/>
