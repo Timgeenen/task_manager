@@ -31,57 +31,75 @@ export const user = {
 export const tasks = [
   {
     title: "Review codebase",
-    priority: "high"
+    priority: "high",
+    status: "pending"
   }, {
     title: "Review codebase",
-    priority: "high"
+    priority: "high",
+    status: "in progress"
   }, {
     title: "Review codebase",
-    priority: "medium"
+    priority: "medium",
+    status: "pending"
   }, {
     title: "Review codebase",
-    priority: "low"
+    priority: "low",
+    status: "pending"
   }, {
     title: "Review codebase",
-    priority: "high"
+    priority: "high",
+    status: "completed"
   }, {
     title: "Review codebase",
-    priority: "medium"
+    priority: "medium",
+    status: "pending"
   }, {
     title: "Review codebase",
-    priority: "medium"
+    priority: "medium",
+    status: "pending"
   }, {
     title: "Review codebase",
-    priority: "high"
+    priority: "high",
+    status: "in progress"
   }, {
     title: "Review codebase",
-    priority: "low"
+    priority: "low",
+    status: "in progress"
   }, {
     title: "Review codebase",
-    priority: "low"
+    priority: "low",
+    status: "in progress"
   }, {
     title: "Review codebase",
-    priority: "low"
+    priority: "low",
+    status: "in progress"
   }, {
     title: "Review codebase",
-    priority: "medium"
+    priority: "medium",
+    status: "in progress"
   }, {
     title: "Review codebase",
-    priority: "medium"
+    priority: "medium",
+    status: "in progress"
   }, {
     title: "Review codebase",
-    priority: "high"
+    priority: "high",
+    status: "completed"
   }, {
     title: "Review codebase",
-    priority: "medium"
+    priority: "medium",
+    status: "completed"
   }, {
     title: "Review codebase",
-    priority: "medium"
+    priority: "medium",
+    status: "completed"
   }, {
     title: "Review codebase",
-    priority: "high"
+    priority: "high",
+    status: "completed"
   }, {
     title: "Review codebase",
-    priority: "low"
+    priority: "low",
+    status: "pending"
   }
 ]
