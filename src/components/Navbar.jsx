@@ -1,5 +1,6 @@
 import Notifications from "./Notifications";
 import AddNewTask from "./AddNewTask";
+import UserTag from "./UserTag";
 
 function Navbar() {
   return (
@@ -8,7 +9,7 @@ function Navbar() {
       <div className="flex gap-3">
         <AddNewTask />
         <Notifications />
-        {/*  */}
+        <UserTag />
       </div>
     </div>
   )

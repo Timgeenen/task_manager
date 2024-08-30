@@ -16,7 +16,7 @@ export const TEAMS = [
 
 export const user = {
   _id: "662f32ffd1303cc",
-  name: "Codewave",
+  name: "Tim Geenen",
   title: "Administrator",
   role: "Admin",
   email: "admin@mts.com",
