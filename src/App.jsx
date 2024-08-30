@@ -39,7 +39,7 @@ function Layout() {
   return user ? (
     <div className="flex flex-col">
       <Navbar />
-      <div>
+      <div className="flex">
         {
         isSidebarOpen ? 
         <Sidebar /> : 

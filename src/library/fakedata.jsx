@@ -27,3 +27,61 @@ export const user = {
   __v: 0,
   isActive: true,
 };
+
+export const tasks = [
+  {
+    title: "Review codebase",
+    priority: "high"
+  }, {
+    title: "Review codebase",
+    priority: "high"
+  }, {
+    title: "Review codebase",
+    priority: "medium"
+  }, {
+    title: "Review codebase",
+    priority: "low"
+  }, {
+    title: "Review codebase",
+    priority: "high"
+  }, {
+    title: "Review codebase",
+    priority: "medium"
+  }, {
+    title: "Review codebase",
+    priority: "medium"
+  }, {
+    title: "Review codebase",
+    priority: "high"
+  }, {
+    title: "Review codebase",
+    priority: "low"
+  }, {
+    title: "Review codebase",
+    priority: "low"
+  }, {
+    title: "Review codebase",
+    priority: "low"
+  }, {
+    title: "Review codebase",
+    priority: "medium"
+  }, {
+    title: "Review codebase",
+    priority: "medium"
+  }, {
+    title: "Review codebase",
+    priority: "high"
+  }, {
+    title: "Review codebase",
+    priority: "medium"
+  }, {
+    title: "Review codebase",
+    priority: "medium"
+  }, {
+    title: "Review codebase",
+    priority: "high"
+  }, {
+    title: "Review codebase",
+    priority: "low"
+  }
+]

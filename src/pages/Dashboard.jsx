@@ -1,9 +1,12 @@
-import NewTask from "../components/NewTask"
+import TaskGraph from "../components/TaskGraph"
 
 function Dashboard() {
   return (
     <div>
       Dashboard
+      <TaskGraph />
+      {/* active task graph */}
+      {/* general stats */}
     </div>
   )
 }
