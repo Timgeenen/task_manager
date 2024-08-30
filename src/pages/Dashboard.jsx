@@ -3,7 +3,7 @@ import Stats from "../components/Stats";
 
 function Dashboard() {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="w-full flex flex-col gap-2 items-center">
       Dashboard
       <TaskGraph />
       <Stats />
