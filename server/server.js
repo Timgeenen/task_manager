@@ -1,11 +1,9 @@
-require('dotenv').config;
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
-console.log(process.env.MONGO_URI)
-mongoose.connect(
-  "mongodb+srv://timmiej95:is9k5SGC6oKtw18z@cluster0.e7txv8g.mongodb.net/"
-);
+
+mongoose.connect(process.env.MONGO_URI);
 
 const cors = require("cors");
 const corsOptions = { origin: "http://localhost:3000" }
