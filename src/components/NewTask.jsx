@@ -1,11 +1,13 @@
-import { useForm, useFieldArray } from "react-hook-form";
-import Textbox from "./Textbox";
-import Optionbox from "./Optionbox";
+import { useFieldArray, useForm } from "react-hook-form";
+import { IoClose } from "react-icons/io5";
 import { TEAMS } from "../library/fakedata";
-import SubmitButton from "./SubmitButton";
-import Checkbox from "./Checkbox";
 import AddButton from "./AddButton";
-import { IoClose } from "react-icons/io5"; //TODO: add functionality to close the form field
+import Checkbox from "./Checkbox";
+import Optionbox from "./Optionbox";
+import SubmitButton from "./SubmitButton";
+import Textbox from "./Textbox";
+import axios from "axios";
+import { BACKEND } from "../library/constants";
 
 //TODO: handle submit logic to post to database
 //TODO: add local state for error handling when no team or team member is selected
@@ -30,14 +32,13 @@ function NewTask({ close }) {
 
   const selectedTeam = watch("team");
 
-  const addSubtask = (e) => {
-    e.preventDefault();
-  }
-
-  const removeSubtask = (e) => {
-    //TODO: add slice functionality to remove specific item
-    e.preventDefault();
-    console.log(e.target);
+  const submitHandler = (data) => {
+    axios.post(BACKEND + "/createtask", data)
+      .then(res => console.log(res.data))
+      .catch(err => console.log(err))
+    // axios.post("/api", data)
+    //   .then(() => console.log("post successful"))
+    //   .catch(err => console.log(err));
   }
 
   return (
@@ -49,10 +50,7 @@ function NewTask({ close }) {
 
       <form 
       className="flex flex-col gap-2"
-      onSubmit={handleSubmit(data => {
-        console.log(data)
-        console.log(selectedTeam);
-      })}>
+      onSubmit={handleSubmit(submitHandler)}>
 
         <Textbox
         label="Title"

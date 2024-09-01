@@ -6,8 +6,11 @@ const app = express();
 mongoose.connect(process.env.MONGO_URI);
 
 const cors = require("cors");
+const bodyParser = require('body-parser');
 const corsOptions = { origin: "http://localhost:3000" }
 app.use(cors(corsOptions));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 
 
@@ -17,7 +20,10 @@ const userSchema = new mongoose.Schema({
   emal: String,
   createdOn: Date,
   lastUpdated: Date,
-  isAdmin: Boolean,
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
   isActive: Boolean,
   teams: [{
     name: String,
@@ -95,8 +101,16 @@ let User = mongoose.model('user', userSchema);
 let Team = mongoose.model('team', teamSchema);
 let Task = mongoose.model('task', taskSchema);
 
-app.get("/api:index", async (req, res) => {
+app.get("/test", (req, res) => {
+  res.send({message: "returned data from get request"})
+})
 
+app.post("/createtask", (req, res) => {
+  console.log(req.body)
+
+  // let body = req.params.body;
+  // console.log(body);
+  // res.send(body)
 });
 
 app.listen(8080, () => {
