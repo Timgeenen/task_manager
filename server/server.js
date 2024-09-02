@@ -23,7 +23,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  isActive: Boolean,
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   teams: [{
     name: String,
     id: String
@@ -100,23 +103,54 @@ let User = mongoose.model('user', userSchema);
 let Team = mongoose.model('team', teamSchema);
 let Task = mongoose.model('task', taskSchema);
 
-app.get("/test", (req, res) => {
+app.get("/taskManagerTest", (req, res) => {
   res.send({message: "returned data from get request"})
 })
 
 app.post("/login", (req, res) => {
   const body = req.body;
-  User.where({
+  User
+    .where({
     password: body.password,
     email: body.email
-  }).findOne()
+    })
+    .findOne()
     .then(user => {
       user ? 
       res.send(user) :
       res.send({ error: "email and password do not match"})
     })
-    .catch(err => console.log(err))
+    .catch(err => res.send(err))
 });
+
+app.post("/register", async (req, res) => {
+  const { name ,role, email, password } = req.body;
+  const registered = await 
+  User
+    .where({
+      email: email
+    })
+    .findOne()
+    .then(user => {
+      console.log(user)
+      return user ? true : false
+    })
+    .catch(err => res.send(err) );
+
+  if (registered) { res.send({error: "email adress is already in use"})}
+  else {
+    const newDate = Date().split(" (")[0];
+    User.create({
+      name: name,
+      role: role,
+      email: email,
+      password: password,
+      createdAt: newDate,
+      updatedAt: newDate,
+      teams: []
+    });
+  }
+})
 
 app.post("/createtask", (req, res) => {
   const body = req.body;

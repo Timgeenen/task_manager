@@ -19,14 +19,21 @@ function Login() {
   //TODO: set submithandler to login or register based on state
 
   const loginUser = (data) => {
-    axios.post(BACKEND + "/login", data).then(res => {
-      if (res.data.error) { alert(res.data.error) }
-    })
-    .catch(err => alert(err));
+    axios.post(BACKEND + "/login", data)
+      .then(res => {
+      if (res.data.error) { return alert(res.data.error) }
+      //TODO: set user in redux store
+      })
+      .catch(err => alert(err));
   }
 
   const registerUser = (data) => {
-    console.log("registered user")
+    axios.post(BACKEND + "/register", data)
+      .then(res => {
+        if (res.data.error) { return alert(res.data.error)}
+        console.log(res)
+      })
+      .catch(err => { alert(err)});
   }
  
   return user ? ( <Navigate to="/dashboard" replace /> ) : (
@@ -79,7 +86,6 @@ function Login() {
         <span>new user? <button className="text-blue-600" onClick={(e) => {
           e.preventDefault();
           setRegisterForm(true);
-          loginError && setLoginError("");
           }}>Register</button>
         </span>
         )}
