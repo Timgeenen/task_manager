@@ -6,9 +6,12 @@ import Textbox from "../components/Textbox";
 import SubmitButton from "../components/SubmitButton";
 import axios from "axios";
 import { BACKEND } from "../library/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../redux/state/authSlice";
 
 function Login() {
-  const user = null //TODO: REMOVE AND REPLACE
+  const { user } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
   const { 
     register, 
     handleSubmit,
@@ -22,7 +25,10 @@ function Login() {
     axios.post(BACKEND + "/login", data)
       .then(res => {
       if (res.data.error) { return alert(res.data.error) }
-      //TODO: set user in redux store
+      else {
+        console.log(res.data);
+        dispatch(login(res.data));
+      }
       })
       .catch(err => alert(err));
   }
@@ -31,7 +37,7 @@ function Login() {
     axios.post(BACKEND + "/register", data)
       .then(res => {
         if (res.data.error) { return alert(res.data.error)}
-        console.log(res)
+        else { loginUser(data) }
       })
       .catch(err => { alert(err)});
   }

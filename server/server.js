@@ -136,7 +136,7 @@ app.post("/register", async (req, res) => {
   if (registered) { res.send({error: "email adress is already in use"})}
   else {
     const newDate = Date().split(" (")[0];
-    User.create({
+    const user = await User.create({
       name: name,
       role: role,
       email: email,
@@ -145,6 +145,7 @@ app.post("/register", async (req, res) => {
       updatedAt: newDate,
       teams: []
     });
+    res.send(user);
   }
 })
 
