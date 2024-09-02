@@ -4,6 +4,8 @@ import { Navigate } from "react-router-dom";
 import Textbox from "../components/Textbox";
 // import { user } from "../library/fakedata";//TODO: change to fetch user from authSlice
 import SubmitButton from "../components/SubmitButton";
+import axios from "axios";
+import { BACKEND } from "../library/constants";
 
 function Login() {
   const user = null //TODO: REMOVE AND REPLACE
@@ -17,11 +19,14 @@ function Login() {
   //TODO: set submithandler to login or register based on state
 
   const loginUser = (data) => {
-    
+    axios.post(BACKEND + "/login", data).then(res => {
+      if (res.data.error) { alert(res.data.error) }
+    })
+    .catch(err => alert(err));
   }
 
   const registerUser = (data) => {
-
+    console.log("registered user")
   }
  
   return user ? ( <Navigate to="/dashboard" replace /> ) : (
@@ -29,7 +34,7 @@ function Login() {
       <h1 className="text-5xl font-bold text-blue-600">Welcome Back!</h1>
       <form 
       className="flex flex-col justify-center gap-4 border p-8 rounded-md"
-      onSubmit={handleSubmit((data) => console.log(data))}>
+      onSubmit={handleSubmit(registerForm ? registerUser : loginUser)}>
         <h3 className="text-xl font-medium text-blue-600">{registerForm ? "Register" : "Login"}</h3>
         <Textbox 
         label="Email Adress"
@@ -72,9 +77,10 @@ function Login() {
         </span>
         ) : (
         <span>new user? <button className="text-blue-600" onClick={(e) => {
-              e.preventDefault();
-              setRegisterForm(true);
-            }}>Register</button>
+          e.preventDefault();
+          setRegisterForm(true);
+          loginError && setLoginError("");
+          }}>Register</button>
         </span>
         )}
       </form>

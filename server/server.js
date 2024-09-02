@@ -13,7 +13,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 
-
 const userSchema = new mongoose.Schema({
   name: String,
   role: String,
@@ -104,6 +103,20 @@ let Task = mongoose.model('task', taskSchema);
 app.get("/test", (req, res) => {
   res.send({message: "returned data from get request"})
 })
+
+app.post("/login", (req, res) => {
+  const body = req.body;
+  User.where({
+    password: body.password,
+    email: body.email
+  }).findOne()
+    .then(user => {
+      user ? 
+      res.send(user) :
+      res.send({ error: "email and password do not match"})
+    })
+    .catch(err => console.log(err))
+});
 
 app.post("/createtask", (req, res) => {
   const body = req.body;
