@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { user } from "../../library/fakedata";
-// const user = null;
+// import { user } from "../../library/fakedata";
+const user = null;
 
 const initialState = {
   user: localStorage.getItem('userInfo')
