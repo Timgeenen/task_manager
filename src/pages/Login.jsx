@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Navigate } from "react-router-dom";
 import Textbox from "../components/Textbox";
-// import { user } from "../library/fakedata";//TODO: change to fetch user from authSlice
 import SubmitButton from "../components/SubmitButton";
 import axios from "axios";
 import { BACKEND } from "../library/constants";
@@ -18,15 +17,12 @@ function Login() {
     formState: { errors }
    } = useForm();
    const [registerForm, setRegisterForm] = useState(false);
-  //TODO: update handle submit to handle login logic
-  //TODO: set submithandler to login or register based on state
 
   const loginUser = (data) => {
     axios.post(BACKEND + "/login", data)
       .then(res => {
       if (res.data.error) { return alert(res.data.error) }
       else {
-        console.log(res.data);
         dispatch(login(res.data));
       }
       })
