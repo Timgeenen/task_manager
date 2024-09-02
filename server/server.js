@@ -17,9 +17,9 @@ app.use(bodyParser.json());
 const userSchema = new mongoose.Schema({
   name: String,
   role: String,
-  emal: String,
-  createdOn: Date,
-  lastUpdated: Date,
+  email: String,
+  createdAt: Date,
+  updatedAt: Date,
   isAdmin: {
     type: Boolean,
     default: false
@@ -106,11 +106,11 @@ app.get("/test", (req, res) => {
 })
 
 app.post("/createtask", (req, res) => {
-  console.log(req.body)
-
-  // let body = req.params.body;
-  // console.log(body);
-  // res.send(body)
+  const body = req.body;
+  console.log(body);
+  res.send(body);
+  //TODO: add data into database
+  //TODO: add data to team
 });
 
 app.listen(8080, () => {

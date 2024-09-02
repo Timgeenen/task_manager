@@ -33,12 +33,10 @@ function NewTask({ close }) {
   const selectedTeam = watch("team");
 
   const submitHandler = (data) => {
+    //TODO: add relevant data for post request (team name)
     axios.post(BACKEND + "/createtask", data)
       .then(res => console.log(res.data))
       .catch(err => console.log(err))
-    // axios.post("/api", data)
-    //   .then(() => console.log("post successful"))
-    //   .catch(err => console.log(err));
   }
 
   return (
