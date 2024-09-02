@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   name: String,
   role: String,
   email: String,
+  password: String,
   createdAt: Date,
   updatedAt: Date,
   isAdmin: {
@@ -103,10 +104,6 @@ let User = mongoose.model('user', userSchema);
 let Team = mongoose.model('team', teamSchema);
 let Task = mongoose.model('task', taskSchema);
 
-app.get("/taskManagerTest", (req, res) => {
-  res.send({message: "returned data from get request"})
-})
-
 app.post("/login", (req, res) => {
   const body = req.body;
   User
@@ -132,7 +129,6 @@ app.post("/register", async (req, res) => {
     })
     .findOne()
     .then(user => {
-      console.log(user)
       return user ? true : false
     })
     .catch(err => res.send(err) );
