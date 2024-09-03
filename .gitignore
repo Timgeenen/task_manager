@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 README.md
 eslint.config.js
+TODO.md

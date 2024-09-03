@@ -1,13 +1,14 @@
-import { forwardRef, useEffect, useState } from "react";
-import { user } from "../library/fakedata";
+import { useEffect, useState } from "react";
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; 
-//TODO: use real user
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/state/authSlice";
 //TODO: customize tippy styling
 //TODO: add link to profile page in tippy
 //TODO: add logout functionality
 
 function UserTag() {
+  const { user } = useSelector(state => state.auth);
   const [initials, setInitials] = useState("");
 
   const getInitials = (name) => {
@@ -27,9 +28,10 @@ function UserTag() {
   const show = () => setVisible(true);
   const hide = () => setVisible(false);
 
+  const dispatch = useDispatch();
 
   const logoutUser = () => {
-    console.log("user logged out");
+    dispatch(logout());
   };
 
   const navigateProfile = () => {

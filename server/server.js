@@ -31,6 +31,20 @@ const userSchema = new mongoose.Schema({
   teams: [{
     name: String,
     id: String
+  }], 
+  connections: [{
+    name: String,
+    role: String,
+    email: String,
+    id: String
+  }],
+  notifications: [{
+    title: String,
+    author: {
+      name: String,
+      id: String
+    },
+    message: String,
   }]
 });
 
@@ -147,6 +161,10 @@ app.post("/register", async (req, res) => {
     });
     res.send(user);
   }
+});
+
+app.post("/createteam", async (req, res) => {
+
 })
 
 app.post("/createtask", (req, res) => {
