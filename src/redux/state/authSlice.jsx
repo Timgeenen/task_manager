@@ -17,6 +17,10 @@ export const authSlice = createSlice({
       state.isSidebarOpen = true; //TODO
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
     },
+    updateUser: (state, action) => {
+      state.user = action.payload
+      localStorage.setItem('userInfo', JSON.stringify(action.payload))
+    },
     logout: (state) => {
       state.user = null;
       state.isSidebarOpen = false; //TODO
