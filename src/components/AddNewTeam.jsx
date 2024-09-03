@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import Textbox from "./Textbox";
 import SubmitButton from "./SubmitButton";
+import Checkbox from "../components/Checkbox.jsx";
+import { BACKEND } from "../library/constants.jsx";
+import axios from "axios";
 
 
 function AddNewTeam({handleClick}) {
@@ -14,16 +17,40 @@ function AddNewTeam({handleClick}) {
     formState: { errors }
   } = useForm();
 
-  const submitHandler = (data) => {console.log(data)}
+  const createTeam = (data) => {
+    const assignedTo = user.connections.filter(item => data.members.includes(item.name));
 
-  const createTeam = () => {
+    const manager = {
+      name: user.name,
+      role: user.role,
+      email: user.email,
+      id: user._id
+    };
 
+    const members = [...assignedTo, manager];
+
+    const teamData = {
+      name: data.name,
+      manager: manager,
+      members: members,
+    }
+
+    axios
+      .post(BACKEND + "/createteam", teamData)
+      .then(res => console.log(res.data))
+      .catch(err => alert(err));
   }
 
   return (
     <div className="w-screen h-screen absolute top-0 z-50 flex justify-center items-center bg-white opacity-50">
-      <button onClick={handleClick}><IoClose size={24}/></button>
-      <form onSubmit={handleSubmit(submitHandler)}>
+
+      <button onClick={handleClick}>
+        <IoClose size={24}/>
+      </button>
+
+      <form 
+      className="flex flex-col"
+      onSubmit={handleSubmit(createTeam)}>
 
         <Textbox
         label="Team Name"
@@ -32,12 +59,18 @@ function AddNewTeam({handleClick}) {
         register={register("name", {required: "Team Name Is Required!"})}
         error={errors.name ? errors.name.message : ""}
         />
-
+        
         {user.connections.map((member) => (
-          <Checkbox value={member.name} register={register("members")} id={member.id} />
+              <Checkbox 
+              value={member.name}
+              register={register("members")}
+              />
         ))}
+
         <SubmitButton />
+
       </form>
+
     </div>
   )
 }

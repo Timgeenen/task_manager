@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
@@ -6,13 +6,12 @@ const app = express();
 mongoose.connect(process.env.MONGO_URI);
 
 const cors = require("cors");
-const bodyParser = require('body-parser');
-const func = require('./functions');
-const corsOptions = { origin: "http://localhost:3000" }
+const bodyParser = require("body-parser");
+const func = require("./functions");
+const corsOptions = { origin: "http://localhost:3000" };
 app.use(cors(corsOptions));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 
 const userSchema = new mongoose.Schema({
   name: String,
@@ -23,115 +22,152 @@ const userSchema = new mongoose.Schema({
   updatedAt: Date,
   isAdmin: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
   },
-  teams: [{
-    name: String,
-    id: String,
-    _id: false
-  }], 
-  connections: [{
-    name: String,
-    role: String,
-    email: String,
-    id: String,
-    _id: false
-  }],
-  notifications: [{
-    title: String,
-    author: {
+  teams: [
+    {
       name: String,
-      id: String
+      id: String,
+      members: [
+        {
+          name: String,
+          id: String,
+          _id: false,
+        },
+      ],
+      _id: false,
     },
-    message: String,
-  }]
+  ],
+  connections: [
+    {
+      name: String,
+      role: String,
+      email: String,
+      id: String,
+      _id: false,
+    },
+  ],
+  notifications: [
+    {
+      title: String,
+      author: {
+        name: String,
+        id: String,
+      },
+      message: String,
+    },
+  ],
 });
 
 const teamSchema = new mongoose.Schema({
   name: String,
   manager: {
     name: String,
-    id: String
+    role: String,
+    email: String,
+    id: String,
+    _id: false,
   },
-  members: [{
-    name: String,
-    id: String
-  }],
-  tasks: [{
-    title: String,
-    assignedTo: [{
+  members: [
+    {
       name: String,
-      id: String
-    }],
-    id: String
-  }],
-  createdOn: Date,
-  messages: [{
-    author: {
-      name: String,
-      id: String
+      role: String,
+      email: String,
+      id: String,
+      _id: false,
     },
-    message: String,
-    createdOn: Date
-  }],
-  trash: [Map]
+  ],
+  tasks: [
+    {
+      title: String,
+      assignedTo: [
+        {
+          name: String,
+          id: String,
+        },
+      ],
+      id: String,
+    },
+  ],
+  createdOn: Date,
+  messages: [
+    {
+      author: {
+        name: String,
+        id: String,
+      },
+      message: String,
+      createdOn: Date,
+    },
+  ],
+  trash: [Map],
 });
 
 const taskSchema = new mongoose.Schema({
   title: String,
   description: String,
-  subTasks: [{
-    description: String,
-    completed: {
-      type: Boolean,
-      default: false
-    }
-  }],
+  subTasks: [
+    {
+      description: String,
+      completed: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
   createdOn: Date,
   deadline: Date,
   priority: String,
   status: String,
-  assignedTo: [{
-    name: String,
-    id: String
-  }],
-  comments: [{
-    author: {
-      name: String,
-      id: String
-    },
-    message: String,
-    createdOn: Date
-  }],
-  updates: [{
-    author: {
+  assignedTo: [
+    {
       name: String,
       id: String,
     },
-    message: String,
-    updatedOn: Date
-  }]
+  ],
+  comments: [
+    {
+      author: {
+        name: String,
+        id: String,
+      },
+      message: String,
+      createdOn: Date,
+    },
+  ],
+  updates: [
+    {
+      author: {
+        name: String,
+        id: String,
+      },
+      message: String,
+      updatedOn: Date,
+    },
+  ],
 });
 
-let User = mongoose.model('user', userSchema);
-let Team = mongoose.model('team', teamSchema);
-let Task = mongoose.model('task', taskSchema);
+let User = mongoose.model("user", userSchema);
+let Team = mongoose.model("team", teamSchema);
+let Task = mongoose.model("task", taskSchema);
 
 app.get("/connections", (req, res) => {
-  User
-    .find({}, {
+  User.find(
+    {},
+    {
       name: 1,
       role: 1,
       email: 1,
       isActive: 1,
-      updatedAt: 1
-    })
-    .then(data => res.send(data))
-    .catch(err => res.send(err))
+      updatedAt: 1,
+    }
+  )
+    .then((data) => res.send(data))
+    .catch((err) => res.send(err));
 });
 
 app.put("/add-connection", async (req, res) => {
@@ -140,7 +176,9 @@ app.put("/add-connection", async (req, res) => {
   const activeUser = await User.findById(user);
   const addedUser = await User.findById(id);
 
-  if (!activeUser || !addedUser) { res.send({error: "user not found"})};
+  if (!activeUser || !addedUser) {
+    res.send({ error: "user not found" });
+  }
 
   const activeUserData = func.createConnectionObj(activeUser);
   const addedUserData = func.createConnectionObj(addedUser);
@@ -152,45 +190,42 @@ app.put("/add-connection", async (req, res) => {
     await addedUser.save();
     res.send({
       message: "Succesfully added connection",
-      user: activeUser
+      user: activeUser,
     });
   } catch (error) {
-    res.send({error: "Adding connection failed"})
+    res.send({ error: "Adding connection failed" });
   }
-
-})
+});
 
 app.post("/login", (req, res) => {
   const { password, email } = req.body;
-  User
-    .where({
+  User.where({
     password: password,
-    email: email
-    })
+    email: email,
+  })
     .findOne()
-    .then(user => {
-      user ? 
-      res.send(user) :
-      res.send({ error: "email and password do not match"})
+    .then((user) => {
+      user
+        ? res.send(user)
+        : res.send({ error: "email and password do not match" });
     })
-    .catch(err => res.send(err))
+    .catch((err) => res.send(err));
 });
 
 app.post("/register", async (req, res) => {
-  const { name ,role, email, password } = req.body;
-  const registered = await 
-  User
-    .where({
-      email: email
-    })
+  const { name, role, email, password } = req.body;
+  const registered = await User.where({
+    email: email,
+  })
     .findOne()
-    .then(user => {
-      return user ? true : false
+    .then((user) => {
+      return user ? true : false;
     })
-    .catch(err => res.send(err) );
+    .catch((err) => res.send(err));
 
-  if (registered) { res.send({error: "email adress is already in use"})}
-  else {
+  if (registered) {
+    res.send({ error: "email adress is already in use" });
+  } else {
     const newDate = Date().split(" (")[0];
     const user = await User.create({
       name: name,
@@ -201,14 +236,42 @@ app.post("/register", async (req, res) => {
       updatedAt: newDate,
       teams: [],
       connections: [],
-      notifications: []
+      notifications: [],
     });
     res.send(user);
   }
 });
 
 app.post("/createteam", async (req, res) => {
+  try {
+    const { name, manager, members } = req.body;
 
+    const team = await Team.create({
+      name,
+      manager,
+      members,
+      tasks: [],
+      createdOn: func.newDate(),
+      messages: [],
+      trash: [],
+    });
+
+    const teamObj = {
+      name,
+      members,
+      id: team._id,
+    };
+
+    members.map((member) => {
+      User.findByIdAndUpdate(member.id, {
+        $push: { teams: teamObj },
+      });
+    });
+
+    res.send({ message: "Succesfully Created New Team"});
+  } catch (err) {
+    res.send({ error: err.message });
+  }
 });
 
 app.post("/createtask", (req, res) => {
