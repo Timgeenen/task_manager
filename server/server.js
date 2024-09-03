@@ -7,6 +7,7 @@ mongoose.connect(process.env.MONGO_URI);
 
 const cors = require("cors");
 const bodyParser = require('body-parser');
+const func = require('./functions');
 const corsOptions = { origin: "http://localhost:3000" }
 app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -30,13 +31,15 @@ const userSchema = new mongoose.Schema({
   },
   teams: [{
     name: String,
-    id: String
+    id: String,
+    _id: false
   }], 
   connections: [{
     name: String,
     role: String,
     email: String,
-    id: String
+    id: String,
+    _id: false
   }],
   notifications: [{
     title: String,
@@ -118,12 +121,51 @@ let User = mongoose.model('user', userSchema);
 let Team = mongoose.model('team', teamSchema);
 let Task = mongoose.model('task', taskSchema);
 
+app.get("/connections", (req, res) => {
+  User
+    .find({}, {
+      name: 1,
+      role: 1,
+      email: 1,
+      isActive: 1,
+      updatedAt: 1
+    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
+});
+
+app.put("/add-connection", async (req, res) => {
+  const { user, id } = req.body;
+
+  const activeUser = await User.findById(user);
+  const addedUser = await User.findById(id);
+
+  if (!activeUser || !addedUser) { res.send({error: "user not found"})};
+
+  const activeUserData = func.createConnectionObj(activeUser);
+  const addedUserData = func.createConnectionObj(addedUser);
+
+  try {
+    activeUser.connections.push(addedUserData);
+    addedUser.connections.push(activeUserData);
+    await activeUser.save();
+    await addedUser.save();
+    res.send({
+      message: "Succesfully added connection",
+      user: activeUser
+    });
+  } catch (error) {
+    res.send({error: "Adding connection failed"})
+  }
+
+})
+
 app.post("/login", (req, res) => {
-  const body = req.body;
+  const { password, email } = req.body;
   User
     .where({
-    password: body.password,
-    email: body.email
+    password: password,
+    email: email
     })
     .findOne()
     .then(user => {
@@ -167,7 +209,7 @@ app.post("/register", async (req, res) => {
 
 app.post("/createteam", async (req, res) => {
 
-})
+});
 
 app.post("/createtask", (req, res) => {
   const body = req.body;
