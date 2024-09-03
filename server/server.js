@@ -157,7 +157,9 @@ app.post("/register", async (req, res) => {
       password: password,
       createdAt: newDate,
       updatedAt: newDate,
-      teams: []
+      teams: [],
+      connections: [],
+      notifications: []
     });
     res.send(user);
   }
