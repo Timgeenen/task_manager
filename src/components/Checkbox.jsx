@@ -1,10 +1,10 @@
 
-function Checkbox({value, register}) {
+function Checkbox({value, register, id}) {
   return (
     <span>
       <input 
       className="mr-2"
-      id={value}
+      id={id}
       value={value}
       type="checkbox"
       {...register} />
