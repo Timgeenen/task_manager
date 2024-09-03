@@ -226,7 +226,7 @@ app.post("/register", async (req, res) => {
   if (registered) {
     res.send({ error: "email adress is already in use" });
   } else {
-    const newDate = Date().split(" (")[0];
+    const newDate = func.newDate();
     const user = await User.create({
       name: name,
       role: role,
