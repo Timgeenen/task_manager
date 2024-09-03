@@ -170,6 +170,12 @@ app.get("/connections", (req, res) => {
     .catch((err) => res.send(err));
 });
 
+app.get("/user:id", (req, res) => {
+  User.findById(req.params.id)
+    .then(user => res.send(user))
+    .catch(err => res.send(err))
+})
+
 app.put("/add-connection", async (req, res) => {
   const { user, id } = req.body;
 

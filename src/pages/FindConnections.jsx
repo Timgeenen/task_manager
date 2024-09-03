@@ -31,7 +31,7 @@ function FindConnections() {
     axios.put(BACKEND + "/add-connection", userData)
       .then(data => {
         if (data.data.error) { return alert(data.data.error)};
-        dispatch(updateUser(data.data.user));
+        dispatch(updateUser(user._id))
         alert(data.data.message);
       })
       .catch(err => alert(err));
@@ -55,7 +55,9 @@ function FindConnections() {
   return (
     <div className="w-full m-4">
       {userData.map((item, i) => (
-        <div className="w-full flex justify-between border-2 border-slate-400 p-2">
+        <div 
+        className="w-full flex justify-between border-2 border-slate-400 p-2"
+        key={item._id}>
           <span className="">{item.name}</span>
           <span className="">{item.role}</span>
           <span>{
