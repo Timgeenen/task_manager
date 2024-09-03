@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import TaskInfo from "./pages/TaskInfo";
+import Connections from "./pages/Connections";
+import FindConnections from "./pages/FindConnections";
 import Teams from "./pages/Teams";
 import Trash from "./pages/Trash";
 import Profile from "./pages/Profile";
@@ -22,6 +24,8 @@ function App() {
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/taskinfo" element={<TaskInfo />} />
         <Route path="/teams" element={<Teams />} />
+        <Route path="/connections" element={<Connections />} />
+        <Route path="/find-connections" element={<FindConnections />} />
         <Route path="/trash" element={<Trash />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
