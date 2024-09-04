@@ -3,6 +3,7 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; 
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/state/authSlice";
+import { getInitials } from "../library/helperfunctions";
 //TODO: customize tippy styling
 //TODO: add link to profile page in tippy
 //TODO: add logout functionality
@@ -10,13 +11,6 @@ import { logout } from "../redux/state/authSlice";
 function UserTag() {
   const { user } = useSelector(state => state.auth);
   const [initials, setInitials] = useState("");
-
-  const getInitials = (name) => {
-    let names = name.split(" ");
-    let firstLetter = names[0].charAt(0);
-    let lastLetter = names[names.length - 1].charAt(0);
-    return (firstLetter + lastLetter).toUpperCase();
-  } 
 
   useEffect(() => {
     let userInitials = getInitials(user.name);
