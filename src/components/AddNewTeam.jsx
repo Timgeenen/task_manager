@@ -41,7 +41,7 @@ function AddNewTeam({handleClick}) {
       .post(BACKEND + "/createteam", teamData)
       .then(res => {
         dispatch(updateUser(user._id));
-        console.log(user.teams)
+        console.log(user.connections)
         alert(res.data.message);
       })
       .catch(err => alert(err));
@@ -69,6 +69,7 @@ function AddNewTeam({handleClick}) {
         {user.connections.map((member) => (
               <Checkbox 
               value={member.name}
+              text={member.name}
               register={register("members")}
               />
         ))}

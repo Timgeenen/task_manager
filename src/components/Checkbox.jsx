@@ -1,14 +1,13 @@
 
-function Checkbox({value, register, id}) {
+function Checkbox({value, text, register }) {
   return (
     <span>
       <input 
       className="mr-2"
-      id={id}
       value={value}
       type="checkbox"
       {...register} />
-      <label>{value}</label>
+      <label>{text}</label>
     </span>
   )
 }
