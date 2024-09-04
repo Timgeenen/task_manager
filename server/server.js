@@ -82,12 +82,8 @@ const teamSchema = new mongoose.Schema({
   tasks: [
     {
       title: String,
-      assignedTo: [
-        {
-          name: String,
-          id: String,
-        },
-      ],
+      priority: String,
+      status: String,
       id: String,
     },
   ],
@@ -117,16 +113,12 @@ const taskSchema = new mongoose.Schema({
       },
     },
   ],
-  createdOn: Date,
+  createdAt: Date,
   deadline: Date,
   priority: String,
   status: String,
-  assignedTo: [
-    {
-      name: String,
-      id: String,
-    },
-  ],
+  assignedTo: [String],
+  assignedTeam: String,
   comments: [
     {
       author: {
@@ -134,7 +126,7 @@ const taskSchema = new mongoose.Schema({
         id: String,
       },
       message: String,
-      createdOn: Date,
+      createdAt: Date,
     },
   ],
   updates: [
@@ -144,7 +136,7 @@ const taskSchema = new mongoose.Schema({
         id: String,
       },
       message: String,
-      updatedOn: Date,
+      updatedAt: Date,
     },
   ],
 });
@@ -279,12 +271,41 @@ app.post("/createteam", async (req, res) => {
   }
 });
 
-app.post("/createtask", (req, res) => {
-  const body = req.body;
-  console.log(body);
-  res.send(body);
-  //TODO: add data into database
-  //TODO: add data to team
+app.post("/createtask", async (req, res) => {
+  try {
+    const { subtasks, title, team, description, deadline, members, priority } = req.body;
+    const data = {
+      title,
+      description,
+      subtasks,
+      createdOn: func.newDate(),
+      deadline,
+      priority,
+      status: "pending",
+      assignedTo: members,
+      assignedTeam: team,
+      comments: [],
+      updates: []
+    }
+
+    const newTask = await Task.create(data);
+
+    const taskPointer = {
+      title,
+      priority,
+      status: "pending",
+      id: newTask._id
+    }
+
+    await Team.findByIdAndUpdate(team, {
+      $push: { tasks: taskPointer }
+    })
+
+    res.send({message: "Succesfully created task"});
+  } catch (err) {
+    res.send({message: err.message})
+  }
+
 });
 
 app.listen(8080, () => {

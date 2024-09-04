@@ -1,6 +1,5 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { IoClose } from "react-icons/io5";
-import { TEAMS } from "../library/fakedata";
 import AddButton from "./AddButton";
 import Checkbox from "./Checkbox";
 import Optionbox from "./Optionbox";
@@ -8,11 +7,16 @@ import SubmitButton from "./SubmitButton";
 import Textbox from "./Textbox";
 import axios from "axios";
 import { BACKEND } from "../library/constants";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import "react-datepicker/dist/react-datepicker.css";
+import DateSelect from "./DateSelect";
 
 //TODO: handle submit logic to post to database
 //TODO: add local state for error handling when no team or team member is selected
 
 function NewTask({ close }) {
+  const { user } = useSelector(state => state.auth);
   const {
     register,
     control,
@@ -30,14 +34,21 @@ function NewTask({ close }) {
     name: "subtasks"
   })
 
+  const [teams, setTeams] = useState([]);
   const selectedTeam = watch("team");
 
   const submitHandler = (data) => {
-    //TODO: add relevant data for post request (team name)
+    if (data.team === "") { return alert("please select a valid team")};
+    if (data.members.length === 0) {return alert("please make sure to select at least 1 team member")};
+
     axios.post(BACKEND + "/createtask", data)
-      .then(res => console.log(res.data))
+      .then(res => console.log(res.data.message))
       .catch(err => console.log(err))
   }
+
+  useEffect(() => {
+    setTeams(user.teams)
+  }, []);
 
   return (
     <div className="bg-white w-screen h-screen absolute top-0 left-0 z-50 bg-opacity-80 flex justify-center items-center">
@@ -48,28 +59,35 @@ function NewTask({ close }) {
 
       <form 
       className="flex flex-col gap-2"
-      onSubmit={handleSubmit(submitHandler)}>
+      onSubmit={handleSubmit(submitHandler)}
+      >
 
         <Textbox
         label="Title"
         type="text"
         placeholder="add title"
         register={register("title", {required: "Title Is Required"})}
-        error={errors.title ? errors.title.message : ""} />
+        error={errors.title ? errors.title.message : ""}
+        />
 
         <Optionbox 
-        options={TEAMS}
-        register={register("team")}/>
+        options={teams}
+        register={register("team")}
+        />
 
         {
-          TEAMS.map((item) => (
-            item.title === selectedTeam &&
-            item.members.map((member) => (
-              <Checkbox value={member} register={register("members")} />
+          teams.map((team) => (
+            team.id === selectedTeam &&
+            team.members.map((member) => (
+              <Checkbox 
+              value={member.id}
+              text={member.name}
+
+              register={register("members")}
+              />
             ))
           ))
         }
-        {/* { teamMembers?.length < 1 && <span className="text-xs text-red-600">Select at least 1 team member</span>} */}
 
         <textarea 
         type="text"
@@ -84,9 +102,26 @@ function NewTask({ close }) {
             placeholder="Add Subtask"
             register={register(`subtasks.${i}.name`)}
             />
-            <IoClose onClick={() => { remove(i) }} size={24} className="absolute right-1 top-1.5 hover:cursor-pointer"/>
+            <IoClose 
+            onClick={() => { remove(i) }}
+            size={24}
+            className="absolute right-1 top-1.5 hover:cursor-pointer"
+            />
           </span>
         ))}
+
+        <DateSelect
+        text="Deadline"
+        control={control}
+        />
+        
+        <label>Priority</label>
+        <select {...register("priority")}>
+          {["low", "medium", "high"].map(priority => (
+            <option value={priority}>{priority}</option>
+          ))}
+        </select>
+        
         <AddButton 
         text="Add Subtask"
         handleClick={() => append({ name: ''})}
