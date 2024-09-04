@@ -1,15 +1,17 @@
 import { IoClose } from "react-icons/io5"
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Textbox from "./Textbox";
 import SubmitButton from "./SubmitButton";
 import Checkbox from "../components/Checkbox.jsx";
 import { BACKEND } from "../library/constants.jsx";
 import axios from "axios";
+import { updateUser } from "../redux/state/authSlice.jsx";
 
 
 function AddNewTeam({handleClick}) {
   const { user } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
   const {
     register,
     control,
@@ -37,7 +39,11 @@ function AddNewTeam({handleClick}) {
 
     axios
       .post(BACKEND + "/createteam", teamData)
-      .then(res => console.log(res.data))
+      .then(res => {
+        dispatch(updateUser(user._id));
+        console.log(user.teams)
+        alert(res.data.message);
+      })
       .catch(err => alert(err));
   }
 

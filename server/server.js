@@ -36,10 +36,8 @@ const userSchema = new mongoose.Schema({
         {
           name: String,
           id: String,
-          _id: false,
         },
       ],
-      _id: false,
     },
   ],
   connections: [
@@ -268,15 +266,16 @@ app.post("/createteam", async (req, res) => {
       id: team._id,
     };
 
-    members.map((member) => {
-      User.findByIdAndUpdate(member.id, {
-        $push: { teams: teamObj },
-      });
-    });
+    const ids = members.map(member => {return member.id});
+
+    await User.updateMany(
+      { _id: { $in: ids } },
+      { $push: { teams: teamObj} }
+    )
 
     res.send({ message: "Succesfully Created New Team"});
   } catch (err) {
-    res.send({ error: err.message });
+    res.send({ message: err.message });
   }
 });
 
