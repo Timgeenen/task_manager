@@ -44,7 +44,7 @@ function NewTask({ close }) {
     const team = teams.find(item => item.id === selectedTeam)
     const teamObj = {
       name: team.name,
-      id: team._id
+      id: team.id
     }
     const assignedTo = team.members.filter(item => data.members.includes(item.id))
     
