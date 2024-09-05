@@ -6,23 +6,28 @@ const initialState = {
   user: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
-  teams: [],
-  tasks: [],
+
+  teams: localStorage.getItem('teamInfo')
+    ? JSON.parse(localStorage.getItem('userInfo'))
+    : [],
+
+  tasks: localStorage.getItem('taskInfo')
+    ? JSON.parse(localStorage.getItem('taskInfo'))
+    : [],
   
   isSidebarOpen: false
 }
 
 export const updateTeams = createAsyncThunk('teams/getById', async (arg, { getState }) => {
   const teams = getState().auth.user.teams;
-  const teamIds = teams.map(team => team.id)
+  const teamIds = teams.map(team => team.id);
 
   const res = await axios.post(BACKEND + "/teams", {teamIds: teamIds});
-
   return res.data;
 })
 
-export const updateTasks = createAsyncThunk('tasks/getById', async ({ getState }) => {
-  const tasks = getState();
+export const updateTasks = createAsyncThunk('tasks/getById', async (arg, { getState }) => {
+  const tasks = getState().auth;
   console.log(tasks)
 })
 
@@ -62,6 +67,7 @@ export const authSlice = createSlice({
 
     builder.addCase(updateTeams.fulfilled, (state, action) => {
       state.teams = action.payload;
+      localStorage.setItem('teamInfo', JSON.stringify(action.payload));
     })
   }
 })
