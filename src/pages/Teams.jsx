@@ -27,7 +27,10 @@ function Teams() {
             <button className="w-1/4">{team.name}</button>
             <span>
               {team.members.map((member, i) => (
-                <MembersTag member={member} index={i} key={`${member.id}${i}`} />
+                <MembersTag 
+                member={member.name}
+                index={i}
+                key={`${member.id}${i}`} />
               ))}
             </span>
             <div>

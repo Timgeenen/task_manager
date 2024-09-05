@@ -3,11 +3,11 @@ import { COLORS } from "../library/constants";
 import { getInitials } from "../library/helperfunctions";
 
 function MembersTag({ member, index }) {
-  const initials = getInitials(member.name);
+  const initials = getInitials(member);
   const navigate = useNavigate();
   const navigateToProfile = () => {
     //TODO: add navigate route to profile
-    console.log(`navigated to ${member.name}'s profile`);
+    console.log(`navigated to ${member}'s profile`);
   };
   return (
     <>
