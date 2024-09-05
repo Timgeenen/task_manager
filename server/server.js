@@ -193,12 +193,19 @@ app.put("/add-connection", async (req, res) => {
   }
 });
 
-app.post("/teams", (req, res) => {
+app.post("/get-teams", (req, res) => {
   const { teamIds } = req.body;
   Team.find({ _id: { $in: teamIds}})
     .then(data => res.send(data))
     .catch(err => res.send({message: err.message}));
 });
+
+app.post("/get-tasks", (req, res) => {
+  const { teamIds } = req.body;
+  Task.find({ assignedTeam: { $in: teamIds}})
+    .then(data => res.send(data))
+    .catch(err => res.send({message: err.message}));
+})
 
 app.post("/login", (req, res) => {
   const { password, email } = req.body;
