@@ -6,14 +6,31 @@ const initialState = {
   user: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
+  teams: [],
+  tasks: [],
   
   isSidebarOpen: false
 }
+
+export const updateTeams = createAsyncThunk('teams/getById', async (arg, { getState }) => {
+  const teams = getState().auth.user.teams;
+  const teamIds = teams.map(team => team.id)
+
+  const res = await axios.post(BACKEND + "/teams", {teamIds: teamIds});
+
+  return res.data;
+})
+
+export const updateTasks = createAsyncThunk('tasks/getById', async ({ getState }) => {
+  const tasks = getState();
+  console.log(tasks)
+})
 
 export const updateUser = createAsyncThunk('user/getById', async (id) => {
   const user = await axios.get(BACKEND + "/user" + id);
   return user.data;
 })
+
 
 export const authSlice = createSlice({
   name: "auth",
@@ -36,9 +53,15 @@ export const authSlice = createSlice({
   },
 
   extraReducers: (builder) => {
+
+    //TODO: add error handling and pending requests
     builder.addCase(updateUser.fulfilled, (state, action) => {
       state.user = action.payload;
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
+    }),
+
+    builder.addCase(updateTeams.fulfilled, (state, action) => {
+      state.teams = action.payload;
     })
   }
 })
