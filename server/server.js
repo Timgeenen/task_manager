@@ -110,6 +110,7 @@ const taskSchema = new mongoose.Schema({
       completed: {
         type: Boolean,
         default: false,
+        _id: false
       },
     },
   ],
@@ -117,13 +118,20 @@ const taskSchema = new mongoose.Schema({
   deadline: Date,
   priority: String,
   status: String,
-  assignedTo: [String],
-  assignedTeam: String,
+  assignedTo: [{
+    name: String,
+    id: String,
+  }],
+  assignedTeam: {
+    name: String,
+    id: String,
+  },
   comments: [
     {
       author: {
         name: String,
         id: String,
+        _id: false
       },
       message: String,
       createdAt: Date,
@@ -134,6 +142,7 @@ const taskSchema = new mongoose.Schema({
       author: {
         name: String,
         id: String,
+        _id: false
       },
       message: String,
       updatedAt: Date,
@@ -288,6 +297,7 @@ app.post("/createteam", async (req, res) => {
 app.post("/createtask", async (req, res) => {
   try {
     const { subtasks, title, team, description, deadline, members, priority } = req.body;
+    console.log(team)
     const data = {
       title,
       description,
@@ -311,7 +321,7 @@ app.post("/createtask", async (req, res) => {
       id: newTask._id
     }
 
-    await Team.findByIdAndUpdate(team, {
+    await Team.findByIdAndUpdate(team.id, {
       $push: { tasks: taskPointer }
     })
 

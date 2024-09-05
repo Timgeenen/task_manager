@@ -41,9 +41,19 @@ function NewTask({ close }) {
     if (data.team === "") { return alert("please select a valid team")};
     if (data.members.length === 0) {return alert("please make sure to select at least 1 team member")};
 
+    const team = teams.find(item => item.id === selectedTeam)
+    const teamObj = {
+      name: team.name,
+      id: team._id
+    }
+    const assignedTo = team.members.filter(item => data.members.includes(item.id))
+    
+    data.members = assignedTo;
+    data.team = teamObj;
+
     axios.post(BACKEND + "/createtask", data)
-      .then(res => console.log(res.data.message))
-      .catch(err => console.log(err))
+      .then(res => alert(res.data.message))
+      .catch(err => alert(err))
   }
 
   useEffect(() => {
