@@ -209,10 +209,16 @@ app.post("/get-teams", (req, res) => {
     .catch(err => res.send({message: err.message}));
 });
 
-app.post("/get-tasks", (req, res) => {
+app.post("/get-tasks-by-teamId", (req, res) => {
   const { teamIds } = req.body;
-  Task.find({ assignedTeam: { $in: teamIds}})
-    .then(data => res.send(data))
+  Team.find({ _id: { $in: teamIds}})
+    .then(data => {
+      const tasks = data.flatMap(team => team.tasks);
+      const taskIds = tasks.map(task => task.id);
+      Task.find({ _id: { $in: taskIds }})
+        .then(tasks => res.send(tasks))
+        .catch(err => res.send(err.message));
+    })
     .catch(err => res.send({message: err.message}));
 })
 
