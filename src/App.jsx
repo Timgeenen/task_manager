@@ -22,7 +22,9 @@ function App() {
         <Route path="/" element={<Navigate to="/dashboard" />} index />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tasks" element={<Tasks />} />
-        <Route path="/taskinfo" element={<TaskInfo />} />
+        <Route path="/task-info">
+          <Route path=":taskId" element={<TaskInfo />} />
+        </Route>
         <Route path="/teams" element={<Teams />} />
         <Route path="/connections" element={<Connections />} />
         <Route path="/find-connections" element={<FindConnections />} />
