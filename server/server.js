@@ -173,6 +173,27 @@ app.get("/user:id", (req, res) => {
   User.findById(req.params.id)
     .then(user => res.send(user))
     .catch(err => res.send(err))
+});
+
+app.get("/task:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const task = await Task.findById(id, {
+      title: 1,
+      description: 1,
+      subTasks: 1,
+      deadline: 1,
+      priority: 1,
+      status: 1,
+      assignedTo: 1,
+      assignedTeam: 1,
+      comments: 1,
+      updates: 1
+    });
+    res.send(task);
+  } catch (err) {
+    res.send(err);
+  }
 })
 
 app.put("/add-connection", async (req, res) => {
