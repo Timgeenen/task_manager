@@ -5,18 +5,19 @@ import Checkbox from "./Checkbox";
 import Optionbox from "./Optionbox";
 import SubmitButton from "./SubmitButton";
 import Textbox from "./Textbox";
-import axios from "axios";
-import { BACKEND } from "../library/constants";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "react-datepicker/dist/react-datepicker.css";
 import DateSelect from "./DateSelect";
-
-//TODO: handle submit logic to post to database
-//TODO: add local state for error handling when no team or team member is selected
+import { useMutation } from "@tanstack/react-query";
+import { createNewTask } from "../api/Event";
 
 function NewTask({ close }) {
   const { user } = useSelector(state => state.auth);
+  const { isError, isSuccess, mutateAsync, error, data } = useMutation({
+    mutationKey: ["create-task"],
+    mutationFn: (data) => createNewTask(data)
+  });
+
   const {
     register,
     control,
@@ -32,33 +33,28 @@ function NewTask({ close }) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "subtasks"
-  })
+  });
 
-  const [teams, setTeams] = useState([]);
   const selectedTeam = watch("team");
 
-  const submitHandler = (data) => {
-    if (data.team === "") { return alert("please select a valid team")};
-    if (data.members.length === 0) {return alert("please make sure to select at least 1 team member")};
+  const submitHandler = (formData) => {
+    if (formData.team === "") { return alert("please select a valid team")};
+    if (formData.members.length === 0) {return alert("please make sure to select at least 1 team member")};
 
-    const team = teams.find(item => item.id === selectedTeam)
+    const team = user.teams.find(item => item.id === selectedTeam);
     const teamObj = {
       name: team.name,
       id: team.id
-    }
-    const assignedTo = team.members.filter(item => data.members.includes(item.id))
-    
-    data.members = assignedTo;
-    data.team = teamObj;
+    };
+    const assignedTo = team.members.filter(item => formData.members.includes(item.id));
+    formData.members = assignedTo;
+    formData.team = teamObj;
 
-    axios.post(BACKEND + "/createtask", data)
-      .then(res => alert(res.data.message))
-      .catch(err => alert(err))
+    mutateAsync(formData);
   }
 
-  useEffect(() => {
-    setTeams(user.teams)
-  }, []);
+  if (isError) { alert(error.message) };
+  if (isSuccess) { alert(data.message)};
 
   return (
     <div className="bg-white w-screen h-screen absolute top-0 left-0 z-50 bg-opacity-80 flex justify-center items-center">
@@ -81,12 +77,12 @@ function NewTask({ close }) {
         />
 
         <Optionbox 
-        options={teams}
+        options={user.teams}
         register={register("team")}
         />
 
         {
-          teams.map((team) => (
+          user.teams.map((team) => (
             team.id === selectedTeam &&
             team.members.map((member) => (
               <Checkbox 
