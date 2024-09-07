@@ -154,19 +154,23 @@ let User = mongoose.model("user", userSchema);
 let Team = mongoose.model("team", teamSchema);
 let Task = mongoose.model("task", taskSchema);
 
-app.get("/connections", (req, res) => {
-  User.find(
-    {},
-    {
-      name: 1,
-      role: 1,
-      email: 1,
-      isActive: 1,
-      updatedAt: 1,
-    }
-  )
-    .then((data) => res.send(data))
-    .catch((err) => res.send(err));
+app.get("/connections", async (req, res) => {
+  try {
+    const users = await User.find(
+      {},
+      {
+        name: 1,
+        role: 1,
+        email: 1,
+        isActive: 1,
+        updatedAt: 1,
+      }
+    );
+    res.send(users);
+    
+  } catch(err) {
+    res.send(err);
+  }
 });
 
 app.get("/user:id", (req, res) => {
@@ -214,10 +218,7 @@ app.put("/add-connection", async (req, res) => {
     addedUser.connections.push(activeUserData);
     await activeUser.save();
     await addedUser.save();
-    res.send({
-      message: "Succesfully added connection",
-      user: activeUser,
-    });
+    res.send({ user: activeUser });
   } catch (error) {
     res.send({ error: "Adding connection failed" });
   }
