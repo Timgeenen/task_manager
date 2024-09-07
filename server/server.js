@@ -289,7 +289,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/createteam", async (req, res) => {
+app.post("/create-team", async (req, res) => {
   try {
     const { name, manager, members } = req.body;
 
@@ -314,32 +314,34 @@ app.post("/createteam", async (req, res) => {
     await User.updateMany(
       { _id: { $in: ids } },
       { $push: { teams: teamObj} }
-    )
+    );
 
-    res.send({ message: "Succesfully Created New Team"});
+    const user = await User.findById(manager.id);
+
+    res.send(user);
   } catch (err) {
-    res.send({ message: err.message });
+    res.send(err);
   }
 });
 
-app.post("/createtask", async (req, res) => {
-  try {
-    const { subtasks, title, team, description, deadline, members, priority } = req.body;
-    console.log(team)
-    const data = {
-      title,
-      description,
-      subtasks,
-      createdOn: func.newDate(),
-      deadline,
-      priority,
-      status: "pending",
-      assignedTo: members,
-      assignedTeam: team,
-      comments: [],
-      updates: []
-    }
+app.post("/create-task", async (req, res) => {
+  const { subtasks, title, team, description, deadline, members, priority } = req.body;
 
+  const data = {
+    title,
+    description,
+    subtasks,
+    createdOn: func.newDate(),
+    deadline,
+    priority,
+    status: "pending",
+    assignedTo: members,
+    assignedTeam: team,
+    comments: [],
+    updates: [],
+  };
+
+  try {
     const newTask = await Task.create(data);
 
     const taskPointer = {
@@ -355,7 +357,7 @@ app.post("/createtask", async (req, res) => {
 
     res.send({message: "Succesfully created task"});
   } catch (err) {
-    res.send({message: err.message})
+    res.send(err)
   }
 
 });

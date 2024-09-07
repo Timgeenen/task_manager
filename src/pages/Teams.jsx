@@ -8,21 +8,15 @@ function Teams() {
   const { user } = useSelector(state => state.auth);
 
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
-  const [teams, setTeams] = useState([]);
 
   const closeForm = (e) => {
     e.preventDefault()
     setCreateTeamOpen(false);
   }
 
-  useEffect(() => {
-    console.log(user.teams)
-    setTeams(user.teams)
-  }, [])
-
   return (
     <div className="w-full flex flex-col gap-10">
-      {teams.map((team, i) => (
+      {user.teams.map((team, i) => (
           <div key={team.id} className="">
             <button className="w-1/4">{team.name}</button>
             <span>

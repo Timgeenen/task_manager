@@ -4,12 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Textbox from "./Textbox";
 import SubmitButton from "./SubmitButton";
 import Checkbox from "../components/Checkbox.jsx";
-import { BACKEND } from "../library/constants.jsx";
-import axios from "axios";
-import { updateUser } from "../redux/state/authSlice.jsx";
 import { useMutation } from "@tanstack/react-query";
 import { getTeamDataObj } from '../library/helperfunctions';
 import { createNewTeam } from "../api/Event";
+import { updateUser } from "../redux/state/authSlice.jsx";
 
 
 function AddNewTeam({handleClick}) {
@@ -17,7 +15,6 @@ function AddNewTeam({handleClick}) {
   const dispatch = useDispatch();
   const {
     register,
-    control,
     handleSubmit,
     formState: { errors }
   } = useForm();
@@ -32,11 +29,15 @@ function AddNewTeam({handleClick}) {
     mutation.mutateAsync(teamData)
   }
 
+  if (mutation.isError) { alert(mutation.error.message) };
+  if (mutation.isSuccess) {
+    dispatch(updateUser(mutation.data));
+    alert("Succesfully created new team");
+  }
+
   return (
     <div className="w-screen h-screen absolute top-0 z-50 flex justify-center items-center bg-white opacity-50">
-      {mutation.isLoading && <div>LOADING...</div>}
-      {mutation.isError && <div>{mutation.error.message}</div>}
-      {mutation.isSuccess && <div>SUCCESS</div>}
+      {mutation.isLoading && <div>Loading...</div>}
       <button onClick={handleClick}>
         <IoClose size={24}/>
       </button>
