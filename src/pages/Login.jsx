@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import { Navigate } from "react-router-dom";
 import Textbox from "../components/Textbox";
 import SubmitButton from "../components/SubmitButton";
-import axios from "axios";
-import { BACKEND } from "../library/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/state/authSlice";
+import { useMutation } from "@tanstack/react-query";
+import { createUser, authenticateUser } from "../api/Event";
 
 function Login() {
   const { user } = useSelector(state => state.auth);
@@ -18,27 +18,36 @@ function Login() {
    } = useForm();
    const [registerForm, setRegisterForm] = useState(false);
 
+  const loginMutation = useMutation({
+    mutationKey: ["login"],
+    mutationFn: (userData) => authenticateUser(userData)
+  });
+
+  const registerMutation = useMutation({
+    mutationKey: ["register"],
+    mutationFn: (userData) => createUser(userData)
+  });
+
   const loginUser = (data) => {
-    axios.post(BACKEND + "/login", data)
-      .then(res => {
-      if (res.data.error) { return alert(res.data.error) }
-      else {
-        dispatch(login(res.data));
-      }
-      })
-      .catch(err => alert(err));
+    loginMutation.mutate(data);
+    loginMutation.isError && alert(loginMutation.error.message);
+    loginMutation.isSuccess && dispatch(login(loginMutation.data));
   }
 
   const registerUser = (data) => {
-    axios.post(BACKEND + "/register", data)
-      .then(res => {
-        if (res.data.error) { return alert(res.data.error)}
-        else { loginUser(data) }
-      })
-      .catch(err => { alert(err)});
+    registerMutation.mutate(data);
+    registerMutation.isError && alert(loginMutation.error.message);
+    registerMutation.isSuccess && dispatch(login(registerMutation.data));
+  }
+
+  const toggleForm = (e) => {
+    e.preventDefault();
+    setRegisterForm(!registerForm);
   }
  
-  return user ? ( <Navigate to="/dashboard" replace /> ) : (
+  return user 
+  ? ( <Navigate to="/dashboard" replace /> ) 
+  : (
     <div className="w-screen h-screen flex flex-col justify-center gap-20 items-center">
       <h1 className="text-5xl font-bold text-blue-600">Welcome Back!</h1>
       <form 
@@ -79,16 +88,10 @@ function Login() {
 
         <SubmitButton />
         {registerForm ? (
-        <span>Already registered? <button className="text-blue-600" onClick={(e) => {
-          e.preventDefault();
-          setRegisterForm(false);
-          }}>Login</button>
+        <span>Already registered? <button className="text-blue-600" onClick={toggleForm}>Login</button>
         </span>
         ) : (
-        <span>new user? <button className="text-blue-600" onClick={(e) => {
-          e.preventDefault();
-          setRegisterForm(true);
-          }}>Register</button>
+        <span>new user? <button className="text-blue-600" onClick={toggleForm}>Register</button>
         </span>
         )}
       </form>
