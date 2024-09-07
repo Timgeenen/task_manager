@@ -7,6 +7,9 @@ import Checkbox from "../components/Checkbox.jsx";
 import { BACKEND } from "../library/constants.jsx";
 import axios from "axios";
 import { updateUser } from "../redux/state/authSlice.jsx";
+import { useMutation } from "@tanstack/react-query";
+import { getTeamDataObj } from '../library/helperfunctions';
+import { createNewTeam } from "../api/Event";
 
 
 function AddNewTeam({handleClick}) {
@@ -19,37 +22,21 @@ function AddNewTeam({handleClick}) {
     formState: { errors }
   } = useForm();
 
+  const mutation = useMutation({
+    mutateKey: ["newTeam"],
+    mutationFn: (teamData) => createNewTeam(teamData)
+  })
+
   const createTeam = (data) => {
-    const assignedTo = user.connections.filter(item => data.members.includes(item.name));
-
-    const manager = {
-      name: user.name,
-      role: user.role,
-      email: user.email,
-      id: user._id
-    };
-
-    const members = [...assignedTo, manager];
-
-    const teamData = {
-      name: data.name,
-      manager: manager,
-      members: members,
-    }
-
-    axios
-      .post(BACKEND + "/createteam", teamData)
-      .then(res => {
-        dispatch(updateUser(user._id));
-        console.log(user.connections)
-        alert(res.data.message);
-      })
-      .catch(err => alert(err));
+    const teamData = getTeamDataObj(data, user);
+    mutation.mutateAsync(teamData)
   }
 
   return (
     <div className="w-screen h-screen absolute top-0 z-50 flex justify-center items-center bg-white opacity-50">
-
+      {mutation.isLoading && <div>LOADING...</div>}
+      {mutation.isError && <div>{mutation.error.message}</div>}
+      {mutation.isSuccess && <div>SUCCESS</div>}
       <button onClick={handleClick}>
         <IoClose size={24}/>
       </button>
