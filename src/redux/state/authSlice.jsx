@@ -38,10 +38,10 @@ export const updateTasks = createAsyncThunk('tasks/getByTeamIds', async (selecte
   return res.data;
 })
 
-export const updateUser = createAsyncThunk('user/getById', async (id) => {
-  const user = await axios.get(BACKEND + "/user" + id);
-  return user.data;
-})
+// export const updateUser = createAsyncThunk('user/getById', async (id) => {
+//   const user = await axios.get(BACKEND + "/user" + id);
+//   return user.data;
+// })
 
 
 export const authSlice = createSlice({
@@ -54,11 +54,16 @@ export const authSlice = createSlice({
       state.isSidebarOpen = true; //TODO
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
     },
+    updateUser: (state, action) => {
+      state.user = action.payload;
+      localStorage.setItem('userInfo', JSON.stringify(action.payload));
+    },
     logout: (state) => {
       state.user = null;
       state.isSidebarOpen = false; //TODO
       localStorage.removeItem('userInfo');
     },
+
     setOpenSidebar: (state, action) => {
       state.isSidebarOpen = action.payload
     }
@@ -67,10 +72,10 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
 
     //TODO: add error handling and pending requests
-    builder.addCase(updateUser.fulfilled, (state, action) => {
-      state.user = action.payload;
-      localStorage.setItem('userInfo', JSON.stringify(action.payload));
-    }),
+    // builder.addCase(updateUser.fulfilled, (state, action) => {
+    //   state.user = action.payload;
+    //   localStorage.setItem('userInfo', JSON.stringify(action.payload));
+    // }),
 
     builder.addCase(updateTeams.fulfilled, (state, action) => {
       state.teams = action.payload;
@@ -86,6 +91,7 @@ export const authSlice = createSlice({
 
 export const {
   login,
+  updateUser,
   logout,
   setOpenSidebar,
 } = authSlice.actions
