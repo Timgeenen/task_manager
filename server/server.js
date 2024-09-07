@@ -244,19 +244,17 @@ app.post("/get-tasks-by-teamId", (req, res) => {
     .catch(err => res.send({message: err.message}));
 })
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { password, email } = req.body;
-  User.where({
-    password: password,
-    email: email,
-  })
-    .findOne()
-    .then((user) => {
-      user
-        ? res.send(user)
-        : res.send({ error: "email and password do not match" });
-    })
-    .catch((err) => res.send(err));
+  try {
+    const user = await User.where({
+      password: password,
+      email: email,
+    }).findOne();
+    res.send(user);
+  } catch (err) {
+    res.send(err)
+  }
 });
 
 app.post("/register", async (req, res) => {
