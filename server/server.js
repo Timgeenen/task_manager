@@ -110,7 +110,7 @@ const taskSchema = new mongoose.Schema({
       completed: {
         type: Boolean,
         default: false,
-        _id: false
+        _id: false,
       },
     },
   ],
@@ -118,10 +118,12 @@ const taskSchema = new mongoose.Schema({
   deadline: Date,
   priority: String,
   status: String,
-  assignedTo: [{
-    name: String,
-    id: String,
-  }],
+  assignedTo: [
+    {
+      name: String,
+      id: String,
+    },
+  ],
   assignedTeam: {
     name: String,
     id: String,
@@ -131,7 +133,7 @@ const taskSchema = new mongoose.Schema({
       author: {
         name: String,
         id: String,
-        _id: false
+        _id: false,
       },
       message: String,
       createdAt: Date,
@@ -142,7 +144,7 @@ const taskSchema = new mongoose.Schema({
       author: {
         name: String,
         id: String,
-        _id: false
+        _id: false,
       },
       message: String,
       updatedAt: Date,
@@ -167,16 +169,15 @@ app.get("/connections", async (req, res) => {
       }
     );
     res.send(users);
-    
-  } catch(err) {
+  } catch (err) {
     res.send(err);
   }
 });
 
 app.get("/user:id", (req, res) => {
   User.findById(req.params.id)
-    .then(user => res.send(user))
-    .catch(err => res.send(err))
+    .then((user) => res.send(user))
+    .catch((err) => res.send(err));
 });
 
 app.get("/task:id", async (req, res) => {
@@ -192,13 +193,13 @@ app.get("/task:id", async (req, res) => {
       assignedTo: 1,
       assignedTeam: 1,
       comments: 1,
-      updates: 1
+      updates: 1,
     });
     res.send(task);
   } catch (err) {
     res.send(err);
   }
-})
+});
 
 app.put("/add-connection", async (req, res) => {
   const { user, id } = req.body;
@@ -226,23 +227,38 @@ app.put("/add-connection", async (req, res) => {
 
 app.post("/get-teams", (req, res) => {
   const { teamIds } = req.body;
-  Team.find({ _id: { $in: teamIds}})
-    .then(data => res.send(data))
-    .catch(err => res.send({message: err.message}));
+  Team.find({ _id: { $in: teamIds } })
+    .then((data) => res.send(data))
+    .catch((err) => res.send(err));
+});
+
+app.post("/get-team-tasksArr", async (req, res) => {
+  const teamIds = req.body;
+  try {
+    const tasks = await Team.find(
+      { _id: { $in: teamIds } },
+      { tasks: 1, _id: 0 }
+    );
+
+    const taskArr = tasks.flatMap((obj) => obj.tasks);
+    res.send(taskArr);
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 app.post("/get-tasks-by-teamId", (req, res) => {
   const { teamIds } = req.body;
-  Team.find({ _id: { $in: teamIds}})
-    .then(data => {
-      const tasks = data.flatMap(team => team.tasks);
-      const taskIds = tasks.map(task => task.id);
-      Task.find({ _id: { $in: taskIds }})
-        .then(tasks => res.send(tasks))
-        .catch(err => res.send(err.message));
+  Team.find({ _id: { $in: teamIds } })
+    .then((data) => {
+      const tasks = data.flatMap((team) => team.tasks);
+      const taskIds = tasks.map((task) => task.id);
+      Task.find({ _id: { $in: taskIds } })
+        .then((tasks) => res.send(tasks))
+        .catch((err) => res.send(err.message));
     })
-    .catch(err => res.send({message: err.message}));
-})
+    .catch((err) => res.send({ message: err.message }));
+});
 
 app.post("/login", async (req, res) => {
   const { password, email } = req.body;
@@ -253,7 +269,7 @@ app.post("/login", async (req, res) => {
     }).findOne();
     res.send(user);
   } catch (err) {
-    res.send(err)
+    res.send(err);
   }
 });
 
@@ -307,12 +323,11 @@ app.post("/create-team", async (req, res) => {
       id: team._id,
     };
 
-    const ids = members.map(member => {return member.id});
+    const ids = members.map((member) => {
+      return member.id;
+    });
 
-    await User.updateMany(
-      { _id: { $in: ids } },
-      { $push: { teams: teamObj} }
-    );
+    await User.updateMany({ _id: { $in: ids } }, { $push: { teams: teamObj } });
 
     const user = await User.findById(manager.id);
 
@@ -323,7 +338,8 @@ app.post("/create-team", async (req, res) => {
 });
 
 app.post("/create-task", async (req, res) => {
-  const { subtasks, title, team, description, deadline, members, priority } = req.body;
+  const { subtasks, title, team, description, deadline, members, priority } =
+    req.body;
 
   const data = {
     title,
@@ -346,18 +362,17 @@ app.post("/create-task", async (req, res) => {
       title,
       priority,
       status: "pending",
-      id: newTask._id
-    }
+      id: newTask._id,
+    };
 
     await Team.findByIdAndUpdate(team.id, {
-      $push: { tasks: taskPointer }
-    })
+      $push: { tasks: taskPointer },
+    });
 
-    res.send({message: "Succesfully created task"});
+    res.send({ message: "Succesfully created task" });
   } catch (err) {
-    res.send(err)
+    res.send(err);
   }
-
 });
 
 app.listen(8080, () => {
