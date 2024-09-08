@@ -45,9 +45,11 @@ function Stats({data}) {
           <span className={titleStyle}>Status</span>
         </div>
         {
-          tasks.map((item, i) => (
+          data.map((item, i) => (
             item.status !== "completed" &&
-            <div className="text-center grid grid-cols-4 font-semibold sticky bg-slate-100">
+            <div
+            key={`task-${i}`}
+            className="text-center grid grid-cols-4 font-semibold sticky bg-slate-100">
               <span className={taskStyle}>{item.title}</span>
               <span className={taskStyle}>{item.deadline}</span>
               <span 
