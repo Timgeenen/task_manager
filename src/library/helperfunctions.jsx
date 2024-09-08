@@ -19,8 +19,8 @@ export const getTeamDataObj = (data, user) => {
   }
 };
 
-export const getTeamIdArray = (teamObj) => {
-  const array = teamObj.map((team) => (team.id));
+export const getTeamIdArray = (teams) => {
+  const array = teams.map((team) => (team.id));
   return array;
 }
 
@@ -35,8 +35,8 @@ export const getTimePassed = (date) => {
   const lastLogin = Math.floor(new Date(date).getTime() / 1000);
   const currentTime = Math.floor(new Date().getTime() / 1000);
   const timePassed = currentTime - lastLogin;
-
   const minutes = Math.floor(timePassed / 60);
+
   if (minutes < 60) { return `${minutes} min`};
 
   const hours = Math.floor(minutes / 60);
