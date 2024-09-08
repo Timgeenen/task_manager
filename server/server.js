@@ -168,120 +168,7 @@ let User = mongoose.model("user", userSchema);
 let Team = mongoose.model("team", teamSchema);
 let Task = mongoose.model("task", taskSchema);
 
-app.get("/connections", async (req, res) => {
-  try {
-    const users = await User.find(
-      {},
-      {
-        name: 1,
-        role: 1,
-        email: 1,
-        isActive: 1,
-        updatedAt: 1,
-      }
-    );
-    res.send(users);
-  } catch (err) {
-    res.send(err);
-  }
-});
-
-app.get("/user:id", (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => res.send(user))
-    .catch((err) => res.send(err));
-});
-
-app.get("/task:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const task = await Task.findById(id, {
-      title: 1,
-      description: 1,
-      subTasks: 1,
-      deadline: 1,
-      priority: 1,
-      status: 1,
-      assignedTo: 1,
-      assignedTeam: 1,
-      comments: 1,
-      updates: 1,
-    });
-    res.send(task);
-  } catch (err) {
-    res.send(err);
-  }
-});
-
-app.put("/add-connection", async (req, res) => {
-  const { user, id } = req.body;
-
-  const activeUser = await User.findById(user);
-  const addedUser = await User.findById(id);
-
-  if (!activeUser || !addedUser) {
-    res.send({ error: "user not found" });
-  }
-
-  const activeUserData = func.createConnectionObj(activeUser);
-  const addedUserData = func.createConnectionObj(addedUser);
-
-  try {
-    activeUser.connections.push(addedUserData);
-    addedUser.connections.push(activeUserData);
-    await activeUser.save();
-    await addedUser.save();
-    res.send({ user: activeUser });
-  } catch (error) {
-    res.send({ error: "Adding connection failed" });
-  }
-});
-
-app.post("/get-teams", (req, res) => {
-  const { teamIds } = req.body;
-  Team.find({ _id: { $in: teamIds } })
-    .then((data) => res.send(data))
-    .catch((err) => res.send(err));
-});
-
-app.post("/get-team-tasksArr", async (req, res) => {
-  const teamIds = req.body;
-  try {
-    const tasks = await Team.find(
-      { _id: { $in: teamIds } },
-      { tasks: 1, _id: 0 }
-    );
-
-    const taskArr = tasks.flatMap((obj) => obj.tasks);
-    res.send(taskArr);
-  } catch (err) {
-    res.send(err);
-  }
-});
-
-app.post("/get-tasks-by-teamId", (req, res) => {
-  const { teamIds } = req.body;
-  Team.find({ _id: { $in: teamIds } })
-    .then((data) => {
-      const tasks = data.flatMap((team) => team.tasks);
-      const taskIds = tasks.map((task) => task.id);
-      Task.find({ _id: { $in: taskIds } })
-        .then((tasks) => res.send(tasks))
-        .catch((err) => res.send(err.message));
-    })
-    .catch((err) => res.send({ message: err.message }));
-});
-
-app.post("/get-all-tasks", async (req, res) => {
-  const teamIds = req.body;
-  try {
-    const tasks = await Task.find({ "assignedTeam.id": { $in: teamIds } });
-    res.send(tasks);
-  } catch (err) {
-    res.send(err);
-  }
-});
-
+//user api calls
 app.post("/login", async (req, res) => {
   const { password, email } = req.body;
   try {
@@ -325,40 +212,55 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/create-team", async (req, res) => {
+app.get("/connections", async (req, res) => {
   try {
-    const { name, manager, members } = req.body;
-
-    const team = await Team.create({
-      name,
-      manager,
-      members,
-      tasks: [],
-      createdOn: func.newDate(),
-      messages: [],
-      trash: [],
-    });
-
-    const teamObj = {
-      name,
-      members,
-      id: team._id,
-    };
-
-    const ids = members.map((member) => {
-      return member.id;
-    });
-
-    await User.updateMany({ _id: { $in: ids } }, { $push: { teams: teamObj } });
-
-    const user = await User.findById(manager.id);
-
-    res.send(user);
+    const users = await User.find(
+      {},
+      {
+        name: 1,
+        role: 1,
+        email: 1,
+        isActive: 1,
+        updatedAt: 1,
+      }
+    );
+    res.send(users);
   } catch (err) {
     res.send(err);
   }
 });
 
+app.put("/add-connection", async (req, res) => {
+  const { user, id } = req.body;
+
+  const activeUser = await User.findById(user);
+  const addedUser = await User.findById(id);
+
+  if (!activeUser || !addedUser) {
+    res.send({ error: "user not found" });
+  }
+
+  const activeUserData = func.createConnectionObj(activeUser);
+  const addedUserData = func.createConnectionObj(addedUser);
+
+  try {
+    activeUser.connections.push(addedUserData);
+    addedUser.connections.push(activeUserData);
+    await activeUser.save();
+    await addedUser.save();
+    res.send({ user: activeUser });
+  } catch (error) {
+    res.send({ error: "Adding connection failed" });
+  }
+});
+
+app.get("/user:id", (req, res) => {
+  User.findById(req.params.id)
+    .then((user) => res.send(user))
+    .catch((err) => res.send(err));
+});
+
+//task api calls
 app.post("/create-task", async (req, res) => {
   const { subtasks, title, team, description, deadline, members, priority } =
     req.body;
@@ -393,6 +295,125 @@ app.post("/create-task", async (req, res) => {
     });
 
     res.send({ message: "Succesfully created task" });
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.get("/task:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const task = await Task.findById(id, {
+      title: 1,
+      description: 1,
+      subTasks: 1,
+      deadline: 1,
+      priority: 1,
+      status: 1,
+      assignedTo: 1,
+      assignedTeam: 1,
+      comments: 1,
+      updates: 1,
+    });
+    res.send(task);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.post("/get-all-tasks", async (req, res) => {
+  const teamIds = req.body;
+  try {
+    const tasks = await Task.find({ "assignedTeam.id": { $in: teamIds } });
+    res.send(tasks);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.post("/get-tasks-by-teamId", (req, res) => {
+  const { teamIds } = req.body;
+  Team.find({ _id: { $in: teamIds } })
+    .then((data) => {
+      const tasks = data.flatMap((team) => team.tasks);
+      const taskIds = tasks.map((task) => task.id);
+      Task.find({ _id: { $in: taskIds } })
+        .then((tasks) => res.send(tasks))
+        .catch((err) => res.send(err.message));
+    })
+    .catch((err) => res.send({ message: err.message }));
+});
+
+app.put("/add-comment", async (req, res) => {
+  const { author, message, taskId } = req.body;
+  const comment = {
+    author,
+    message,
+    createdAt: func.newDate()
+  };
+
+  try {
+    const updatedTask = await Task.findByIdAndUpdate(taskId, {
+      $push: { comments: comment },
+    });
+    res.send(updatedTask);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+//team api calls
+app.post("/get-teams", (req, res) => {
+  const { teamIds } = req.body;
+  Team.find({ _id: { $in: teamIds } })
+    .then((data) => res.send(data))
+    .catch((err) => res.send(err));
+});
+
+app.post("/get-team-tasksArr", async (req, res) => {
+  const teamIds = req.body;
+  try {
+    const tasks = await Team.find(
+      { _id: { $in: teamIds } },
+      { tasks: 1, _id: 0 }
+    );
+
+    const taskArr = tasks.flatMap((obj) => obj.tasks);
+    res.send(taskArr);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+app.post("/create-team", async (req, res) => {
+  try {
+    const { name, manager, members } = req.body;
+
+    const team = await Team.create({
+      name,
+      manager,
+      members,
+      tasks: [],
+      createdOn: func.newDate(),
+      messages: [],
+      trash: [],
+    });
+
+    const teamObj = {
+      name,
+      members,
+      id: team._id,
+    };
+
+    const ids = members.map((member) => {
+      return member.id;
+    });
+
+    await User.updateMany({ _id: { $in: ids } }, { $push: { teams: teamObj } });
+
+    const user = await User.findById(manager.id);
+
+    res.send(user);
   } catch (err) {
     res.send(err);
   }

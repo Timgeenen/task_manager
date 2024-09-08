@@ -7,6 +7,7 @@ axios.defaults.baseURL = BACKEND;
 
 const user = store.getState().auth.user;
 
+//user api calls
 export const authenticateUser = async (userData) => {
   const res = await axios.post("/login", userData);
   return res.data;
@@ -17,25 +18,10 @@ export const createUser = async (userData) => {
   return res.data;
 };
 
-export const getTaskById = async (taskId) => {
-  const res = await axios.get("/task" + taskId);
+export const getAllUsers = async () => {
+  const res = await axios.get("/connections");
   return res.data;
 };
-
-export const getTeamTaskArr = async (teamIds) => {
-  const res = await axios.post("/get-team-tasksArr", teamIds);
-  return res.data;
-}
-
-export const createNewTeam = async (teamData) => {
-  const res = await axios.post("/create-team", teamData);
-  return res.data;
-};
-
-// export const getTeamsByIds = async (teamIds) => {
-//   const res = await axios.post("/get-teams", teamIds);
-//   return res.data;
-// };
 
 export const addConnection = async (id) => {
   const userId = user._id;
@@ -49,8 +35,9 @@ export const addConnection = async (id) => {
   return res.data;
 };
 
-export const getAllUsers = async () => {
-  const res = await axios.get("/connections");
+//task api calls
+export const getTaskById = async (taskId) => {
+  const res = await axios.get("/task" + taskId);
   return res.data;
 };
 
@@ -61,7 +48,28 @@ export const createNewTask = async (taskData) => {
 
 export const getAllTasks = async () => {
   const teamIds = getTeamIdArray(user.teams);
-  console.log(teamIds)
+  console.log(teamIds);
   const res = await axios.post("/get-all-tasks", teamIds);
   return res.data;
+};
+
+export const commentOnTask = async (comment) => {
+  const res = await axios.put("/add-comment", comment);
+  return res.data;
 }
+
+//team api calls
+export const getTeamTaskArr = async (teamIds) => {
+  const res = await axios.post("/get-team-tasksArr", teamIds);
+  return res.data;
+};
+
+export const createNewTeam = async (teamData) => {
+  const res = await axios.post("/create-team", teamData);
+  return res.data;
+};
+
+// export const getTeamsByIds = async (teamIds) => {
+//   const res = await axios.post("/get-teams", teamIds);
+//   return res.data;
+// };
