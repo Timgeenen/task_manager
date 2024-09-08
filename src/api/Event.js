@@ -1,8 +1,11 @@
 import axios from "axios";
 import { BACKEND } from "../library/constants";
 import { store } from "../redux/store";
+import { getTeamIdArray } from "../library/helperfunctions";
 
 axios.defaults.baseURL = BACKEND;
+
+const user = store.getState().auth.user;
 
 export const authenticateUser = async (userData) => {
   const res = await axios.post("/login", userData);
@@ -35,7 +38,7 @@ export const createNewTeam = async (teamData) => {
 // };
 
 export const addConnection = async (id) => {
-  const userId = store.getState().auth.user._id;
+  const userId = user._id;
 
   const userData = {
     user: userId,
@@ -55,3 +58,10 @@ export const createNewTask = async (taskData) => {
   const res = await axios.post("/create-task", taskData);
   return res.data;
 };
+
+export const getAllTasks = async () => {
+  const teamIds = getTeamIdArray(user.teams);
+  console.log(teamIds)
+  const res = await axios.post("/get-all-tasks", teamIds);
+  return res.data;
+}

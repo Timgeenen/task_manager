@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
           id: String,
         },
       ],
-      _id: false
+      _id: false,
     },
   ],
   connections: [
@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema({
         id: String,
       },
       message: String,
-      isRead: Boolean
+      isRead: Boolean,
     },
   ],
 });
@@ -88,7 +88,7 @@ const teamSchema = new mongoose.Schema({
       status: String,
       deadline: Date,
       id: String,
-      _id: false
+      _id: false,
     },
   ],
   createdOn: Date,
@@ -125,14 +125,21 @@ const taskSchema = new mongoose.Schema({
     {
       name: String,
       id: String,
-      _id: false
+      _id: false,
     },
   ],
   assignedTeam: {
     name: String,
     id: String,
-    _id: false
+    _id: false,
   },
+  activelyWorking: [
+    {
+      name: String,
+      id: String,
+      _id: false,
+    },
+  ],
   comments: [
     {
       author: {
@@ -263,6 +270,16 @@ app.post("/get-tasks-by-teamId", (req, res) => {
         .catch((err) => res.send(err.message));
     })
     .catch((err) => res.send({ message: err.message }));
+});
+
+app.post("/get-all-tasks", async (req, res) => {
+  const teamIds = req.body;
+  try {
+    const tasks = await Task.find({ "assignedTeam.id": { $in: teamIds } });
+    res.send(tasks);
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 app.post("/login", async (req, res) => {
