@@ -19,6 +19,11 @@ export const getTeamDataObj = (data, user) => {
   }
 };
 
+export const getTeamIdArray = (teamObj) => {
+  const array = teamObj.map((team) => (team.id));
+  return array;
+}
+
 export const getInitials = (name) => {
   let names = name.split(" ");
   let firstLetter = names[0].charAt(0);
@@ -51,3 +56,53 @@ export const getFilteredConnections = (allUsers) => {
 
   return filtered;
 };
+
+export const countTasksByStatus = (tasks) => {
+  let status = [
+    {
+      status: "in progress",
+      count: 0
+    }, {
+      status: "pending",
+      count: 0
+    }, {
+      status: "completed",
+      count: 0
+    }, 
+  ];
+
+  tasks.filter((task) => {
+    if (task.status === "in progress") { status[0].count += 1 };
+    if (task.status === "pending") { status[1].count += 1 };
+    if (task.status === "completed") { status[2].count += 1 };
+
+  });
+
+  return status;
+};
+
+export const countTasksByPriority = (tasks) => {
+  let data = [
+    {
+      priority: "high",
+      tasks: 0,
+      color: "red"
+    }, {
+      priority: "medium",
+      tasks: 0,
+      color: "orange"
+    }, {
+      priority: "low",
+      tasks: 0,
+      color: "green"
+    }
+  ]
+
+  tasks.filter((task) => {
+    if (task.priority === "high") { return data[0].tasks += 1 }
+    if (task.priority === "medium") { return data[1].tasks += 1 }
+    if (task.priority === "low") { return data[2].tasks += 1 }
+  });
+
+  return data;
+}
