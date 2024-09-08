@@ -1,5 +1,8 @@
 import Countup from "./Countup"
 import { tasks } from "../library/fakedata";
+import { countTasksByStatus } from "../library/helperfunctions";
+import { useEffect, useState } from "react";
+
 //TODO: use real data to display stats
 //TODO: add functionality to organize current tasks on clicking field
 //TODO: add tooltip on hovering task to show more info
@@ -7,42 +10,27 @@ import { tasks } from "../library/fakedata";
 const taskStyle = "text-nowrap overflow-hidden p-1 border-2 border-gray-300 border-black"
 const titleStyle = "pt-1"
 
-function Stats() {
-  let status = [
-    {
-      status: "completed",
-      count: 0
-    }, {
-      status: "in progress",
-      count: 0
-    }, {
-      status: "pending",
-      count: 0
-    }
-  ];
-  let total = 0;
+function Stats({data}) {
 
-  tasks.filter((task) => {
-    if (task.status === "completed") { status[0].count += 1 };
-    if (task.status === "in progress") { 
-      status[1].count += 1;
-      total += 1;
-    };
-    if (task.status === "pending") { 
-      status[2].count += 1 
-      total += 1;
-    };
-  })
+  const [statusData, setStatusData] = useState([]);
 
-  console.log(status)
+  useEffect(() => {
+    const currentData = countTasksByStatus(data);
+    setStatusData(currentData);
+  }, []);
+
   return (
     <div className="w-4/5 flex h-52">
+      
       <div className="w-2/5 border-t-2 border-b-2 border-slate-300">
         {
-          status.map((item) => (
+          statusData.map((item) => (
             <Countup
             actual={item.count}
-            total={item.status === "completed" ? item.count : total}
+            total={
+              item.status === "completed"
+              ? item.count
+              : data.length}
             parameter={item.status}
             radius={20}
             />
