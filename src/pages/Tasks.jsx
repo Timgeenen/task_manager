@@ -1,27 +1,24 @@
-import { useDispatch, useSelector } from "react-redux"
-import { updateTasks, updateTeams } from "../redux/state/authSlice";
-import { useEffect } from "react";
 import MembersTag from "../components/MembersTag";
 import { FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getAllTasks } from "../api/Event";
 
 function Tasks () {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { tasks, teams } = useSelector(state => state.auth);
 
-  useEffect(() => {
-    dispatch(updateTeams());
-    dispatch(updateTasks());
-  }, [])
+  const { isLoading, isError, error, data } = useQuery({
+    queryKey: ["all-tasks"],
+    queryFn: () => getAllTasks(),
+    staleTime: Infinity
+  });
 
-  console.log("TASKS", tasks)
-  console.log("TEAMS", teams)
-  //TODO: add filter per team
-  //TODO: add navigation to task page
+  if (isError) { alert(error.message) };
+
   return (
     <div className="w-5/6 m-auto mt-4">
-      {tasks.map((task, i) => (
+      {isLoading && <div>Loading...</div>}
+      {data?.map((task) => (
         <div
         key={task._id}
         className="flex justify-between items-center border-2 p-2"

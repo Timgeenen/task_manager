@@ -8,7 +8,7 @@ import { getTimePassed } from "../library/helperfunctions";
 function TaskInfo() {
   const { taskId } = useParams();
   const { isPending, error, data } = useQuery({
-    queryKey: ["task"],
+    queryKey: [`task-${taskId}`],
     queryFn: () => getTaskById(taskId),
     staleTime: Infinity
   });
