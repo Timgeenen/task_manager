@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema({
           id: String,
         },
       ],
+      _id: false
     },
   ],
   connections: [
@@ -57,6 +58,7 @@ const userSchema = new mongoose.Schema({
         id: String,
       },
       message: String,
+      isRead: Boolean
     },
   ],
 });
@@ -84,7 +86,9 @@ const teamSchema = new mongoose.Schema({
       title: String,
       priority: String,
       status: String,
+      deadline: Date,
       id: String,
+      _id: false
     },
   ],
   createdOn: Date,
@@ -110,7 +114,6 @@ const taskSchema = new mongoose.Schema({
       completed: {
         type: Boolean,
         default: false,
-        _id: false,
       },
     },
   ],
@@ -122,11 +125,13 @@ const taskSchema = new mongoose.Schema({
     {
       name: String,
       id: String,
+      _id: false
     },
   ],
   assignedTeam: {
     name: String,
     id: String,
+    _id: false
   },
   comments: [
     {
@@ -362,6 +367,7 @@ app.post("/create-task", async (req, res) => {
       title,
       priority,
       status: "pending",
+      deadline,
       id: newTask._id,
     };
 
