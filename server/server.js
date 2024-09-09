@@ -364,24 +364,6 @@ app.post("/get-tasks-by-teamId", (req, res) => {
     .catch((err) => res.send({ message: err.message }));
 });
 
-app.put("/add-comment", async (req, res) => {
-  const { author, message, taskId } = req.body;
-  const comment = {
-    author,
-    message,
-    createdAt: func.newDate(),
-  };
-
-  try {
-    const updatedTask = await Task.findByIdAndUpdate(taskId, {
-      $push: { comments: comment },
-    });
-    res.send(updatedTask.comments);
-  } catch (err) {
-    res.send(err);
-  }
-});
-
 //team api calls
 app.post("/get-teams", (req, res) => {
   const { teamIds } = req.body;
