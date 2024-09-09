@@ -1,8 +1,15 @@
 import { useSelector } from "react-redux"
 import { getTimePassed } from "../library/helperfunctions";
 import { useNavigate } from "react-router-dom";
+import { memo } from "react";
 
-function Comment({ authorName, authorId, message, commentId, date }) {
+function Comment({
+  authorName,
+  authorId,
+  message,
+  commentId,
+  date
+}) {
   const { user } = useSelector(state => state.auth);
   const navigate = useNavigate();
   const classes = user._id === authorId
@@ -26,10 +33,10 @@ function Comment({ authorName, authorId, message, commentId, date }) {
       onClick={navigateToUser}
       >{authorName}
       </button>
-      <span className="pt-2 pb-2">{message}</span>
+      <span className="pt-1 pb-1">{message}</span>
       <span className="text-xs text-gray-400">{timePassed} ago</span>
     </div>
   )
 }
 
-export default Comment
+export default memo(Comment)
