@@ -1,8 +1,9 @@
 import { useParams } from "react-router-dom";
 import { getTaskById } from "../api/Event";
 import { useQuery } from "@tanstack/react-query";
-import MembersTag from "../components/MembersTag";
 import Chatroom from "../components/Chatroom";
+import TaskEdit from "../components/TaskEdit";
+import TaskOverview from "../components/TaskOverview";
 
 function TaskInfo() {
   const { taskId } = useParams();
@@ -10,7 +11,6 @@ function TaskInfo() {
   const {
     isPending,
     isError,
-    isSuccess,
     error,
     data
   } = useQuery({
@@ -19,39 +19,31 @@ function TaskInfo() {
     staleTime: Infinity
   });
 
-  const updateTask = (data) => {
-    console.log(data);
-  }
-
   if (isPending) { return ( <div>Loading...</div> ) };
   if (isError) { return ( <div>{error.message}</div> ) };
+  console.log(data);
 
   return (
     <div className="w-10/12 flex flex-col justify-between m-auto border-2">
-      <div className="flex justify-between items-center w-full border-2">
-        <span>{data?.title}</span>
-        <span>{data?.assignedTeam.name}</span>
-        <span className="mr-4">
-          {data?.assignedTo.map((member, i) => (
-          <MembersTag member={member.name} index={i} />
-        ))}
-        </span>
-      </div>
-      <div className="flex gap-8 items-center">
-        <textarea value={data?.description}></textarea>
-        <span>{data?.priority}</span>
-        <span>{data?.status}</span>
-      </div>
-      <div>
-        <button
-        className="border-2 w-40 p-3"
-        onClick={updateTask}
-        >UPDATE TASK
-        </button>
-      </div>
+      <TaskOverview
+      teamName={data?.assignedTeam.name}
+      teamMembers={data?.assignedTo}
+      deadline={data?.deadline}
+      title={data?.title}
+      priority={data?.priority}
+      status={data?.status}
+      />
+      <TaskEdit
+      teamId={data?.assignedTeam.id}
+      taskId={data?._id}
+      description={data?.description}
+      subtasks={data?.subtasks}
+      priority={data?.priority}
+      status={data?.status}
+      />
       <Chatroom
       taskId={taskId}
-      messagesArr={data.comments}
+      messagesArr={data?.comments}
       />
     </div>
   )
