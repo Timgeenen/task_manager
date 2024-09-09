@@ -120,7 +120,7 @@ const taskSchema = new mongoose.Schema({
   description: String,
   subtasks: [
     {
-      description: String,
+      name: String,
       completed: {
         type: Boolean,
         default: false,

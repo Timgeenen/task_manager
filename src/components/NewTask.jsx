@@ -23,6 +23,7 @@ function NewTask({ close }) {
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors }
   } = useForm({
     defaultValues: {
@@ -54,7 +55,9 @@ function NewTask({ close }) {
   }
 
   if (isError) { alert(error.message) };
-  if (isSuccess) { alert(data.message)};
+  if (isSuccess) {
+    alert(data.message);
+  };
 
   return (
     <div className="bg-white w-screen h-screen absolute top-0 left-0 z-50 bg-opacity-80 flex justify-center items-center">
@@ -130,7 +133,10 @@ function NewTask({ close }) {
         
         <AddButton 
         text="Add Subtask"
-        handleClick={() => append({ name: ''})}
+        handleClick={(e) => {
+          e.preventDefault();
+          append({ name: ''});
+        }}
         />
 
         <SubmitButton />
