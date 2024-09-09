@@ -1,10 +1,11 @@
 
-function Checkbox({value, text, register }) {
+function Checkbox({value, text, register, checked }) {
   return (
-    <span>
+    <span key={value}>
       <input 
       className="mr-2"
       value={value}
+      checked={checked ? checked : false}
       type="checkbox"
       {...register} />
       <label>{text}</label>
