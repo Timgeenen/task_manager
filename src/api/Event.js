@@ -53,11 +53,6 @@ export const getAllTasks = async () => {
   return res.data;
 };
 
-export const commentOnTask = async (comment) => {
-  const res = await axios.put("/add-comment", comment);
-  return res.data;
-};
-
 export const getCommentsByTaskId = async (taskId) => {
   const res = await axios.get(`/comments${taskId}`);
   return res.data;
