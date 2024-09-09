@@ -10,15 +10,14 @@ function MembersTag({ member, index }) {
     console.log(`navigated to ${member}'s profile`);
   };
   return (
-    <>
-      <button 
+      <button
+      key={`memberTag-${index}`}
       style={{background: COLORS[index]}}
       onClick={navigateToProfile}
       className="rounded-full p-1 w-9 h-9 -mr-4 text-sm font-semibold border-2 border-black text-white"
       >
         {initials}
       </button>
-    </>
   )
 }
 
