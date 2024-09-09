@@ -1,7 +1,17 @@
 require("dotenv").config();
 const express = require("express");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 const mongoose = require("mongoose");
+
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  },
+});
 
 mongoose.connect(process.env.MONGO_URI);
 
@@ -429,6 +439,24 @@ app.post("/create-team", async (req, res) => {
   }
 });
 
-app.listen(8080, () => {
+//io chatrooms
+io.on("connection", (socket) => {
+  console.log("a user connected");
+
+  socket.on("joinTaskRoom", (taskId) => {
+    socket.join(taskId);
+    console.log(`User {add name} joined the chat for {add task name}`);
+  });
+
+  socket.on("sendMessage", (taskId, message) => {
+    io.to(taskId).emit("receiveMessage", message);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`User {add name} has disconnected`)
+  })
+})
+
+httpServer.listen(8080, () => {
   console.log("Server is running on port 8080");
 });
