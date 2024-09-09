@@ -9,7 +9,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
   },
 });
 
@@ -445,17 +445,31 @@ io.on("connection", (socket) => {
 
   socket.on("joinTaskRoom", (taskId) => {
     socket.join(taskId);
-    console.log(`User {add name} joined the chat for {add task name}`);
+    console.log(`User {add name} joined the chat for ${taskId}`);
   });
 
-  socket.on("sendMessage", (taskId, message) => {
-    io.to(taskId).emit("receiveMessage", message);
+  socket.on("sendMessage", async (messageObj) => {
+    const { author, message, taskId } = messageObj;
+    const comment = {
+      author,
+      message,
+      createdAt: func.newDate(),
+    };
+
+    try {
+      const updatedTask = await Task.findByIdAndUpdate(taskId, {
+        $push: { comments: { $each: [comment], $position: 0 } },
+      }, { new: true });
+      io.to(taskId).emit("receiveMessage", updatedTask.comments[0]);
+    } catch (err) {
+      console.error(err.message);
+    }
   });
 
   socket.on("disconnect", () => {
-    console.log(`User {add name} has disconnected`)
-  })
-})
+    console.log(`User {add name} has disconnected`);
+  });
+});
 
 httpServer.listen(8080, () => {
   console.log("Server is running on port 8080");
