@@ -1,12 +1,9 @@
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import SubmitButton from "./SubmitButton";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { commentOnTask } from "../api/Event";
 
-function Commentbox({ taskId }) {
+function Commentbox({ taskId, submitHandler }) {
   const { user } = useSelector(state => state.auth);
-  const queryClient = useQueryClient();
 
   const {
     register,
@@ -22,25 +19,20 @@ function Commentbox({ taskId }) {
     }
   });
 
-  const { isPending, isError, isSuccess, error, data, mutateAsync } = useMutation({
-    mutationKey: [`comment-${taskId}`],
-    mutationFn: (comment) => commentOnTask(comment)
-  });
-
-  const submitHandler = (data) => {
-    mutateAsync(data);
-  };
-
-  if (isSuccess) { 
-    queryClient.setQueryData([`task-${taskId}`], data);
-    reset();
-  };
+  const submitFn = (data) => {
+    submitHandler(data)
+    reset()
+  }
 
   return (
-    <form onSubmit={handleSubmit(submitHandler)}>
+    <form 
+    onSubmit={handleSubmit(submitFn)}
+    className="p-2 border-2"
+    >
       <input 
       type="text"
       placeholder="Type your message here..."
+      required
       {...register("message")}
       />
       <SubmitButton />
