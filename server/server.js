@@ -321,6 +321,16 @@ app.get("/task:id", async (req, res) => {
   }
 });
 
+app.get("/comments:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const comments = await Task.findById(id, { comments: 1, _id: 0 });
+    res.send(comments);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 app.post("/get-all-tasks", async (req, res) => {
   const teamIds = req.body;
   try {
@@ -349,14 +359,14 @@ app.put("/add-comment", async (req, res) => {
   const comment = {
     author,
     message,
-    createdAt: func.newDate()
+    createdAt: func.newDate(),
   };
 
   try {
     const updatedTask = await Task.findByIdAndUpdate(taskId, {
       $push: { comments: comment },
     });
-    res.send(updatedTask);
+    res.send(updatedTask.comments);
   } catch (err) {
     res.send(err);
   }
