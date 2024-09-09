@@ -118,7 +118,7 @@ const teamSchema = new mongoose.Schema({
 const taskSchema = new mongoose.Schema({
   title: String,
   description: String,
-  subTasks: [
+  subtasks: [
     {
       description: String,
       completed: {
@@ -143,13 +143,13 @@ const taskSchema = new mongoose.Schema({
     id: String,
     _id: false,
   },
-  activelyWorking: [
-    {
-      name: String,
-      id: String,
-      _id: false,
-    },
-  ],
+  // activelyWorking: [
+  //   {
+  //     name: String,
+  //     id: String,
+  //     _id: false,
+  //   },
+  // ],
   comments: [
     {
       author: {
@@ -316,7 +316,7 @@ app.get("/task:id", async (req, res) => {
     const task = await Task.findById(id, {
       title: 1,
       description: 1,
-      subTasks: 1,
+      subtasks: 1,
       deadline: 1,
       priority: 1,
       status: 1,
