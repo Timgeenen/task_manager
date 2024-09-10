@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import Tippy from "@tippyjs/react";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { getAllNotifications } from "../api/Event";
 import { useSelector } from "react-redux";
@@ -25,27 +25,22 @@ function Notifications() {
     console.log("navigated to notifcations page")
   }
 
-  const { user } = useSelector(state => state.auth);
+  const { socket } = useSelector(state => state.auth);
 
   const [notifications, setNotifications] = useState([]);
   const [newNotifications, setNewNotifications] = useState(true);
   const [openNotifications, setOpenNotifications] = useState(false);
 
   if (isError) { alert(error.message) };
+  
+  useEffect(() => {
 
-  const messages = [
-    {
-      nType: "New Team",
-      team: {
-        name: user.teams[0].name,
-        id: user.teams[0].id
-      },
-      task: null,
-      message: `${user.name} has created a new team: ${user.teams[0].name}`,
-      isRead: false
-    },
-  ];
-  //TODO: fetch messages from database, slice first 5 messages
+    setNotifications(data.notifications);
+    socket.on("receiveNotification", (newUpdate) => {
+      !newNotifications && setNewNotifications(true);
+      setNotifications([newUpdate, ...notifications]);
+    });
+  }, []);
 
   const showNotifications = () => {
     newNotifications && setNewNotifications(false);
@@ -57,7 +52,7 @@ function Notifications() {
       <div className="flex flex-col p-2 gap-2">
         {isLoading && <span>Loading...</span>}
         {/* TODO: change to use data instead of fake data */}
-        {isSuccess && messages.map((item) => (
+        {notifications.map((item) => (
           <NotificationLink
             message={item.message}
             type={item.nType}
