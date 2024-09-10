@@ -66,17 +66,17 @@ const userSchema = new mongoose.Schema({
       team: {
         name: String,
         id: String,
-        _id: false
+        _id: false,
       },
       task: {
         name: String,
         id: String,
-        _id: false
+        _id: false,
       },
       message: String,
       isRead: {
         type: Boolean,
-        default: false
+        default: false,
       },
     },
   ],
@@ -434,34 +434,62 @@ app.post("/create-team", async (req, res) => {
 
     const user = await User.findById(manager.id);
 
-    res.send(user);
+    res.send({ user, team });
   } catch (err) {
     res.send(err);
   }
 });
 
-//io chatrooms
+//io sockets
 io.on("connection", (socket) => {
-  const { user } = socket.handshake.auth
-  console.log("a user connected", user);
+  const { user } = socket.handshake.auth;
+  console.log("a user connected", user.name);
 
   if (user) {
-    user.teams.map(team => {
+    user.teams.map((team) => {
       socket.join(team.id);
-      console.log(`${user.name} joined ${team.name}`)
+      console.log(`${user.name} joined ${team.name}`);
     });
     socket.join(user._id);
     console.log(`${user.name} joined notification channel`);
-  };
+  }
 
   socket.on("login", (user) => {
-    console.log("NEW LOGIN EVENT", user)
-  })
+    console.log("NEW LOGIN EVENT", user);
+  });
+
+  //TODO: remove comment to prevent sending notification to yourself
+  socket.on("createTeam", async (team) => {
+    // team.members.pop();
+    const notificationObj = {
+      nType: "New Team",
+      team: {
+        name: team.name,
+        id: team._id,
+      },
+      message: `You have been added to ${team.name}, created by ${team.manager.name}`,
+    };
+
+    idArr = team.members.map((member) => member.id);
+
+    try {
+      await User.updateMany(
+        { _id: { $in: idArr } },
+        { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
+      );
+
+      team.members.map((member) =>
+        io.to(member.id).emit("receiveNotification", notificationObj)
+      );
+    } catch (err) {
+      console.error(err.message);
+    }
+  });
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
     console.log(`user joined new team: ${teamId}`);
-  })
+  });
 
   socket.on("joinTaskRoom", (taskId) => {
     socket.join(taskId);
