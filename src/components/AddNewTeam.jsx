@@ -11,11 +11,12 @@ import { updateUser } from "../redux/state/authSlice.jsx";
 
 
 function AddNewTeam({handleClick}) {
-  const { user } = useSelector(state => state.auth);
+  const { user, socket } = useSelector(state => state.auth);
   const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm();
 
@@ -31,12 +32,14 @@ function AddNewTeam({handleClick}) {
 
   if (mutation.isError) { alert(mutation.error.message) };
   if (mutation.isSuccess) {
-    dispatch(updateUser(mutation.data));
-    alert("Succesfully created new team");
+    socket.emit("createTeam", mutation.data.team)
+    socket.emit("joinNewTeam", mutation.data.team._id);
+    dispatch(updateUser(mutation.data.user));
+    // alert("Succesfully created new team");
   }
 
   return (
-    <div className="w-screen h-screen absolute top-0 z-50 flex justify-center items-center bg-white opacity-50">
+    <div className="w-screen h-screen absolute top-0 z-50 flex justify-center items-center bg-white bg-opacity-70">
       {mutation.isLoading && <div>Loading...</div>}
       <button onClick={handleClick}>
         <IoClose size={24}/>
@@ -45,7 +48,10 @@ function AddNewTeam({handleClick}) {
       <form 
       className="flex flex-col"
       onSubmit={handleSubmit(createTeam)}>
-
+        {mutation.isSuccess && 
+        <div className="text-xs text-green-400">
+          Succesfully created new team: {mutation.data.team.name}
+        </div>}
         <Textbox
         label="Team Name"
         type="text"
