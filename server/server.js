@@ -442,7 +442,26 @@ app.post("/create-team", async (req, res) => {
 
 //io chatrooms
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  const { user } = socket.handshake.auth
+  console.log("a user connected", user);
+
+  if (user) {
+    user.teams.map(team => {
+      socket.join(team.id);
+      console.log(`${user.name} joined ${team.name}`)
+    });
+    socket.join(user._id);
+    console.log(`${user.name} joined notification channel`);
+  };
+
+  socket.on("login", (user) => {
+    console.log("NEW LOGIN EVENT", user)
+  })
+
+  socket.on("joinNewTeam", (teamId) => {
+    socket.join(teamId);
+    console.log(`user joined new team: ${teamId}`);
+  })
 
   socket.on("joinTaskRoom", (taskId) => {
     socket.join(taskId);
