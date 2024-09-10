@@ -1,56 +1,92 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Tippy from "@tippyjs/react";
+import { memo, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { getAllNotifications } from "../api/Event";
+import { useSelector } from "react-redux";
+import NotificationLink from "./NotificationLink";
+import { useNavigate } from "react-router-dom";
 
 function Notifications() {
-  const messages = [
-    {from: "Tim", team: "team 1", message: "I just added this task to our teams to-do list", id: "1234"},
-    {from: "Aimi", team: "team 1", message: "I just completed this task", id: "1235"},
-    {from: "Piet", team: "team 1", message: "I just updated this task", id: "1236"},
-    {from: "Franske", team: "team 1", message: "I just updated this task", id: "1236"},
-    {from: "Piet", team: "team 1", message: "I just updated this task", id: "1236"},
-  ]
-  //TODO: fetch messages from database, slice first 5 messages
-  //TODO: style components
-  //TODO: add name badge instead of name
-  //TODO: add global state to set new messages
+  const {
+    isError,
+    isLoading,
+    isSuccess,
+    error,
+    data
+  } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => getAllNotifications(),
+    staleTime: Infinity
+  });
 
+  const navigate = useNavigate();
+  const navigateToNotifications = () => {
+    console.log("navigated to notifcations page")
+  }
 
-  const [openNotifications, setOpenNotifications] = useState(false);
+  const { user } = useSelector(state => state.auth);
+
+  const [notifications, setNotifications] = useState([]);
   const [newNotifications, setNewNotifications] = useState(true);
+  const [openNotifications, setOpenNotifications] = useState(false);
+
+  if (isError) { alert(error.message) };
+
+  const messages = [
+    {
+      nType: "New Team",
+      team: {
+        name: user.teams[0].name,
+        id: user.teams[0].id
+      },
+      task: null,
+      message: `${user.name} has created a new team: ${user.teams[0].name}`,
+      isRead: false
+    },
+  ];
+  //TODO: fetch messages from database, slice first 5 messages
 
   const showNotifications = () => {
     newNotifications && setNewNotifications(false);
     setOpenNotifications(!openNotifications);
   }
   return (
-    <div className="">
+    <Tippy
+    content={
+      <div className="flex flex-col p-2 gap-2">
+        {isLoading && <span>Loading...</span>}
+        {/* TODO: change to use data instead of fake data */}
+        {isSuccess && messages.map((item) => (
+          <NotificationLink
+            message={item.message}
+            type={item.nType}
+            isNew={item.isRead}
+            teamName={item.team.name}
+            teamId={item.team.id}
+            taskName={item.task && item.task.name}
+            taskId={item.task && item.task.id}
+          />
+        ))}
+        <button
+        onClick={navigateToNotifications}
+        className="text-xs"
+        >See All Notifications</button>
+      </div>
+    }
+    onClickOutside={() => {
+      openNotifications && setOpenNotifications(false);
+    }}
+    interactive={true}
+    visible={openNotifications}
+    >
       <button onClick={showNotifications} >
         <IoMdNotificationsOutline size="2em"/>
-        {newNotifications && <span className="absolute bottom-3 right-3 bg-red-600 rounded-full p-1"></span>}
+        {newNotifications && 
+        <span className="absolute bottom-3 right-3 bg-red-600 rounded-full p-1"></span>}
       </button>
-      {openNotifications && (
-        <ul className="absolute w-40 right-1 border-slate-300 p-2">
-          {/* TODO: add click handler to redirect to task */}
-          {messages.map((item) => (
-            <DropdownLink message={item.message} key={item.id} from={item.from} team={item.team} />
-          ))}
-        </ul>
-      )}
-    </div>
+    </Tippy>
   )
 }
 
-function DropdownLink({message, key, from, team}) {
-  const [unread, setUnread] = useState(true);
-  return (
-    <li key={key} className="mb-1 border-gray-400 border-2 p-1">
-      <div className="text-md flex justify-between font-semibold">
-        <span className="">{from}</span>
-        <span>{team}</span>
-      </div>
-      <span className="text-sm line-clamp-1">{message}</span>
-    </li>
-  )
-}
-
-export default Notifications
+export default memo(Notifications)
