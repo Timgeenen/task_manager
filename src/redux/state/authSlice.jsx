@@ -1,9 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { io } from "socket.io-client";
+import { BACKEND } from "../../library/constants";
 
 const initialState = {
   user: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
+  socket: localStorage.getItem('userInfo')
+    ? io(BACKEND, {
+      auth: {
+        user: JSON.parse(localStorage.getItem('userInfo'))
+      }
+    })
+    : null
+  ,
   
   isSidebarOpen: false
 }
@@ -15,7 +25,12 @@ export const authSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.user = action.payload;
-      state.isSidebarOpen = true; //TODO
+      state.socket = io(BACKEND, {
+        auth: {
+          user: action.payload
+        }
+      });
+      state.isSidebarOpen = true;
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
     },
     updateUser: (state, action) => {
@@ -23,8 +38,10 @@ export const authSlice = createSlice({
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
     },
     logout: (state) => {
+      state.socket.disconnect();
+      state.socket = null;
       state.user = null;
-      state.isSidebarOpen = false; //TODO
+      state.isSidebarOpen = false;
       localStorage.removeItem('userInfo');
     },
 
