@@ -62,13 +62,22 @@ const userSchema = new mongoose.Schema({
   ],
   notifications: [
     {
-      title: String,
-      author: {
+      nType: String,
+      team: {
         name: String,
         id: String,
+        _id: false
+      },
+      task: {
+        name: String,
+        id: String,
+        _id: false
       },
       message: String,
-      isRead: Boolean,
+      isRead: {
+        type: Boolean,
+        default: false
+      },
     },
   ],
 });
@@ -270,6 +279,16 @@ app.get("/user:id", (req, res) => {
     .catch((err) => res.send(err));
 });
 
+app.get("/notifications:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const notifications = await User.findById(id, { notifications: 1 });
+    res.send(notifications);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 //task api calls
 app.post("/create-task", async (req, res) => {
   const { subtasks, title, team, description, deadline, members, priority } =
@@ -439,9 +458,13 @@ io.on("connection", (socket) => {
     };
 
     try {
-      const updatedTask = await Task.findByIdAndUpdate(taskId, {
-        $push: { comments: { $each: [comment], $position: 0 } },
-      }, { new: true });
+      const updatedTask = await Task.findByIdAndUpdate(
+        taskId,
+        {
+          $push: { comments: { $each: [comment], $position: 0 } },
+        },
+        { new: true }
+      );
       io.to(taskId).emit("receiveMessage", updatedTask.comments[0]);
     } catch (err) {
       console.error(err.message);

@@ -35,6 +35,11 @@ export const addConnection = async (id) => {
   return res.data;
 };
 
+export const getAllNotifications = async () => {
+  const res = await axios.get(`/notifications${user._id}`);
+  return res.data;
+}
+
 //task api calls
 export const getTaskById = async (taskId) => {
   const res = await axios.get("/task" + taskId);
