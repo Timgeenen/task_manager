@@ -8,15 +8,11 @@ import Textbox from "../components/Textbox";
 import { useSelector } from "react-redux";
 import "react-datepicker/dist/react-datepicker.css";
 import DateSelect from "../components/DateSelect";
-import { useMutation } from "@tanstack/react-query";
-import { createNewTask } from "../api/Event";
+import { useState } from "react";
 
 function CreateTask() {
-  const { user } = useSelector(state => state.auth);
-  const { isError, isSuccess, mutateAsync, error, data } = useMutation({
-    mutationKey: ["create-task"],
-    mutationFn: (data) => createNewTask(data)
-  });
+  const { user, socket } = useSelector(state => state.auth);
+  const [newTask, setNewTask] = useState(null);
 
   const {
     register,
@@ -48,17 +44,19 @@ function CreateTask() {
       id: team.id
     };
     const assignedTo = team.members.filter(item => formData.members.includes(item.id));
+
     formData.members = assignedTo;
     formData.team = teamObj;
+    formData.user = user.name;
 
-    mutateAsync(formData);
+    socket.emit("createTask", formData);
+    setNewTask(formData.title);
+    reset()
   }
-
-  if (isError) { alert(error.message) };
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
-      {isSuccess && <div className="text-green-400 text-xs p-4">Succesfully created new task</div>}
+      {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
       className="flex flex-col gap-2"
       onSubmit={handleSubmit(submitHandler)}
