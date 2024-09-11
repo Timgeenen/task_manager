@@ -10,7 +10,6 @@ function FindConnections() {
   const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["connections"],
     queryFn: getAllUsers,
-    staleTime: Infinity
   });
 
   const mutation = useMutation({
@@ -42,7 +41,7 @@ function FindConnections() {
 
   return (
     <div className="w-full m-4">
-      {getFilteredConnections(data).map((item, i) => (
+      {getFilteredConnections(data)?.map((item, i) => (
         <div 
         className="w-full flex justify-between border-2 border-slate-400 p-2"
         key={item._id}>
