@@ -14,6 +14,7 @@ import Sidebar from "./components/Sidebar";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { setOpenSidebar } from "./redux/state/authSlice";
 import CreateTeam from "./pages/CreateTeam";
+import CreateTask from "./pages/CreateTask";
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Navigate to="/dashboard" />} index />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/create-task" element={<CreateTask />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/task-info">
           <Route path=":taskId" element={<TaskInfo />} />
