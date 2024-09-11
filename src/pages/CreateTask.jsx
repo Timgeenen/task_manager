@@ -1,17 +1,17 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { IoClose } from "react-icons/io5";
-import AddButton from "./AddButton";
-import Checkbox from "./Checkbox";
-import Optionbox from "./Optionbox";
-import SubmitButton from "./SubmitButton";
-import Textbox from "./Textbox";
+import AddButton from "../components/AddButton";
+import Checkbox from "../components/Checkbox";
+import Optionbox from "../components/Optionbox";
+import SubmitButton from "../components/SubmitButton";
+import Textbox from "../components/Textbox";
 import { useSelector } from "react-redux";
 import "react-datepicker/dist/react-datepicker.css";
-import DateSelect from "./DateSelect";
+import DateSelect from "../components/DateSelect";
 import { useMutation } from "@tanstack/react-query";
 import { createNewTask } from "../api/Event";
 
-function NewTask({ close }) {
+function CreateTask() {
   const { user } = useSelector(state => state.auth);
   const { isError, isSuccess, mutateAsync, error, data } = useMutation({
     mutationKey: ["create-task"],
@@ -55,17 +55,10 @@ function NewTask({ close }) {
   }
 
   if (isError) { alert(error.message) };
-  if (isSuccess) {
-    alert(data.message);
-  };
 
   return (
-    <div className="bg-white w-screen h-screen absolute top-0 left-0 z-50 bg-opacity-80 flex justify-center items-center">
-
-      <button className="absolute top-20 right-20" onClick={close}>
-        <IoClose size="2em" />
-      </button>
-
+    <div className="w-full h-full flex flex-col justify-center items-center">
+      {isSuccess && <div className="text-green-400 text-xs p-4">Succesfully created new task</div>}
       <form 
       className="flex flex-col gap-2"
       onSubmit={handleSubmit(submitHandler)}
@@ -114,7 +107,7 @@ function NewTask({ close }) {
             <IoClose 
             onClick={() => { remove(i) }}
             size={24}
-            className="absolute right-1 top-1.5 hover:cursor-pointer"
+            className="absolute -right-7 top-1.5 hover:cursor-pointer"
             />
           </span>
         ))}
@@ -145,4 +138,4 @@ function NewTask({ close }) {
   )
 }
 
-export default NewTask
+export default CreateTask

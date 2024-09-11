@@ -1,20 +1,16 @@
-import { useState } from "react";
 import { MdAddTask } from "react-icons/md";
 import NewTask from "./NewTask";
+import { useNavigate } from "react-router-dom";
 
 
 function AddNewTask() {
-  const [addTaskIsOpen, setAddTaskIsOpen] = useState(false);
-  const handleClick = () => {
-    setAddTaskIsOpen(!addTaskIsOpen);
-  }
+  const navigate = useNavigate();
 
   return (
     <>
-      <button onClick={handleClick}>
+      <button onClick={() => navigate("/create-task")}>
         <MdAddTask size="2em"/>
       </button>
-      {addTaskIsOpen && <NewTask close={handleClick}/>}
     </>
   )
 }
