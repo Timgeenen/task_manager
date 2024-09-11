@@ -46,11 +46,6 @@ export const getTaskById = async (taskId) => {
   return res.data;
 };
 
-export const createNewTask = async (taskData) => {
-  const res = await axios.post("/create-task", taskData);
-  return res.data;
-};
-
 export const getAllTasks = async () => {
   const teamIds = getTeamIdArray(user.teams);
   const res = await axios.post("/get-all-tasks", teamIds);
@@ -65,11 +60,6 @@ export const getCommentsByTaskId = async (taskId) => {
 //team api calls
 export const getTeamTaskArr = async (teamIds) => {
   const res = await axios.post("/get-team-tasksArr", teamIds);
-  return res.data;
-};
-
-export const createNewTeam = async (teamData) => {
-  const res = await axios.post("/create-team", teamData);
   return res.data;
 };
 
