@@ -1,18 +1,11 @@
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AddButton from "../components/AddButton";
-import AddNewTeam from "../components/AddNewTeam";
 import MembersTag from "../components/MembersTag";
+import { useNavigate } from "react-router-dom";
 
 function Teams() {
   const { user } = useSelector(state => state.auth);
-
-  const [createTeamOpen, setCreateTeamOpen] = useState(false);
-
-  const closeForm = (e) => {
-    e.preventDefault()
-    setCreateTeamOpen(false);
-  }
+  const navigate = useNavigate();
 
   return (
     <div className="w-full flex flex-col gap-10">
@@ -27,18 +20,12 @@ function Teams() {
                 key={`${member.id}${i}`} />
               ))}
             </span>
-            <div>
-
-            </div>
           </div>
         ))
       }
       <AddButton 
       text="Create Team" 
-      handleClick={() => setCreateTeamOpen(true)}/>
-        {createTeamOpen && 
-          <AddNewTeam handleClick={closeForm}/>
-        }
+      handleClick={() => navigate("/create-team")}/>
     </div>
   )
 }
