@@ -1,8 +1,7 @@
-import { IoClose } from "react-icons/io5"
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import Textbox from "./Textbox";
-import SubmitButton from "./SubmitButton";
+import Textbox from "../components/Textbox";
+import SubmitButton from "../components/SubmitButton";
 import Checkbox from "../components/Checkbox.jsx";
 import { useMutation } from "@tanstack/react-query";
 import { getTeamDataObj } from '../library/helperfunctions';
@@ -10,7 +9,7 @@ import { createNewTeam } from "../api/Event";
 import { updateUser } from "../redux/state/authSlice.jsx";
 
 
-function AddNewTeam({handleClick}) {
+function CreateTeam() {
   const { user, socket } = useSelector(state => state.auth);
   const dispatch = useDispatch();
   const {
@@ -39,12 +38,8 @@ function AddNewTeam({handleClick}) {
   }
 
   return (
-    <div className="w-screen h-screen absolute top-0 z-50 flex justify-center items-center bg-white bg-opacity-70">
+    <div className="w-full h-full flex justify-center items-center">
       {mutation.isLoading && <div>Loading...</div>}
-      <button onClick={handleClick}>
-        <IoClose size={24}/>
-      </button>
-
       <form 
       className="flex flex-col"
       onSubmit={handleSubmit(createTeam)}>
@@ -76,4 +71,4 @@ function AddNewTeam({handleClick}) {
   )
 }
 
-export default AddNewTeam
+export default CreateTeam
