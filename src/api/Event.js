@@ -53,7 +53,6 @@ export const createNewTask = async (taskData) => {
 
 export const getAllTasks = async () => {
   const teamIds = getTeamIdArray(user.teams);
-  console.log(teamIds);
   const res = await axios.post("/get-all-tasks", teamIds);
   return res.data;
 };
