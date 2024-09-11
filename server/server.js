@@ -406,44 +406,9 @@ app.post("/get-team-tasksArr", async (req, res) => {
   }
 });
 
-app.post("/create-team", async (req, res) => {
-  try {
-    const { name, manager, members } = req.body;
-
-    const team = await Team.create({
-      name,
-      manager,
-      members,
-      tasks: [],
-      createdOn: func.newDate(),
-      messages: [],
-      trash: [],
-    });
-
-    const teamObj = {
-      name,
-      members,
-      id: team._id,
-    };
-
-    const ids = members.map((member) => {
-      return member.id;
-    });
-
-    await User.updateMany({ _id: { $in: ids } }, { $push: { teams: teamObj } });
-
-    const user = await User.findById(manager.id);
-
-    res.send({ user, team });
-  } catch (err) {
-    res.send(err);
-  }
-});
-
 //io sockets
 io.on("connection", (socket) => {
   const { user } = socket.handshake.auth;
-  console.log("a user connected", user.name);
 
   if (user) {
     user.teams.map((team) => {
@@ -454,33 +419,48 @@ io.on("connection", (socket) => {
     console.log(`${user.name} joined notification channel`);
   }
 
-  socket.on("login", (user) => {
-    console.log("NEW LOGIN EVENT", user);
-  });
-
-  //TODO: remove comment to prevent sending notification to yourself
-  socket.on("createTeam", async (team) => {
-    // team.members.pop();
-    const notificationObj = {
-      nType: "New Team",
-      team: {
-        name: team.name,
-        id: team._id,
-      },
-      message: `You have been added to ${team.name}, created by ${team.manager.name}`,
-    };
-
-    idArr = team.members.map((member) => member.id);
+  socket.on("createTeam", async (teamData) => {
+    const { name, manager, members } = teamData;
 
     try {
+      const team = await Team.create({
+        name,
+        manager,
+        members,
+        tasks: [],
+        createdOn: func.newDate(),
+        messages: [],
+        trash: [],
+      });
+
+      const teamObj = {
+        name,
+        members,
+        id: team._id,
+      };
+
+      const ids = members.map((member) => {
+        return member.id;
+      });
+
+      const notificationObj = {
+        nType: "New Team",
+        team: {
+          name: team.name,
+          id: team._id,
+        },
+        message: `You have been added to ${team.name}, created by ${team.manager.name}`,
+      };
+
       await User.updateMany(
-        { _id: { $in: idArr } },
-        { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
+        { _id: { $in: ids } },
+        {
+          $push: { teams: teamObj },
+          $push: { notifications: { $each: [notificationObj], $position: 0 } },
+        }
       );
 
-      team.members.map((member) =>
-        io.to(member.id).emit("receiveNotification", notificationObj)
-      );
+      ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
     } catch (err) {
       console.error(err.message);
     }
