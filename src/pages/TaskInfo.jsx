@@ -16,12 +16,10 @@ function TaskInfo() {
   } = useQuery({
     queryKey: [`task-${taskId}`],
     queryFn: () => getTaskById(taskId),
-    staleTime: Infinity
   });
 
   if (isPending) { return ( <div>Loading...</div> ) };
-  if (isError) { return ( <div>{error.message}</div> ) };
-  console.log(data);
+  if (isError) { return ( <div>{ error.message }</div> ) };
 
   return (
     <div className="w-10/12 flex flex-col justify-between m-auto border-2">
@@ -43,7 +41,6 @@ function TaskInfo() {
       />
       <Chatroom
       taskId={taskId}
-      messagesArr={data?.comments}
       />
     </div>
   )
