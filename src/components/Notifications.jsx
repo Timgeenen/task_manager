@@ -56,8 +56,8 @@ function Notifications() {
           message={item.message}
           type={item.nType}
           isNew={item.isRead}
-          teamName={item.team.name}
-          teamId={item.team.id}
+          teamName={item.team && item.team.name}
+          teamId={item.team && item.team.id}
           taskName={item.task && item.task.name}
           taskId={item.task && item.task.id}
           />
