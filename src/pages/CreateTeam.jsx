@@ -1,17 +1,14 @@
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Textbox from "../components/Textbox";
 import SubmitButton from "../components/SubmitButton";
 import Checkbox from "../components/Checkbox.jsx";
-import { useMutation } from "@tanstack/react-query";
 import { getTeamDataObj } from '../library/helperfunctions';
-import { createNewTeam } from "../api/Event";
-import { updateUser } from "../redux/state/authSlice.jsx";
+import { useState } from "react";
 
 
 function CreateTeam() {
   const { user, socket } = useSelector(state => state.auth);
-  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -19,32 +16,23 @@ function CreateTeam() {
     formState: { errors }
   } = useForm();
 
-  const mutation = useMutation({
-    mutateKey: ["newTeam"],
-    mutationFn: (teamData) => createNewTeam(teamData)
-  })
+  const [newTeam, setNewTeam] = useState(null);
 
-  const createTeam = (data) => {
+  const createTeam = async (data) => {
     const teamData = getTeamDataObj(data, user);
-    mutation.mutateAsync(teamData)
-  }
-
-  if (mutation.isError) { alert(mutation.error.message) };
-  if (mutation.isSuccess) {
-    socket.emit("createTeam", mutation.data.team)
-    socket.emit("joinNewTeam", mutation.data.team._id);
-    dispatch(updateUser(mutation.data.user));
+    await socket.emit("createTeam", teamData);
+    setNewTeam(data.name);
+    reset();
   }
 
   return (
     <div className="w-full h-full flex justify-center items-center">
-      {mutation.isLoading && <div>Loading...</div>}
       <form 
       className="flex flex-col"
       onSubmit={handleSubmit(createTeam)}>
-        {mutation.isSuccess && 
+        {newTeam && 
         <div className="text-xs text-green-400">
-          Succesfully created new team: {mutation.data.team.name}
+          Succesfully created new team: {newTeam}
         </div>}
         <Textbox
         label="Team Name"
