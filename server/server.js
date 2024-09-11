@@ -290,45 +290,6 @@ app.get("/notifications:id", async (req, res) => {
 });
 
 //task api calls
-app.post("/create-task", async (req, res) => {
-  const { subtasks, title, team, description, deadline, members, priority } =
-    req.body;
-
-  const data = {
-    title,
-    description,
-    subtasks,
-    createdOn: func.newDate(),
-    deadline,
-    priority,
-    status: "pending",
-    assignedTo: members,
-    assignedTeam: team,
-    comments: [],
-    updates: [],
-  };
-
-  try {
-    const newTask = await Task.create(data);
-
-    const taskPointer = {
-      title,
-      priority,
-      status: "pending",
-      deadline,
-      id: newTask._id,
-    };
-
-    await Team.findByIdAndUpdate(team.id, {
-      $push: { tasks: taskPointer },
-    });
-
-    res.send({ message: "Succesfully created task" });
-  } catch (err) {
-    res.send(err);
-  }
-});
-
 app.get("/task:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -463,6 +424,62 @@ io.on("connection", (socket) => {
       ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
     } catch (err) {
       console.error(err.message);
+    }
+  });
+
+  socket.on("createTask", async (taskData) => {
+    console.log(taskData)
+    const { subtasks, title, team, description, deadline, members, priority, user } =
+      taskData;
+
+    const ids = members.map(member => member.id);
+
+    const data = {
+      title,
+      description,
+      subtasks,
+      createdOn: func.newDate(),
+      deadline,
+      priority,
+      status: "pending",
+      assignedTo: members,
+      assignedTeam: team,
+      comments: [],
+      updates: [],
+    };
+
+    try {
+      const newTask = await Task.create(data);
+
+      const notificationObj = {
+        nType: "New Task",
+        task: {
+          name: title,
+          id: newTask._id,
+        },
+        message: `${user} has added a new task to ${team.name}`,
+      };
+
+      const taskPointer = {
+        title,
+        priority,
+        status: "pending",
+        deadline,
+        id: newTask._id,
+      };
+
+      await Team.findByIdAndUpdate(team.id, {
+        $push: { tasks: taskPointer },
+      });
+
+      await User.updateMany(
+        { _id: { $in: ids}},
+        { $push: { notifications: { $each: [notificationObj], $position: 0}}}
+      );
+
+      io.to(team.id).emit("receiveNotification", notificationObj);
+    } catch (err) {
+      console.error(err);
     }
   });
 
