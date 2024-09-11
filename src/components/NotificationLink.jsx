@@ -15,16 +15,18 @@ taskId
   const handleClick = () => {
     //TODO: create navigate route based on notification type
     console.log("navigated");
-  }
+  };
+
+  const title = teamName ? teamName : taskName;
   return (
     <button
     onClick={handleClick}
     className="mb-1 border-2 p-1 rounded-lg">
       <div className="text-sm flex justify-between font-semibold pb-1">
         <span className="">{type}</span>
-        <span>{teamName}</span>
+        <span>{title}</span>
       </div>
-      <span className="text-xs line-clamp-1">{message}</span>
+      <span className="text-xs line-clamp-1 items-start">{message}</span>
     </button>
   )
 }
