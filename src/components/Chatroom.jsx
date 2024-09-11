@@ -24,11 +24,7 @@ function Chatroom({ taskId }) {
   });
 
   useEffect(() => {
-    const newSocket = io(BACKEND, {
-      auth: {
-        user: user
-      }
-    });
+    const newSocket = io(BACKEND);
     setSocket(newSocket)
 
     newSocket.emit("joinTaskRoom", taskId);
