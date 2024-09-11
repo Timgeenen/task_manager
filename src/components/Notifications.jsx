@@ -35,11 +35,10 @@ function Notifications() {
 
   useEffect(() => {
     socket.on("receiveNotification", (newUpdate) => {
-      setNewNotifications(true);
       const { notifications } = queryClient.getQueryData(["notifications"]);
       queryClient.setQueryData(["notifications"], {notifications: [newUpdate, ...notifications]});
+      setNewNotifications(true);
     });
-    console.log("Connected to Socket")
   }, []);
 
   const showNotifications = () => {
