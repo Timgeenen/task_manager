@@ -8,7 +8,6 @@ function TaskEdit({
   priority,
   status
 }) {
-  console.log(subtasks)
   return (
     <div>
       <div className="flex gap-8 items-center">

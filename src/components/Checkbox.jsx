@@ -5,7 +5,7 @@ function Checkbox({value, text, register, checked }) {
       <input 
       className="mr-2"
       value={value}
-      // checked={checked ? checked : false}
+      defaultChecked={checked ? true : false}
       type="checkbox"
       {...register} />
       <label>{text}</label>
