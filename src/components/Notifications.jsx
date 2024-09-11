@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Tippy from "@tippyjs/react";
 import { memo, useEffect, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -16,9 +16,10 @@ function Notifications() {
     data
   } = useQuery({
     queryKey: ["notifications"],
-    queryFn: () => getAllNotifications(),
-    staleTime: Infinity
+    queryFn: async () => await getAllNotifications(),
   });
+
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
   const navigateToNotifications = () => {
@@ -27,40 +28,39 @@ function Notifications() {
 
   const { socket } = useSelector(state => state.auth);
 
-  const [notifications, setNotifications] = useState([]);
   const [newNotifications, setNewNotifications] = useState(true);
   const [openNotifications, setOpenNotifications] = useState(false);
 
-  if (isError) { alert(error.message) };
-  
-  useEffect(() => {
+  if (isError) { console.error(error.message) };
 
-    setNotifications(data.notifications);
+  useEffect(() => {
     socket.on("receiveNotification", (newUpdate) => {
-      !newNotifications && setNewNotifications(true);
-      setNotifications([newUpdate, ...notifications]);
+      setNewNotifications(true);
+      const { notifications } = queryClient.getQueryData(["notifications"]);
+      queryClient.setQueryData(["notifications"], {notifications: [newUpdate, ...notifications]});
     });
+    console.log("Connected to Socket")
   }, []);
 
   const showNotifications = () => {
     newNotifications && setNewNotifications(false);
     setOpenNotifications(!openNotifications);
-  }
+  };
+
   return (
     <Tippy
     content={
       <div className="flex flex-col p-2 gap-2">
         {isLoading && <span>Loading...</span>}
-        {/* TODO: change to use data instead of fake data */}
-        {notifications.map((item) => (
+        {data && data.notifications.slice(0, 5).map((item) => (
           <NotificationLink
-            message={item.message}
-            type={item.nType}
-            isNew={item.isRead}
-            teamName={item.team.name}
-            teamId={item.team.id}
-            taskName={item.task && item.task.name}
-            taskId={item.task && item.task.id}
+          message={item.message}
+          type={item.nType}
+          isNew={item.isRead}
+          teamName={item.team.name}
+          teamId={item.team.id}
+          taskName={item.task && item.task.name}
+          taskId={item.task && item.task.id}
           />
         ))}
         <button
@@ -75,10 +75,13 @@ function Notifications() {
     interactive={true}
     visible={openNotifications}
     >
-      <button onClick={showNotifications} >
+      <button
+      onClick={showNotifications}
+      className="relative"
+      >
         <IoMdNotificationsOutline size="2em"/>
         {newNotifications && 
-        <span className="absolute bottom-3 right-3 bg-red-600 rounded-full p-1"></span>}
+        <span className="absolute bottom-1 right-1 bg-red-600 rounded-full p-1"></span>}
       </button>
     </Tippy>
   )
