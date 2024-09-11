@@ -34,7 +34,6 @@ function CreateTeam() {
     socket.emit("createTeam", mutation.data.team)
     socket.emit("joinNewTeam", mutation.data.team._id);
     dispatch(updateUser(mutation.data.user));
-    // alert("Succesfully created new team");
   }
 
   return (
