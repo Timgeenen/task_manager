@@ -452,11 +452,11 @@ io.on("connection", (socket) => {
         }
       );
 
+      const user = await User.findById(manager.id);
+
       ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
 
-      callback({
-        message: "succesfully created new team"
-      });
+      callback({user});
     } catch (err) {
       callback({
         error: err

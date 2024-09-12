@@ -1,14 +1,17 @@
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Textbox from "../components/Textbox";
 import SubmitButton from "../components/SubmitButton";
 import Checkbox from "../components/Checkbox.jsx";
 import { getTeamDataObj } from '../library/helperfunctions';
 import { useState } from "react";
+import { updateUser } from "../redux/state/authSlice.jsx";
 
 
 function CreateTeam() {
   const { user, socket } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
@@ -28,6 +31,7 @@ function CreateTeam() {
         const { error } = response;
         return console.error(`Creating task failed.\nError message: ${error.message}.\nStatus:${error.status}`);
       } else {
+        dispatch(updateUser(response.user));
         setNewTeam(data.name);
         reset();
       }
