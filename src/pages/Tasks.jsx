@@ -24,9 +24,16 @@ function Tasks () {
       {data?.map((task) => (
         <div
         key={task._id}
+        style={{background: task.status === "completed" ? "lightgreen" : task.status === "pending" ? "salmon" : "lightblue"}}
         className="grid grid-flow-col auto-cols-fr items-center border-2 p-2"
         >
-          <span>{task.title}</span>
+          <button
+          onClick={() => navigate("/task-info/" + task._id)}
+          className="flex items-center"
+          >
+            {task.title}
+            <FaArrowRight className="ml-2" size={12}/>
+          </button>
           <span>{task.deadline.split("T")[0]}</span>
           <span
           style={{ color: task.priority === "high" ? "red" : task.priority === "medium" ? "orange" : "green"}}
@@ -41,9 +48,6 @@ function Tasks () {
               />
             ))}
           </span>
-          <button onClick={() => navigate("/task-info/" + task._id)}>
-            <FaArrowRight size={24}/>
-          </button>
         </div>
       ))}
       </div>
