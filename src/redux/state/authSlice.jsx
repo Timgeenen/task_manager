@@ -1,6 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
 import { BACKEND } from "../../library/constants";
+import { QueryCache } from "@tanstack/react-query";
+
+const queryCache = new QueryCache();
 
 const initialState = {
   user: localStorage.getItem('userInfo')
@@ -42,6 +45,7 @@ export const authSlice = createSlice({
       state.socket = null;
       state.user = null;
       state.isSidebarOpen = false;
+      queryCache.clear();
       localStorage.removeItem('userInfo');
     },
 
