@@ -380,7 +380,7 @@ io.on("connection", (socket) => {
     console.log(`${user.name} joined notification channel`);
   }
 
-  socket.on("createTeam", async (teamData) => {
+  socket.on("createTeam", async (teamData, callback) => {
     const { name, manager, members } = teamData;
 
     try {
@@ -422,8 +422,13 @@ io.on("connection", (socket) => {
       );
 
       ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
+      callback({
+        message: "succesfully created new team"
+      })
     } catch (err) {
-      console.error(err.message);
+      callback({
+        error: err
+      })
     }
   });
 
