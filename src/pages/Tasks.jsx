@@ -3,29 +3,34 @@ import { FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAllTasks } from "../api/Event";
+import { sortTasksByDeadline } from "../library/helperfunctions";
 
 function Tasks () {
   const navigate = useNavigate();
 
-  const { isLoading, isError, error, data } = useQuery({
+  const { isLoading, isError, isSuccess, error, data } = useQuery({
     queryKey: ["all-tasks"],
     queryFn: () => getAllTasks(),
-    staleTime: Infinity
   });
 
   if (isError) { alert(error.message) };
+  if (isSuccess) { sortTasksByDeadline(data) };
 
   return (
     <div className="w-5/6 m-auto mt-4">
       {isLoading && <div>Loading...</div>}
+      <div></div>
+      <div>
       {data?.map((task) => (
         <div
         key={task._id}
-        className="flex justify-between items-center border-2 p-2"
+        className="grid grid-flow-col auto-cols-fr items-center border-2 p-2"
         >
-          <span>{task.description}</span>
+          <span>{task.title}</span>
           <span>{task.deadline.split("T")[0]}</span>
-          <span>{task.priority}</span>
+          <span
+          style={{ color: task.priority === "high" ? "red" : task.priority === "medium" ? "orange" : "green"}}
+          >{task.priority}</span>
           <span>{task.status}</span>
           <span>{task.assignedTeam.name}</span>
           <span className="mr-4">
@@ -41,6 +46,7 @@ function Tasks () {
           </button>
         </div>
       ))}
+      </div>
     </div>
   )
 }
