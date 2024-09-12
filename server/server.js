@@ -427,8 +427,8 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("createTask", async (taskData) => {
-    console.log(taskData)
+  socket.on("createTask", async (taskData, callback) => {
+
     const { subtasks, title, team, description, deadline, members, priority, user } =
       taskData;
 
@@ -478,8 +478,13 @@ io.on("connection", (socket) => {
       );
 
       io.to(team.id).emit("receiveNotification", notificationObj);
+      callback({
+        message: "succesfully created task"
+      })
     } catch (err) {
-      console.error(err);
+      callback({
+        error: err
+      })
     }
   });
 
