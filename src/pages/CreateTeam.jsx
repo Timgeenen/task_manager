@@ -17,12 +17,22 @@ function CreateTeam() {
   } = useForm();
 
   const [newTeam, setNewTeam] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const createTeam = async (data) => {
+  const createTeam = (data) => {
+    setIsLoading(true);
+    newTeam && setNewTeam(null);
     const teamData = getTeamDataObj(data, user);
-    await socket.emit("createTeam", teamData);
-    setNewTeam(data.name);
-    reset();
+    socket.emit("createTeam", teamData, (response) => {
+      if (response.error) {
+        const { error } = response;
+        return console.error(`Creating task failed.\nError message: ${error.message}.\nStatus:${error.status}`);
+      } else {
+        setNewTeam(data.name);
+        reset();
+      }
+      setIsLoading(false);
+    });
   }
 
   return (
@@ -30,10 +40,9 @@ function CreateTeam() {
       <form 
       className="flex flex-col"
       onSubmit={handleSubmit(createTeam)}>
-        {newTeam && 
-        <div className="text-xs text-green-400">
-          Succesfully created new team: {newTeam}
-        </div>}
+        {isLoading && <div>Loading...</div>}
+        {newTeam && <div className="text-xs text-green-400">
+          Succesfully created new team: {newTeam}</div>}
         <Textbox
         label="Team Name"
         type="text"
