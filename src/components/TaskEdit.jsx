@@ -4,6 +4,8 @@ import Checkbox from "./Checkbox";
 import { useForm, useFieldArray } from "react-hook-form";
 import SubmitButton from "./SubmitButton";
 import { IoClose } from "react-icons/io5";
+import { useSelector } from "react-redux";
+//TODO: disable fields if the task is marked as completed
 
 function TaskEdit({
   teamId,
@@ -12,7 +14,9 @@ function TaskEdit({
   subtasks,
   priority,
   status,
+  refetch
 }) {
+  const { socket } = useSelector(state => state.auth);
 
   const {
     register,
@@ -22,6 +26,7 @@ function TaskEdit({
     formState: { isDirty }
   } = useForm({
     defaultValues: {
+      taskId,
       subtasks,
       priority,
       status,
@@ -61,7 +66,15 @@ function TaskEdit({
 
   const submitHandler = (data) => {
     if (isDirty) {
-
+      socket.emit("updateTask", data, (response) => {
+        if (response.error) {
+          return console.error(response.error.message);
+        } else {
+          console.log("SUCCESS")
+          console.log(response)
+          refetch();
+        }
+      })
     } else {
       setSubmitError("Please adjust the form before submitting");
     }
@@ -85,7 +98,7 @@ function TaskEdit({
             {fields.map((field, i) => {
               const task = subtasksArr[i];
               task._id && setValue(`subtasks.${i}._id`, task._id);
-              setValue(`subtasks.${i}.name`, task.name)
+              setValue(`subtasks.${i}.name`, task.name);
               return (
                 <span
                 key={field.id}
