@@ -34,13 +34,13 @@ function FindConnections() {
 
   if (mutation.isError) { alert(mutation.error.message)};
   if (mutation.isSuccess)  { 
-    alert("succesfully added connection");
     dispatch(updateUser(mutation.data.user))
     refetch();
   }
 
   return (
     <div className="w-full m-4">
+      {mutation.isSuccess && <div className="text-xs text-green-400">Succesfully added connection</div>}
       {getFilteredConnections(data)?.map((item, i) => (
         <div 
         className="w-full flex justify-between border-2 border-slate-400 p-2"
