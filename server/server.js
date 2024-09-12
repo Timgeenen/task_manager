@@ -185,7 +185,14 @@ const taskSchema = new mongoose.Schema({
         id: String,
         _id: false,
       },
-      message: String,
+      previousState: {
+        description: String,
+        subTasks: [{
+          name: String,
+          completed: Boolean
+        }],
+        status: String
+      },
       updatedAt: Date,
     },
   ],
@@ -524,6 +531,57 @@ io.on("connection", (socket) => {
       })
     }
   });
+
+  socket.on("updateTask", async (taskData, callback) => {
+    const { taskId, subtasks, description, completed } = taskData;
+
+    try {
+      const task = await Task.findById(taskId);
+
+      const updateObj = {
+        author: {
+          name: user.name,
+          id: user._id
+        },
+        previousState: {
+          description: task.description,
+          subtasks: task.subtasks,
+          status: task.status
+        },
+        updatedAt: func.newDate()
+      };
+
+      task.updates.unshift(updateObj);
+      task.subtasks = subtasks;
+      task.description = description;
+
+      if (completed) { task.status = "completed"};
+
+      await task.save();
+
+      const notificationObj = {
+        nType: completed ? "Task Completed" : "Task Updated",
+        task: {
+          name: task.title,
+          id: task._id
+        },
+        message: completed ? `${task.title} has been completed` : `${user.name} has updated ${task.title}`
+      };
+
+      const ids = task.assignedTo.map(member => member.id);
+
+      await User.updateMany(
+        {_id: { $in: ids}},
+        { $push: { notifications: { $each: [notificationObj], $position: 0}}}
+      );
+
+      io.to(task.assignedTeam.id).emit("receiveNotification", notificationObj);
+
+      callback(updateObj);
+    } catch (error) {
+      callback(error)
+    }
+  })
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
