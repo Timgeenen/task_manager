@@ -5,7 +5,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 import SubmitButton from "./SubmitButton";
 import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
-//TODO: disable fields if the task is marked as completed
 
 function TaskEdit({
   teamId,
@@ -31,7 +30,7 @@ function TaskEdit({
       priority,
       status,
       description,
-      completed: false
+      completed: status === "completed" ? true : false
     }
   });
 
@@ -48,6 +47,7 @@ function TaskEdit({
   const [subtasksArr, setSubtasksArr] = useState(subtasks);
   const [error, setError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
+  const [isCompleted, setIsCompleted] = useState(status === "completed" ? true : false);
 
   const addSubtask = (e) => {
     e.preventDefault();
@@ -84,6 +84,7 @@ function TaskEdit({
 
   return (
     <div>
+      {isCompleted && <div className="text-center pt-5 text-3xl font-semibold text-green-500">Completed!</div>}
       <form
       className="flex gap-8 items-center"
       onSubmit={handleSubmit(submitHandler)}
@@ -91,6 +92,7 @@ function TaskEdit({
         <textarea 
         defaultValue={description}
         {...register("description")}
+        disabled={isCompleted}
         className="w-full m-6 p-2 border-2 rounded-lg h-96 text-lg"
         ></textarea>
         <div>
@@ -106,6 +108,7 @@ function TaskEdit({
                   <Checkbox
                   text={task.name}
                   checked={task.completed}
+                  disabled={isCompleted}
                   register={register(`subtasks.${i}.completed`)}
                   />
                   {!task._id && <IoClose
@@ -121,11 +124,13 @@ function TaskEdit({
             className="border-2"
             id="taskEdit__newSubtask"
             placeholder="Add description"
+            disabled={isCompleted}
             onChange={handleChange}
             />
             {error && <span className="text-xs text-red-600">{error}</span>}
             <AddButton
             text="Add Subtask"
+            disabled={isCompleted}
             handleClick={addSubtask}
             />
           </div>
@@ -133,8 +138,11 @@ function TaskEdit({
           <Checkbox
           register={register("completed")}
           text="Complete Task"
+          disabled={isCompleted}
           />
-          <SubmitButton />
+          <SubmitButton
+          disabled={isCompleted}
+          />
           {submitError && <div className="text-xs text-red-600 text-center">{submitError}</div>}
           </div>
         </div>
