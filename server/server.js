@@ -73,6 +73,11 @@ const userSchema = new mongoose.Schema({
         id: String,
         _id: false,
       },
+      user: {
+        name: String,
+        id: String,
+        _id: false
+      },
       message: String,
       isRead: {
         type: Boolean,
@@ -261,15 +266,26 @@ app.put("/add-connection", async (req, res) => {
 
   const activeUserData = func.createConnectionObj(activeUser);
   const addedUserData = func.createConnectionObj(addedUser);
+  const notificationObj = {
+    nType: "New Connection",
+    user: {
+      name: activeUser.name,
+      id: activeUser._id,
+    },
+    message: `${activeUser.name} has been added to your connections`,
+  };
 
   try {
     activeUser.connections.push(addedUserData);
     addedUser.connections.push(activeUserData);
+    addedUser.notifications.unshift(notificationObj);
     await activeUser.save();
     await addedUser.save();
+
+    io.to(id).emit("receiveNotification", notificationObj);
     res.send({ user: activeUser });
   } catch (error) {
-    res.send({ error: "Adding connection failed" });
+    res.send(error);
   }
 });
 
