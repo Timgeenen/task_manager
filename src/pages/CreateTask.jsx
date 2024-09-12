@@ -13,6 +13,7 @@ import { useState } from "react";
 function CreateTask() {
   const { user, socket } = useSelector(state => state.auth);
   const [newTask, setNewTask] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -38,6 +39,9 @@ function CreateTask() {
     if (formData.team === "") { return alert("please select a valid team")};
     if (formData.members.length === 0) {return alert("please make sure to select at least 1 team member")};
 
+    setIsLoading(true);
+    setNewTask(null);
+    
     const team = user.teams.find(item => item.id === selectedTeam);
     const teamObj = {
       name: team.name,
@@ -49,13 +53,22 @@ function CreateTask() {
     formData.team = teamObj;
     formData.user = user.name;
 
-    socket.emit("createTask", formData);
-    setNewTask(formData.title);
-    reset()
+    socket.emit("createTask", formData, (response) => {
+      if (response.error) {
+        const { error } = response
+        return console.error(`Creating task failed.\nError message: ${error.message}.\nStatus:${error.status}`);
+      } else {
+        console.log(response.message);
+        setNewTask(formData.title);
+        reset();
+      }
+      setIsLoading(false);
+    });
   }
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
+      {isLoading && <div>Loading...</div>}
       {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
       className="flex flex-col gap-2"
@@ -130,7 +143,9 @@ function CreateTask() {
         }}
         />
 
-        <SubmitButton />
+        <SubmitButton
+        disabled={isLoading}
+        />
       </form>
     </div>
   )
