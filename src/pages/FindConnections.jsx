@@ -52,7 +52,10 @@ function FindConnections() {
             ? <span className="text-green-400">Online</span>
             : getTimePassed(item.updatedAt)
         }</span>
-          <button onClick={() => addFriend(item._id)}>
+          <button
+          onClick={() => addFriend(item._id)}
+          disabled={mutation.isLoading ? true : false}
+          >
             <FaPlus />
           </button>
         </div>
