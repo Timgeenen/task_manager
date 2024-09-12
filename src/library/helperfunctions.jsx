@@ -105,4 +105,9 @@ export const countTasksByPriority = (tasks) => {
   });
 
   return data;
+};
+
+export const sortTasksByDeadline = (tasks) => {
+  const sorted = tasks.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+  return sorted
 }
