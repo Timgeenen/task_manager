@@ -60,6 +60,8 @@ function Notifications() {
           teamId={item.team && item.team.id}
           taskName={item.task && item.task.name}
           taskId={item.task && item.task.id}
+          userName={item.user && item.user.name}
+          userId={item.user && item.user.id}
           />
         ))}
         <button
