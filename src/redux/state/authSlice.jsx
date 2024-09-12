@@ -3,7 +3,6 @@ import { io } from "socket.io-client";
 import { BACKEND } from "../../library/constants";
 import { QueryCache } from "@tanstack/react-query";
 
-const queryCache = new QueryCache();
 
 const initialState = {
   user: localStorage.getItem('userInfo')
@@ -17,6 +16,8 @@ const initialState = {
     })
     : null
   ,
+
+  cache: new QueryCache(),
   
   isSidebarOpen: false
 }
@@ -45,7 +46,7 @@ export const authSlice = createSlice({
       state.socket = null;
       state.user = null;
       state.isSidebarOpen = false;
-      queryCache.clear();
+      state.cache.clear();
       localStorage.removeItem('userInfo');
     },
 
