@@ -8,7 +8,9 @@ isNew,
 teamName,
 teamId,
 taskName,
-taskId
+taskId,
+userName,
+userId
 }) {
   const [unread, setUnread] = useState(isNew);
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ taskId
     console.log("navigated");
   };
 
-  const title = teamName ? teamName : taskName;
+  const title = teamName ? teamName : taskName ? taskName : userName;
   return (
     <button
     onClick={handleClick}
