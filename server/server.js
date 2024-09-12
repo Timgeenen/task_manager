@@ -45,7 +45,10 @@ const userSchema = new mongoose.Schema({
       members: [
         {
           name: String,
+          role: String,
+          email: String,
           id: String,
+          _id: false
         },
       ],
       _id: false,
@@ -364,9 +367,8 @@ app.post("/get-tasks-by-teamId", (req, res) => {
 app.get("/get-all-teams:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const { teams } = await User.findById(id, { teams: 1, _id: 0 });
-    console.log("START")
-    const teamIdsArray = teams.map((team) => team.id);
+    const user = await User.findById(id, { teams: 1, _id: 0 });
+    const teamIdsArray = user.teams.map((team) => team.id);
     const allTeams = await Team.find({ _id: { $in: teamIdsArray }});
     res.send(allTeams);
   } catch (error) {
@@ -429,9 +431,7 @@ io.on("connection", (socket) => {
         id: team._id,
       };
 
-      const ids = members.map((member) => {
-        return member.id;
-      });
+      const ids = members.map((member) => member.id);
 
       const notificationObj = {
         nType: "New Team",
@@ -445,15 +445,18 @@ io.on("connection", (socket) => {
       await User.updateMany(
         { _id: { $in: ids } },
         {
-          $push: { teams: teamObj },
-          $push: { notifications: { $each: [notificationObj], $position: 0 } },
+          $push: {
+            teams: teamObj,
+            notifications: { $each: [notificationObj], $position: 0 },
+          },
         }
       );
 
       ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
+
       callback({
         message: "succesfully created new team"
-      })
+      });
     } catch (err) {
       callback({
         error: err
