@@ -70,8 +70,6 @@ function TaskEdit({
         if (response.error) {
           return console.error(response.error.message);
         } else {
-          console.log("SUCCESS")
-          console.log(response)
           refetch();
         }
       })
