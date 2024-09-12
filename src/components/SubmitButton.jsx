@@ -1,6 +1,10 @@
-function SubmitButton() {
+function SubmitButton({ disabled }) {
   return (
-    <input type="submit" className="shadow rounded-full h-8 bg-blue-600 text-gray-100 hover:cursor-pointer" />
+    <input
+    type="submit"
+    disabled={disabled ? true : false}
+    className="shadow rounded-full h-8 bg-blue-600 text-gray-100 hover:cursor-pointer"
+    />
   )
 }
 
