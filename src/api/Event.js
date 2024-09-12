@@ -63,6 +63,11 @@ export const getTeamTaskArr = async (teamIds) => {
   return res.data;
 };
 
+export const getAllTeams = async () => {
+  const res = await axios.get(`/get-all-teams${user._id}`);
+  return res.data
+}
+
 // export const getTeamsByIds = async (teamIds) => {
 //   const res = await axios.post("/get-teams", teamIds);
 //   return res.data;

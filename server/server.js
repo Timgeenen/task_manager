@@ -361,6 +361,19 @@ app.post("/get-tasks-by-teamId", (req, res) => {
 });
 
 //team api calls
+app.get("/get-all-teams:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { teams } = await User.findById(id, { teams: 1, _id: 0 });
+    console.log("START")
+    const teamIdsArray = teams.map((team) => team.id);
+    const allTeams = await Team.find({ _id: { $in: teamIdsArray }});
+    res.send(allTeams);
+  } catch (error) {
+    res.send(error)
+  }
+});
+
 app.post("/get-teams", (req, res) => {
   const { teamIds } = req.body;
   Team.find({ _id: { $in: teamIds } })
