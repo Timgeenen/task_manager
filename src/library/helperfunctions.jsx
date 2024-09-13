@@ -46,6 +46,26 @@ export const getTimePassed = (date) => {
   return `${days} day(s)`;
 };
 
+export const getHoursLeft = (date) => {
+  const currentTime = Math.floor(new Date().getTime() / 1000);
+  const deadline = Math.floor(new Date(date).getTime() / 1000);
+  const timeLeft = deadline - currentTime;
+  return Math.floor(timeLeft / 60 / 60);
+}
+
+export const getUrgentDeadlines = (tasks) => {
+  let urgent = {
+    thisWeek: 0,
+    overDue: 0
+  }
+  tasks.map(task => {
+    const hoursLeft = getHoursLeft(task.deadline);
+    if (hoursLeft < 0) { urgent.overDue += 1};
+    if (hoursLeft / 24 < 7) { urgent.thisWeek += 1};
+  });
+  return urgent;
+}
+
 export const getFilteredConnections = (allUsers) => {
 
   const user = store.getState().auth.user;
