@@ -533,7 +533,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("updateTask", async (taskData, callback) => {
-    const { taskId, subtasks, description, completed } = taskData;
+    const { taskId, teamId, subtasks, description, completed } = taskData;
 
     try {
       const task = await Task.findById(taskId);
@@ -567,6 +567,15 @@ io.on("connection", (socket) => {
         },
         message: completed ? `${task.title} has been completed` : `${user.name} has updated ${task.title}`
       };
+
+      if (completed) {
+        await Team.updateOne(
+          { _id: teamId, "tasks.id": taskId },
+          {
+            $set: { "tasks.$.status": "completed"}
+          }
+        );
+      }
 
       const ids = task.assignedTo.map(member => member.id);
 

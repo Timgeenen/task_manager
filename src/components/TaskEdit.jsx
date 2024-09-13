@@ -25,6 +25,7 @@ function TaskEdit({
     formState: { isDirty }
   } = useForm({
     defaultValues: {
+      teamId,
       taskId,
       subtasks,
       priority,
