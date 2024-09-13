@@ -318,8 +318,11 @@ app.get("/user:id", (req, res) => {
 
 app.get("/notifications:id", async (req, res) => {
   const id = req.params.id;
+  const { unread } = req.query;
+
   try {
     const user = await User.findById(id, { notifications: 1 });
+    if (unread) { user.notifications = user.notifications.filter(item => !item.isRead) };
     res.send(user.notifications);
   } catch (err) {
     res.send(err);

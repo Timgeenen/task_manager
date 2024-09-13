@@ -35,8 +35,11 @@ export const addConnection = async (id) => {
   return res.data;
 };
 
-export const getAllNotifications = async () => {
-  const res = await axios.get(`/notifications${user._id}`);
+export const getAllNotifications = async (unreadOnly) => {
+  let route = `/notifications${user._id}`;
+  if (unreadOnly) { route += "?unread=true"}
+  console.log(route)
+  const res = await axios.get(route);
   return res.data;
 }
 
