@@ -51,17 +51,17 @@ function Notifications() {
     content={
       <div className="flex flex-col p-2 gap-2">
         {isLoading && <span>Loading...</span>}
-        {data && data.notifications.slice(0, 5).map((item) => (
+        {data && data?.notifications.slice(0, 5).map((item) => (
           <NotificationLink
           message={item.message}
           type={item.nType}
           isNew={item.isRead}
-          teamName={item.team && item.team.name}
-          teamId={item.team && item.team.id}
-          taskName={item.task && item.task.name}
-          taskId={item.task && item.task.id}
-          userName={item.user && item.user.name}
-          userId={item.user && item.user.id}
+          teamName={item.team?.name}
+          teamId={item.team?.id}
+          taskName={item.task?.name}
+          taskId={item.task?.id}
+          userName={item.user?.name}
+          userId={item.user?.id}
           />
         ))}
         <button
