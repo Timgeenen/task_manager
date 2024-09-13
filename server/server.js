@@ -214,7 +214,7 @@ app.post("/login", async (req, res) => {
     }).findOne();
     if (!user) {
       res.status(404);
-      res.send({ message: "email and password don't match"})
+      res.send({ message: "email and password don't match" });
     } else {
       res.send(user);
     }
@@ -235,21 +235,26 @@ app.post("/register", async (req, res) => {
     .catch((err) => res.send(err));
 
   if (registered) {
-    res.send({ error: "email adress is already in use" });
+    res.status(401);
+    res.send({ message: "email adress is already in use" });
   } else {
-    const newDate = func.newDate();
-    const user = await User.create({
-      name: name,
-      role: role,
-      email: email,
-      password: password,
-      createdAt: newDate,
-      updatedAt: newDate,
-      teams: [],
-      connections: [],
-      notifications: [],
-    });
-    res.send(user);
+    try {
+      const newDate = func.newDate();
+      const user = await User.create({
+        name: name,
+        role: role,
+        email: email,
+        password: password,
+        createdAt: newDate,
+        updatedAt: newDate,
+        teams: [],
+        connections: [],
+        notifications: [],
+      });
+      res.send(user);
+    } catch (error) {
+      res.send(error);
+    }
   }
 });
 
