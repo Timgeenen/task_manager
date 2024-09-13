@@ -60,6 +60,7 @@ export const getUrgentDeadlines = (tasks) => {
   }
   tasks.map(task => {
     const hoursLeft = getHoursLeft(task.deadline);
+    if (task.status === "completed") { return }
     if (hoursLeft < 0) { urgent.overDue += 1};
     if (hoursLeft / 24 < 7) { urgent.thisWeek += 1};
   });
