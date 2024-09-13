@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
           role: String,
           email: String,
           id: String,
-          _id: false
+          _id: false,
         },
       ],
       _id: false,
@@ -79,7 +79,7 @@ const userSchema = new mongoose.Schema({
       user: {
         name: String,
         id: String,
-        _id: false
+        _id: false,
       },
       message: String,
       isRead: {
@@ -187,11 +187,13 @@ const taskSchema = new mongoose.Schema({
       },
       previousState: {
         description: String,
-        subTasks: [{
-          name: String,
-          completed: Boolean
-        }],
-        status: String
+        subTasks: [
+          {
+            name: String,
+            completed: Boolean,
+          },
+        ],
+        status: String,
       },
       updatedAt: Date,
     },
@@ -210,7 +212,12 @@ app.post("/login", async (req, res) => {
       password: password,
       email: email,
     }).findOne();
-    res.send(user);
+    if (!user) {
+      res.status(404);
+      res.send({ message: "email and password don't match"})
+    } else {
+      res.send(user);
+    }
   } catch (err) {
     res.send(err);
   }
@@ -376,10 +383,10 @@ app.get("/get-all-teams:id", async (req, res) => {
   try {
     const user = await User.findById(id, { teams: 1, _id: 0 });
     const teamIdsArray = user.teams.map((team) => team.id);
-    const allTeams = await Team.find({ _id: { $in: teamIdsArray }});
+    const allTeams = await Team.find({ _id: { $in: teamIdsArray } });
     res.send(allTeams);
   } catch (error) {
-    res.send(error)
+    res.send(error);
   }
 });
 
@@ -463,20 +470,27 @@ io.on("connection", (socket) => {
 
       ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
 
-      callback({user});
+      callback({ user });
     } catch (err) {
       callback({
-        error: err
-      })
+        error: err,
+      });
     }
   });
 
   socket.on("createTask", async (taskData, callback) => {
+    const {
+      subtasks,
+      title,
+      team,
+      description,
+      deadline,
+      members,
+      priority,
+      user,
+    } = taskData;
 
-    const { subtasks, title, team, description, deadline, members, priority, user } =
-      taskData;
-
-    const ids = members.map(member => member.id);
+    const ids = members.map((member) => member.id);
 
     const data = {
       title,
@@ -517,18 +531,18 @@ io.on("connection", (socket) => {
       });
 
       await User.updateMany(
-        { _id: { $in: ids}},
-        { $push: { notifications: { $each: [notificationObj], $position: 0}}}
+        { _id: { $in: ids } },
+        { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
       );
 
       io.to(team.id).emit("receiveNotification", notificationObj);
       callback({
-        message: "succesfully created task"
-      })
+        message: "succesfully created task",
+      });
     } catch (err) {
       callback({
-        error: err
-      })
+        error: err,
+      });
     }
   });
 
@@ -541,21 +555,23 @@ io.on("connection", (socket) => {
       const updateObj = {
         author: {
           name: user.name,
-          id: user._id
+          id: user._id,
         },
         previousState: {
           description: task.description,
           subtasks: task.subtasks,
-          status: task.status
+          status: task.status,
         },
-        updatedAt: func.newDate()
+        updatedAt: func.newDate(),
       };
 
       task.updates.unshift(updateObj);
       task.subtasks = subtasks;
       task.description = description;
 
-      if (completed) { task.status = "completed"};
+      if (completed) {
+        task.status = "completed";
+      }
 
       await task.save();
 
@@ -563,34 +579,36 @@ io.on("connection", (socket) => {
         nType: completed ? "Task Completed" : "Task Updated",
         task: {
           name: task.title,
-          id: task._id
+          id: task._id,
         },
-        message: completed ? `${task.title} has been completed` : `${user.name} has updated ${task.title}`
+        message: completed
+          ? `${task.title} has been completed`
+          : `${user.name} has updated ${task.title}`,
       };
 
       if (completed) {
         await Team.updateOne(
           { _id: teamId, "tasks.id": taskId },
           {
-            $set: { "tasks.$.status": "completed"}
+            $set: { "tasks.$.status": "completed" },
           }
         );
       }
 
-      const ids = task.assignedTo.map(member => member.id);
+      const ids = task.assignedTo.map((member) => member.id);
 
       await User.updateMany(
-        {_id: { $in: ids}},
-        { $push: { notifications: { $each: [notificationObj], $position: 0}}}
+        { _id: { $in: ids } },
+        { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
       );
 
       io.to(task.assignedTeam.id).emit("receiveNotification", notificationObj);
 
       callback(updateObj);
     } catch (error) {
-      callback(error)
+      callback(error);
     }
-  })
+  });
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
