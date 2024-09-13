@@ -203,7 +203,6 @@ const taskSchema = new mongoose.Schema({
 let User = mongoose.model("user", userSchema);
 let Team = mongoose.model("team", teamSchema);
 let Task = mongoose.model("task", taskSchema);
-
 //user api calls
 app.post("/login", async (req, res) => {
   const { password, email } = req.body;
@@ -320,8 +319,8 @@ app.get("/user:id", (req, res) => {
 app.get("/notifications:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const notifications = await User.findById(id, { notifications: 1 });
-    res.send(notifications);
+    const user = await User.findById(id, { notifications: 1 });
+    res.send(user.notifications);
   } catch (err) {
     res.send(err);
   }
@@ -614,6 +613,18 @@ io.on("connection", (socket) => {
       callback(error);
     }
   });
+
+  socket.on("readNotification", async (userId, notificationId, callback) => {
+    try {
+      await User.updateOne(
+        { _id: userId, "notifications._id": notificationId },
+        { $set: { "notifications.$.isRead": true } }
+      );
+      callback({})
+    } catch (error) {
+      callback({error});
+    }
+  })
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
