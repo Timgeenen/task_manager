@@ -1,12 +1,12 @@
 import { CountUp } from "use-count-up";
 //TODO: change styles to tailwind
 
-function Countup({actual, total, parameter, radius}) {
+function Countup({actual, total, parameter, radius, color}) {
   const circumference = radius * 2 * Math.PI;
   const offset = radius / 5;
   const boxSize = (radius * 2) + (offset * 2)
   return (
-    <div className="flex items-center gap-2 border-2 border-slate-300 p-2">
+    <div className="flex items-center gap-2 border-slate-300 p-1 w-36">
       <CountUp
       isCounting
       end={actual}
@@ -19,10 +19,11 @@ function Countup({actual, total, parameter, radius}) {
           height={boxSize}
           >
             <circle 
-            cx={radius + offset}
-            cy={radius + offset}
+            cx={(radius + offset)}
+            cy={-(radius + offset)}
             r={radius}
-            stroke="blue"
+            style={{transform: "rotate(90deg)"}}
+            stroke={color ? color : "blue"}
             strokeWidth={offset}
             strokeDashoffset={circumference - (value / total) * circumference}
             strokeDasharray={circumference}
@@ -41,7 +42,7 @@ function Countup({actual, total, parameter, radius}) {
           ))
         }
       </CountUp>
-      <text className="text-xl">{parameter}</text>
+      <text className="text-sm text-nowrap">{parameter}</text>
     </div>
   )
 }
