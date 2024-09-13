@@ -14,8 +14,17 @@ function Login() {
   const { 
     register, 
     handleSubmit,
+    setError,
     formState: { errors }
-   } = useForm();
+   } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+      name: "",
+      role: ""
+    }
+   });
+
    const [registerForm, setRegisterForm] = useState(false);
 
   const loginMutation = useMutation({
@@ -30,13 +39,23 @@ function Login() {
 
   const loginUser = (data) => {
     loginMutation.mutate(data);
-    loginMutation.isError && alert(loginMutation.error.message);
-    loginMutation.error && console.log(loginMutation.error)
+    if (loginMutation.isError) {
+      setError("password", {
+        type: "custom",
+        message: loginMutation.error.response?.data?.message || loginMutation.error.message
+      })
+    };
     loginMutation.isSuccess && dispatch(login(loginMutation.data));
   }
 
   const registerUser = (data) => {
     registerMutation.mutate(data);
+    if (registerMutation.isError) {
+      setError("email", {
+        type: "custom",
+        message: registerMutation.error.response?.data?.message || registerMutation.error.message
+      })
+    }
     registerMutation.isSuccess && dispatch(login(registerMutation.data));
   }
 
@@ -53,7 +72,6 @@ function Login() {
       <form 
       className="flex flex-col justify-center gap-4 border p-8 rounded-md"
       onSubmit={handleSubmit(registerForm ? registerUser : loginUser)}>
-        {loginMutation.isError && <div className="text-xs text-red-600">{loginMutation.error.response.data.message}</div>}
         <h3 className="text-xl font-medium text-blue-600">{registerForm ? "Register" : "Login"}</h3>
         <Textbox 
         label="Email Adress"
@@ -68,7 +86,7 @@ function Login() {
         placeholder="enter password"
         register={register("password", {required: "Password Is Required!"})}
         error={errors.password ? errors.password.message : ""} />
-        { loginMutation.data?.error && <span className="text-xs text-red-600">{loginMutation.data.error.message}</span>}
+
         { registerForm && 
         <>
           <Textbox
