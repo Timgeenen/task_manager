@@ -15,6 +15,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { setOpenSidebar } from "./redux/state/authSlice";
 import CreateTeam from "./pages/CreateTeam";
 import CreateTask from "./pages/CreateTask";
+import TeamInfo from "./pages/TeamInfo";
 
 
 function App() {
@@ -29,11 +30,16 @@ function App() {
           <Route path=":taskId" element={<TaskInfo />} />
         </Route>
         <Route path="/teams" element={<Teams />} />
+        <Route path="/team-info">
+          <Route path=":teamId" element={<TeamInfo />} />
+        </Route>
         <Route path="/create-team" element={<CreateTeam />} />
         <Route path="/connections" element={<Connections />} />
         <Route path="/find-connections" element={<FindConnections />} />
         <Route path="/trash" element={<Trash />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile">
+          <Route path=":teamId" element={<Profile />} />
+        </Route>
       </Route>
       <Route path="/login" element={<Login />} />
     </Routes>
