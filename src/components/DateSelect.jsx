@@ -1,13 +1,13 @@
 import { Controller, useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 
-function DateSelect({ text, control }) {
+function DateSelect({ text, name, control, minDate, maxDate, defaultValue }) {
 
   return (
     <Controller
     control={control}
-    name="deadline"
-    defaultValue={new Date()}
+    name={name}
+    defaultValue={defaultValue}
     render={({ field }) => (
       <>
         <label>{text}</label>
@@ -15,8 +15,10 @@ function DateSelect({ text, control }) {
         {...field}
         value={field.value}
         selected={field.value}
-        minDate={new Date()}
-        onChange={date => field.onChange(date) }
+        placeholderText="select date"
+        minDate={minDate}
+        maxDate={maxDate}
+        onChange={date => field.onChange(date)}
         />
       </>
     )}
