@@ -38,7 +38,7 @@ function App() {
         <Route path="/find-connections" element={<FindConnections />} />
         <Route path="/trash" element={<Trash />} />
         <Route path="/profile">
-          <Route path=":teamId" element={<Profile />} />
+          <Route path=":userId" element={<Profile />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
