@@ -4,13 +4,12 @@ import 'tippy.js/dist/tippy.css';
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/state/authSlice";
 import { getInitials } from "../library/helperfunctions";
-//TODO: customize tippy styling
-//TODO: add link to profile page in tippy
-//TODO: add logout functionality
+import { useNavigate } from "react-router-dom";
 
 function UserTag() {
   const { user } = useSelector(state => state.auth);
   const [initials, setInitials] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     let userInitials = getInitials(user.name);
@@ -29,7 +28,7 @@ function UserTag() {
   };
 
   const navigateProfile = () => {
-    console.log("navigate to profile");
+    navigate(`/profile/${user._id}`)
   };
 
   return (
