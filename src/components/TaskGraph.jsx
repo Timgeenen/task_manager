@@ -1,7 +1,6 @@
 import { BarChart, Tooltip, XAxis, YAxis, Bar, CartesianGrid, Cell } from "recharts";
 import { countTasksByPriority } from "../library/helperfunctions";
 import { useEffect, useState } from "react";
-//TODO: make chart responsive
 
 function TaskGraph({data}) {
 
