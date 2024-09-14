@@ -53,6 +53,7 @@ function Notifications() {
 
   return (
     <Tippy
+    appendTo={document.body}
     content={
       <div className="flex flex-col p-2 gap-2">
         {isLoading && <span>Loading...</span>}

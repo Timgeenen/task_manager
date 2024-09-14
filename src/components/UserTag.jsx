@@ -34,6 +34,7 @@ function UserTag() {
 
   return (
     <Tippy
+      appendTo={document.body}
       content={
         <div className="flex flex-col p-2 gap-2">
           <UserLink name="Profile" handleClick={navigateProfile}/>
