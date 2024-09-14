@@ -16,7 +16,17 @@ function Tasks () {
     queryFn: () => getAllTasks(),
   });
 
-  const { register, control, reset, watch } = useForm({})
+  const defaultValues = {
+      status: "all",
+      team: "all",
+      priority: "all",
+      from: "",
+      to: ""
+    };
+
+  const { register, control, reset, watch } = useForm({
+    defaultValues: defaultValues
+  });
   const currentStatus = watch("status");
   const fromDate = watch("from");
   const toDate = watch("to");
@@ -63,7 +73,7 @@ function Tasks () {
         defaultValue="all"
         defaultText="--Select Team"
         />
-        <button onClick={reset}>
+        <button onClick={() => reset(defaultValues)}>
           <LuRefreshCcw size={24}/>
         </button>
       </div>
