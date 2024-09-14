@@ -39,7 +39,7 @@ function Teams() {
                 <MembersTag 
                 member={member.name}
                 index={index}
-                key={`${member.id}${i}`} />
+                memberId={member.id} />
               ))}
             </span>
             </div>
