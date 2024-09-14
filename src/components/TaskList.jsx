@@ -3,20 +3,24 @@ import MembersTag from "../components/MembersTag";
 import { FaArrowRight } from "react-icons/fa";
 import { memo } from "react";
 import { getHoursLeft, getTimeDiff } from "../library/helperfunctions";
+import { useNavigate } from "react-router-dom";
 
-function TaskList({data, status, from, to}) {
+function TaskList({data, status, from, to, team, priority}) {
+  const navigate = useNavigate();
   const [filteredData, setFilteredData] = useState(data);
 
-
   useEffect(() => {
+    console.log(status, from, to, team, priority)
       const selectedData = data.filter(item => {
         const x = status !== "all" ? item.status === status : true;
         const y = from ? getTimeDiff(from, item.deadline) > 0 : true;
         const z = to ? getTimeDiff(item.deadline, to) > 0 : true;
-        if (x & y & z) { return item}
+        const a = team !== "all" ? item.assignedTeam.id === team : true;
+        const b = priority !== "all" ? item.priority === priority : true;
+        if (x & y & z & a & b) { return item}
       });
     setFilteredData(selectedData);
-  }, [status, from, to]);
+  }, [status, from, to, team, priority]);
 
   return (
     <div className="h-96 overflow-y-scroll">
