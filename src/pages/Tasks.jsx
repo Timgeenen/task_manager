@@ -45,6 +45,7 @@ function Tasks () {
               <MembersTag
               member={member.name}
               index={i}
+              memberId={member.id}
               />
             ))}
           </span>
