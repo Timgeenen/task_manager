@@ -11,12 +11,11 @@ function Notifications() {
   const {
     isError,
     isLoading,
-    isSuccess,
     error,
     data
   } = useQuery({
     queryKey: ["notifications"],
-    queryFn: async () => await getAllNotifications(),
+    queryFn: () => getAllNotifications(true),
   });
 
   const queryClient = useQueryClient();
@@ -35,11 +34,17 @@ function Notifications() {
 
   useEffect(() => {
     socket.on("receiveNotification", (newUpdate) => {
-      const { notifications } = queryClient.getQueryData(["notifications"]);
-      queryClient.setQueryData(["notifications"], {notifications: [newUpdate, ...notifications]});
+      const notifications = queryClient.getQueryData(["notifications"]);
+      queryClient.setQueryData(["notifications"], [newUpdate, ...notifications]);
       setNewNotifications(true);
     });
   }, []);
+
+  const updateNotificationQuery = (index) => {
+    const notifications = queryClient.getQueryData(["notifications"]);
+    notifications.splice(index, 1);
+    queryClient.setQueryData([...notifications]);
+  }
 
   const showNotifications = () => {
     newNotifications && setNewNotifications(false);
@@ -51,17 +56,19 @@ function Notifications() {
     content={
       <div className="flex flex-col p-2 gap-2">
         {isLoading && <span>Loading...</span>}
-        {data && data?.notifications.slice(0, 5).map((item) => (
+        {data && data?.slice(0, 10).map((item, i) => (
           <NotificationLink
           message={item.message}
           type={item.nType}
-          isNew={item.isRead}
           teamName={item.team?.name}
           teamId={item.team?.id}
           taskName={item.task?.name}
           taskId={item.task?.id}
           userName={item.user?.name}
           userId={item.user?.id}
+          notificationId={item._id}
+          updateQuery={updateNotificationQuery}
+          index={i}
           />
         ))}
         <button
