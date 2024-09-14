@@ -125,7 +125,10 @@ function CreateTask() {
 
         <DateSelect
         text="Deadline"
+        name="deadline"
+        minDate={new Date()}
         control={control}
+        defaultValue={new Date()}
         />
         
         <label>Priority</label>
