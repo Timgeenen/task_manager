@@ -15,7 +15,11 @@ function Notifications() {
     data
   } = useQuery({
     queryKey: ["notifications"],
-    queryFn: () => getAllNotifications(true),
+    queryFn: async () => {
+      const notifications = await getAllNotifications(true)
+      notifications.length > 1 && setNewNotifications(true);
+      return notifications;
+    },
   });
 
   const queryClient = useQueryClient();
@@ -27,7 +31,7 @@ function Notifications() {
 
   const { socket } = useSelector(state => state.auth);
 
-  const [newNotifications, setNewNotifications] = useState(true);
+  const [newNotifications, setNewNotifications] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
 
   if (isError) { console.error(error.message) };
