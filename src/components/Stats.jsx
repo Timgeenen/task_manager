@@ -1,11 +1,6 @@
 import Countup from "./Countup"
-import { tasks } from "../library/fakedata";
 import { countTasksByStatus } from "../library/helperfunctions";
 import { useEffect, useState } from "react";
-
-//TODO: use real data to display stats
-//TODO: add functionality to organize current tasks on clicking field
-//TODO: add tooltip on hovering task to show more info
 
 const taskStyle = "text-nowrap overflow-hidden p-1 border-2 border-gray-300 border-black"
 const titleStyle = "pt-1"
