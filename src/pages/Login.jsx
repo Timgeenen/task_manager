@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Navigate } from "react-router-dom";
 import Textbox from "../components/Textbox";
@@ -7,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/state/authSlice";
 import { useMutation } from "@tanstack/react-query";
 import { createUser, authenticateUser } from "../api/Event";
+import useToggle from "../hooks/useToggle";
 
 function Login() {
   const { user } = useSelector(state => state.auth);
@@ -25,7 +25,7 @@ function Login() {
     }
    });
 
-   const [registerForm, setRegisterForm] = useState(false);
+   const [isOpen, toggle] = useToggle();
 
   const loginMutation = useMutation({
     mutationKey: ["login"],
@@ -58,11 +58,6 @@ function Login() {
     }
     registerMutation.isSuccess && dispatch(login(registerMutation.data));
   }
-
-  const toggleForm = (e) => {
-    e.preventDefault();
-    setRegisterForm(!registerForm);
-  }
  
   return user 
   ? ( <Navigate to="/dashboard" replace /> ) 
@@ -71,8 +66,8 @@ function Login() {
       <h1 className="text-5xl font-bold text-blue-600">Welcome Back!</h1>
       <form 
       className="flex flex-col justify-center gap-4 border p-8 rounded-md"
-      onSubmit={handleSubmit(registerForm ? registerUser : loginUser)}>
-        <h3 className="text-xl font-medium text-blue-600">{registerForm ? "Register" : "Login"}</h3>
+      onSubmit={handleSubmit(isOpen ? registerUser : loginUser)}>
+        <h3 className="text-xl font-medium text-blue-600">{isOpen ? "Register" : "Login"}</h3>
         <Textbox 
         label="Email Adress"
         type="email"
@@ -87,7 +82,7 @@ function Login() {
         register={register("password", {required: "Password Is Required!"})}
         error={errors.password ? errors.password.message : ""} />
 
-        { registerForm && 
+        { isOpen && 
         <>
           <Textbox
           label="Name"
@@ -106,11 +101,11 @@ function Login() {
         }
 
         <SubmitButton />
-        {registerForm ? (
-        <span>Already registered? <button className="text-blue-600" onClick={toggleForm}>Login</button>
+        {isOpen ? (
+        <span>Already registered? <button className="text-blue-600" onClick={toggle}>Login</button>
         </span>
         ) : (
-        <span>new user? <button className="text-blue-600" onClick={toggleForm}>Register</button>
+        <span>new user? <button className="text-blue-600" onClick={toggle}>Register</button>
         </span>
         )}
       </form>
