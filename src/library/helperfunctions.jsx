@@ -22,7 +22,7 @@ export const getTeamDataObj = (data, user) => {
 export const getTeamIdArray = (teams) => {
   const array = teams.map((team) => (team.id));
   return array;
-}
+};
 
 export const getInitials = (name) => {
   let names = name.split(" ");
@@ -51,6 +51,11 @@ export const getHoursLeft = (date) => {
   const deadline = Math.floor(new Date(date).getTime() / 1000);
   const timeLeft = deadline - currentTime;
   return Math.floor(timeLeft / 60 / 60);
+};
+
+export const getTimeDiff = (from, to) => {
+  const timeDiff = new Date(to) - new Date(from);
+  return timeDiff
 }
 
 export const getUrgentDeadlines = (tasks) => {
@@ -65,7 +70,7 @@ export const getUrgentDeadlines = (tasks) => {
     if (hoursLeft / 24 < 7) { urgent.thisWeek += 1};
   });
   return urgent;
-}
+};
 
 export const getFilteredConnections = (allUsers) => {
 
