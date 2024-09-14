@@ -1,9 +1,11 @@
-function Optionbox({options, register}) {
+function Optionbox({options, register, defaultValue, defaultText}) {
   return (
     <select {...register}>
-      <option value="">--Select Team</option>
+      <option value={defaultValue}>{defaultText}</option>
       {options.map((item) => (
-        <option value={item.id}>{item.name}</option>
+        <option value={item.id ? item.id : item}>
+          {item.name ? item.name : item}
+        </option>
       ))}
     </select>
   )
