@@ -131,4 +131,9 @@ export const countTasksByPriority = (tasks) => {
 export const sortTasksByDeadline = (tasks) => {
   const sorted = tasks.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
   return sorted
-}
+};
+
+export const getUnreadNotifications = (notifications) => {
+  const unRead = notifications.filter(item => { if(item.isRead === false) {return item} });
+  return unRead;
+};
