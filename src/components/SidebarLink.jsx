@@ -5,7 +5,6 @@ function SidebarLink({ text, icon, target }) {
   const navigate = useNavigate();
   const handleNavigate = () => {
     navigate(target);
-    console.log(`navigated to ${target}`);
   }
   return (
     <button 
