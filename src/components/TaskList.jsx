@@ -2,22 +2,21 @@ import { useEffect, useState } from "react";
 import MembersTag from "../components/MembersTag";
 import { FaArrowRight } from "react-icons/fa";
 import { memo } from "react";
-import { getHoursLeft } from "../library/helperfunctions";
+import { getHoursLeft, getTimeDiff } from "../library/helperfunctions";
 
-function TaskList({data, filter, date}) {
+function TaskList({data, status, from, to}) {
   const [filteredData, setFilteredData] = useState(data);
 
 
   useEffect(() => {
-    console.log(filter)
-    const selectedData = 
-    filter === "all" 
-    ? data
-    // : filter === "all" & 
-    : data.filter(item => item.status === filter);
-
-    setFilteredData(selectedData)
-  }, [filter]);
+      const selectedData = data.filter(item => {
+        const x = status !== "all" ? item.status === status : true;
+        const y = from ? getTimeDiff(from, item.deadline) > 0 : true;
+        const z = to ? getTimeDiff(item.deadline, to) > 0 : true;
+        if (x & y & z) { return item}
+      });
+    setFilteredData(selectedData);
+  }, [status, from, to]);
 
   return (
     <div className="h-96 overflow-y-scroll">
@@ -36,7 +35,7 @@ function TaskList({data, filter, date}) {
           ? "salmon"
           : "lightblue"
         }}
-        className={`grid grid-flow-col auto-cols-fr items-center border-2 p-2 ${overDue && "border-red-600 bg-indigo-600 font-extrabold"}`}
+        className={`grid grid-flow-col auto-cols-fr items-center border-2 p-2 ${overDue ? "border-red-600 font-extrabold" : ""}`}
         >
           <button
           onClick={() => navigate("/task-info/" + task._id)}
@@ -46,7 +45,7 @@ function TaskList({data, filter, date}) {
             <FaArrowRight className="ml-2" size={12}/>
           </button>
           <span
-          className={overDue && "text-red-600 font-extrabold"}
+          className={overDue ? "text-red-600 font-extrabold" : ""}
           >
             {task.deadline.split("T")[0]}
             {overDue && <span className="text-2xl ml-2"> !</span>}

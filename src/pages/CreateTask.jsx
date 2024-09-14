@@ -86,6 +86,7 @@ function CreateTask() {
         <Optionbox 
         options={user.teams}
         register={register("team")}
+        defaultText="--Select Team"
         />
 
         {
