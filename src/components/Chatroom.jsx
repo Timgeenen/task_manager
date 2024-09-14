@@ -3,12 +3,10 @@ import Commentbox from "./Commentbox"
 import { memo, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { BACKEND } from "../library/constants";
-import { useSelector } from "react-redux";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCommentsByTaskId } from "../api/Event";
 
 function Chatroom({ taskId }) {
-  const { user } = useSelector(state => state.auth);
   const [socket, setSocket] = useState(null);
   const queryClient = useQueryClient();
 
