@@ -43,8 +43,10 @@ function CreateTask() {
     setNewTask(null);
     
     const team = user.teams.find(item => item.id === selectedTeam);
+
     const teamObj = {
       name: team.name,
+      managerId: team.managerId,
       id: team.id
     };
     const assignedTo = team.members.filter(item => formData.members.includes(item.id));

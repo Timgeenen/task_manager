@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema({
     {
       name: String,
       id: String,
+      managerId: String,
       members: [
         {
           name: String,
@@ -158,6 +159,7 @@ const taskSchema = new mongoose.Schema({
   assignedTeam: {
     name: String,
     id: String,
+    managerId: String,
     _id: false,
   },
   // activelyWorking: [
@@ -450,6 +452,7 @@ io.on("connection", (socket) => {
         name,
         members,
         id: team._id,
+        managerId: manager.id
       };
 
       const ids = members.map((member) => member.id);
