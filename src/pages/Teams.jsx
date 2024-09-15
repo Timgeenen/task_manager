@@ -17,7 +17,9 @@ function Teams() {
   if (isError) { console.error(error.message) };
 
   return (
-    <div className="w-full flex flex-col">
+    <div
+    className="w-full flex flex-wrap justify-center max-w-fit"
+    >
       {isLoading && <div>Loading...</div>}
       {isSuccess && data?.map((team, i) => {
           const status = countTasksByStatus(team.tasks);
@@ -25,32 +27,32 @@ function Teams() {
           const total = team.tasks.length;
           const urgent = getUrgentDeadlines(team.tasks);
 
-          return (<div key={team.id} className="flex p-2 m-2 border-2 rounded-xl">
-            <div className="flex flex-col w-1/5 min-w-52 items-start gap-8">
-            <button className="text-2xl font-semibold">{team.name}</button>
-            <span>
-              <div className="font-semibold">Manager</div>
-              <div>{team.manager.name}</div>
-              <div className="text-xs">{team.manager.role}</div>
-            </span>
-            <span>
-              <div className="font-semibold">Team Members</div>
-              {team.members.map((member, index) => (
-                <MembersTag 
-                member={member.name}
-                index={index}
-                memberId={member.id} />
-              ))}
-            </span>
+          return (
+          <button
+          key={team.id}
+          className="flex p-2 m-2 border-2 rounded-xl hover:bg-violet-200"
+          onClick={() => navigate(`/team-info/${team._id}`)}
+          >
+            <div className="flex flex-col min-w-52 items-start text-left gap-6 border-r-2 p-1">
+              <div className="text-2xl font-semibold w-52 inline-block overflow-ellipsis overflow-hidden whitespace-nowrap">
+                {team.name}
+              </div>
+              <span>
+                <div className="font-semibold">Manager</div>
+                <div>{team.manager.name}</div>
+                <div className="text-xs">{team.manager.role}</div>
+              </span>
+              <span>
+                <div className="font-semibold">Team Members</div>
+                {team.members.map((member, index) => (
+                  <MembersTag 
+                  member={member.name}
+                  index={index}
+                  memberId={member.id} />
+                ))}
+              </span>
             </div>
-            <div className="border-l-2 w-full overflow-y-scroll h-56">
-              {team.tasks?.map((task, index) => (
-                <div>
-                  {task.title}
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col m-auto gap-6">
+            <div className="flex flex-col m-auto gap-2 p-1">
               <div className="flex">
                 <div>
                   {priority.map((item) => (
@@ -84,7 +86,7 @@ function Teams() {
                 </div>}
               </div>
             </div>
-          </div>
+          </button>
           )
         })
       }
