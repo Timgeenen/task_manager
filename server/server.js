@@ -280,6 +280,19 @@ app.get("/connections", async (req, res) => {
   }
 });
 
+app.post("/get-connected", async (req, res) => {
+  const idArray = req.body;
+  try {
+    const users = await User.find(
+      { _id: { $in: idArray } },
+      { name: 1, role: 1, email: 1, updatedAt: 1, isActive: 1 }
+    );
+    res.send(users);
+  } catch (error) {
+    res.send(error);
+  }
+});
+
 app.put("/add-connection", async (req, res) => {
   const { user, id } = req.body;
 

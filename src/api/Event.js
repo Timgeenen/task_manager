@@ -9,7 +9,7 @@ const user = store.getState().auth.user;
 
 //user api calls
 export const authenticateUser = async (userData) => {
-  const res = await axios.post("/login", userData);
+  const res = await axios.put("/login", userData);
   return res.data;
 };
 
@@ -22,6 +22,11 @@ export const getAllUsers = async () => {
   const res = await axios.get("/connections");
   return res.data;
 };
+
+export const getConnections = async (idArray) => {
+  const res = await axios.post("/get-connected", idArray);
+  return res.data;
+}
 
 export const addConnection = async (id) => {
   const userId = user._id;
