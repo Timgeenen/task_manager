@@ -11,6 +11,7 @@ function Notifications() {
   const {
     isError,
     isLoading,
+    isSuccess,
     error,
     data
   } = useQuery({
@@ -61,7 +62,7 @@ function Notifications() {
     content={
       <div className="flex flex-col p-2 gap-2">
         {isLoading && <span>Loading...</span>}
-        {data && data?.slice(0, 10).map((item, i) => (
+        {isSuccess && data?.slice(0, 10).map((item, i) => (
           <NotificationLink
           message={item.message}
           type={item.nType}

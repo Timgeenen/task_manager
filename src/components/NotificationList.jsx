@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { getAllNotifications } from "../api/Event";
 import { getTimePassed } from "../library/helperfunctions";
 import useNavigateNotification from "../hooks/useNavigateNotification";
@@ -72,7 +72,7 @@ const CustomLink = React.memo(({
 
   return (
     <button
-        className={clsx("rounded-lg mt-1 mb-1 grid grid-cols-6 w-full p-2 border-2 gap-2 hover:bg-blue-100 text-start text-sm h-16 items-center", {"font-semibold": !isRead})}
+        className={clsx("rounded-lg mt-1 mb-1 grid grid-cols-6 w-full p-2 border-2 gap-2 hover:bg-blue-100 text-start text-sm h-16 items-center", {"font-semibold bg-yellow-100": !isRead})}
         key={notificationId}
         onClick={handleClick}
         >
