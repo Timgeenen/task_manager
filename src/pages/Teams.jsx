@@ -18,7 +18,7 @@ function Teams() {
 
   return (
     <div
-    className="w-full flex flex-wrap justify-center max-w-fit"
+    className="w-full flex flex-wrap justify-center max-w-fit overflow-y-scroll pb-20"
     >
       {isLoading && <div>Loading...</div>}
       {isSuccess && data?.map((team, i) => {
@@ -30,11 +30,11 @@ function Teams() {
           return (
           <button
           key={team.id}
-          className="flex p-2 m-2 border-2 rounded-xl hover:bg-violet-200"
+          className="flex p-2 m-2 border-2 rounded-xl hover:bg-blue-300"
           onClick={() => navigate(`/team-info/${team._id}`)}
           >
-            <div className="flex flex-col min-w-52 items-start text-left gap-6 border-r-2 p-1">
-              <div className="text-2xl font-semibold w-52 inline-block overflow-ellipsis overflow-hidden whitespace-nowrap">
+            <div className="flex flex-col w-52 items-start text-left gap-6 border-r-2 p-1">
+              <div className="text-2xl font-semibold w-48 inline-block overflow-ellipsis overflow-hidden whitespace-nowrap">
                 {team.name}
               </div>
               <span>
@@ -76,7 +76,7 @@ function Teams() {
                   ))}
                 </div>
               </div>
-              <div className="m-auto">
+              <div className="m-auto text-start">
                 <div className="text-sm">
                   <span className="font-extrabold">{urgent.thisWeek} </span>
                   Task(s) have to be finished this week
@@ -90,9 +90,6 @@ function Teams() {
           )
         })
       }
-      <AddButton 
-      text="Create Team" 
-      handleClick={() => navigate("/create-team")}/>
     </div>
   )
 }

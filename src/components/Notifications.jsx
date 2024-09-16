@@ -1,11 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Tippy from "@tippyjs/react";
 import { memo, useEffect, useState } from "react";
-import { IoMdNotificationsOutline } from "react-icons/io";
 import { getAllNotifications } from "../api/Event";
 import { useSelector } from "react-redux";
 import NotificationLink from "./NotificationLink";
 import { useNavigate } from "react-router-dom";
+import { IoIosNotificationsOutline } from "react-icons/io";
 
 function Notifications() {
   const {
@@ -93,7 +93,7 @@ function Notifications() {
       onClick={showNotifications}
       className="relative"
       >
-        <IoMdNotificationsOutline size="2em"/>
+        <IoIosNotificationsOutline size={36}/>
         {newNotifications && 
         <span className="absolute bottom-1 right-1 bg-red-600 rounded-full p-1"></span>}
       </button>

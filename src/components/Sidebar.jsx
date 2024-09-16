@@ -7,7 +7,6 @@ import { GrGroup } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { setOpenSidebar } from "../redux/state/authSlice";
-//TODO: remove links for non-admin?
 
 function Sidebar() {
   const iconSize = 24
@@ -42,7 +41,7 @@ function Sidebar() {
   }
 
   return (
-    <div className="w-1/5 bg-slate-300 h-screen flex flex-col ">
+    <div className="bg-blue-100 inline-block h-full">
       <IoClose size={24} className="m-2 ml-1 hover:cursor-pointer" onClick={closeSidebar}/>
       {
         links.map((item, i) => (

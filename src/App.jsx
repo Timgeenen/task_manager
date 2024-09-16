@@ -53,14 +53,14 @@ function Layout() {
   const location = useLocation();
 
   return user ? (
-    <div className="flex flex-col">
+    <div className="h-screen overflow-y-hidden">
       <Navbar />
-      <div className="flex">
+      <div className="h-full flex">
         {
         isSidebarOpen ? 
         <Sidebar /> : 
         <RxHamburgerMenu 
-        className="left-5 top-20 absolute hover:cursor-pointer"
+        className="left-5 top-4 absolute hover:cursor-pointer"
         size={24}
         onClick={() => { dispatch(setOpenSidebar(true)) }}/>
         }
