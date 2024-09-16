@@ -14,7 +14,7 @@ notificationId,
 index,
 updateQuery
 }) {
-  const updateFn = updateQuery(index);
+  const updateFn = () => updateQuery(index);
   const [handleClick] = useNavigateNotification({
     teamId, taskId, userId, notificationId, updateFn
   });
