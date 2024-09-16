@@ -12,6 +12,7 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"],
   },
 });
+let userId;
 
 mongoose.connect(process.env.MONGO_URI);
 
@@ -206,7 +207,7 @@ let User = mongoose.model("user", userSchema);
 let Team = mongoose.model("team", teamSchema);
 let Task = mongoose.model("task", taskSchema);
 //user api calls
-app.post("/login", async (req, res) => {
+app.put("/login", async (req, res) => {
   const { password, email } = req.body;
   try {
     const user = await User.where({
@@ -217,6 +218,8 @@ app.post("/login", async (req, res) => {
       res.status(404);
       res.send({ message: "email and password don't match" });
     } else {
+      user.isActive = true;
+      user.save();
       res.send(user);
     }
   } catch (err) {
@@ -324,7 +327,9 @@ app.get("/notifications:id", async (req, res) => {
 
   try {
     const user = await User.findById(id, { notifications: 1 });
-    if (unread) { user.notifications = user.notifications.filter(item => !item.isRead) };
+    if (unread) {
+      user.notifications = user.notifications.filter((item) => !item.isRead);
+    }
     res.send(user.notifications);
   } catch (err) {
     res.send(err);
@@ -430,6 +435,7 @@ io.on("connection", (socket) => {
       socket.join(team.id);
       console.log(`${user.name} joined ${team.name}`);
     });
+    userId = user._id
     socket.join(user._id);
     console.log(`${user.name} joined notification channel`);
   }
@@ -452,7 +458,7 @@ io.on("connection", (socket) => {
         name,
         members,
         id: team._id,
-        managerId: manager.id
+        managerId: manager.id,
       };
 
       const ids = members.map((member) => member.id);
@@ -626,11 +632,11 @@ io.on("connection", (socket) => {
         { _id: userId, "notifications._id": notificationId },
         { $set: { "notifications.$.isRead": true } }
       );
-      callback({})
+      callback({});
     } catch (error) {
-      callback({error});
+      callback({ error });
     }
-  })
+  });
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
@@ -664,8 +670,9 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("disconnect", () => {
-    console.log(`User {add name} has disconnected`);
+  socket.on("disconnect", async () => {
+    await User.findByIdAndUpdate(userId, { $set: { isActive: false, updatedAt: new Date()}});
+    console.log(`You have been disconnected`);
   });
 });
 
