@@ -90,7 +90,7 @@ const userSchema = new mongoose.Schema({
       },
       createdAt: {
         type: Date,
-        default: new Date()
+        default: new Date(),
       }
     },
   ],
@@ -657,6 +657,22 @@ io.on("connection", (socket) => {
       callback({ error });
     }
   });
+
+  socket.on("markAllAsRead", async (callback) => {
+    try {
+      const res = await User.updateOne({_id: userId}, {
+        $set: { "notifications.$[notification].isRead": true }
+      }, {
+        arrayFilters: [
+          {"notification.isRead": false}
+        ]
+      });
+      
+      callback({res})
+    } catch (err) {
+      callback(err)
+    }
+  })
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
