@@ -218,8 +218,6 @@ app.put("/login", async (req, res) => {
       res.status(404);
       res.send({ message: "email and password don't match" });
     } else {
-      user.isActive = true;
-      user.save();
       res.send(user);
     }
   } catch (err) {
@@ -444,11 +442,16 @@ io.on("connection", (socket) => {
   const { user } = socket.handshake.auth;
 
   if (user) {
-    user.teams.map((team) => {
-      socket.join(team.id);
-      console.log(`${user.name} joined ${team.name}`);
-    });
-    userId = user._id
+    User.findByIdAndUpdate(user._id, { $set: { isActive: true } })
+      .then((user) => {
+        user.teams.map((team) => {
+          socket.join(team.id);
+          console.log(`${user.name} joined ${team.name}`);
+        });
+      })
+      .catch((err) => console.error(err.message));
+
+    userId = user._id;
     socket.join(user._id);
     console.log(`${user.name} joined notification channel`);
   }
@@ -684,7 +687,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", async () => {
-    await User.findByIdAndUpdate(userId, { $set: { isActive: false, updatedAt: new Date()}});
+    await User.findByIdAndUpdate(userId, {
+      $set: { isActive: false, updatedAt: new Date() },
+    });
     console.log(`You have been disconnected`);
   });
 });
