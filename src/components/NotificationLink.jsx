@@ -1,6 +1,5 @@
 import { memo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import useNavigateNotification from "../hooks/useNavigateNotification";
 
 function NotificationLink({
 message,
@@ -15,20 +14,12 @@ notificationId,
 index,
 updateQuery
 }) {
-  const { socket } = useSelector(state => state.auth);
-  const navigate = useNavigate();
+  const updateFn = updateQuery(index);
+  const [handleClick] = useNavigateNotification({
+    teamId, taskId, userId, notificationId, updateFn
+  });
 
-  const id = teamId ? teamId : taskId ? taskId : userId;
-  const route = teamId ? `/team-info/${id}` : taskId ? `/task-info/${id}` : `/profile/${id}`
   const title = teamName ? teamName : taskName ? taskName : userName;
-
-  const handleClick = () => {
-    socket.emit("readNotification", userId, notificationId, (response) => {
-      if (response.error) { return console.error(response.error.message) };
-      updateQuery(index);
-      navigate(route)
-    });
-  };
 
   return (
     <button
