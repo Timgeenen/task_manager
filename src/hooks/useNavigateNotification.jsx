@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -8,13 +9,14 @@ function useNavigateNotification({ teamId, taskId, userId, notificationId, updat
   const id = teamId ? teamId : taskId ? taskId : userId;
   const route = teamId ? `/team-info/${id}` : taskId ? `/task-info/${id}` : `/profile/${id}`
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     socket.emit("readNotification", userId, notificationId, (response) => {
       if (response.error) { return console.error(response.error.message) };
       if (updateFn) { updateFn() };
       navigate(route);
     });
-  };
+  }, [userId, notificationId, updateFn]);
+  
   return [handleClick]
 }
 
