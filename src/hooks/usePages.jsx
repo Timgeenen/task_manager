@@ -26,7 +26,7 @@ console.log(lastPage, arrayLength)
     setLowestIndex(lowestIndex - itemsPerPage);
     setHighestIndex(highestIndex - itemsPerPage);
   };
-  return [prevPage, nextPage, lowestIndex, highestIndex];
+  return [prevPage, nextPage, lowestIndex, highestIndex, page];
 }
 
 export default usePages
