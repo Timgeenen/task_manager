@@ -55,7 +55,7 @@ function Layout() {
   return user ? (
     <div className="h-screen overflow-y-hidden">
       <Navbar />
-      <div className="h-full flex">
+      <div className="h-full flex w-screen">
         {
         isSidebarOpen ? 
         <Sidebar /> : 
