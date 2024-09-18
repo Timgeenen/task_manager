@@ -4,8 +4,9 @@ import { memo, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { BACKEND } from "../library/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getCommentsById } from "../api/Event";
 
-function Chatroom({ socketId, queryFn, socketType }) {
+function Chatroom({ socketId, socketType }) {
   const [socket, setSocket] = useState(null);
   const queryClient = useQueryClient();
 
@@ -17,7 +18,7 @@ function Chatroom({ socketId, queryFn, socketType }) {
     data
   } = useQuery({
     queryKey: [`comments-${socketId}`],
-    queryFn: queryFn
+    queryFn: () => getCommentsById(socketId, socketType)
   });
 
   useEffect(() => {
