@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import SubmitButton from "./SubmitButton";
 
-function Commentbox({ taskId, submitHandler }) {
+function Commentbox({ socketId, submitHandler, socketType }) {
   const { user } = useSelector(state => state.auth);
 
   const {
@@ -15,7 +15,8 @@ function Commentbox({ taskId, submitHandler }) {
         name: user.name,
         id: user._id
       },
-      taskId
+      socketId,
+      socketType
     }
   });
 

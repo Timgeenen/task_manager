@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Chatroom from "../components/Chatroom";
 import TaskEdit from "../components/TaskEdit";
 import TaskOverview from "../components/TaskOverview";
+import { getCommentsByTaskId } from "../api/Event";
 
 function TaskInfo() {
   const { taskId } = useParams();
@@ -42,7 +43,9 @@ console.log(data)
       refetch={refetch}
       />
       <Chatroom
-      taskId={taskId}
+      socketId={taskId}
+      queryFn={() => getCommentsByTaskId(taskId)}
+      socketType="task"
       />
     </div>
   )

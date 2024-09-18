@@ -4,9 +4,8 @@ import { memo, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { BACKEND } from "../library/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCommentsByTaskId } from "../api/Event";
 
-function Chatroom({ taskId }) {
+function Chatroom({ socketId, queryFn, socketType }) {
   const [socket, setSocket] = useState(null);
   const queryClient = useQueryClient();
 
@@ -17,19 +16,19 @@ function Chatroom({ taskId }) {
     error,
     data
   } = useQuery({
-    queryKey: [`comments-${taskId}`],
-    queryFn: () => getCommentsByTaskId(taskId)
+    queryKey: [`comments-${socketId}`],
+    queryFn: queryFn
   });
 
   useEffect(() => {
     const newSocket = io(BACKEND);
     setSocket(newSocket)
 
-    newSocket.emit("joinTaskRoom", taskId);
+    newSocket.emit("joinTaskRoom", socketId);
 
     newSocket.on("receiveMessage", (newMessage) => {
       queryClient.setQueryData(
-        [`comments-${taskId}`],
+        [`comments-${socketId}`],
         (oldValue) => {
           const { comments } = oldValue;
           return { comments: [newMessage, ...(comments || [])] };
@@ -42,7 +41,7 @@ function Chatroom({ taskId }) {
         newSocket.disconnect();
       }
     }
-  }, [taskId]);
+  }, [socketId]);
 
   const addMessage = async (messageData) => {
     await socket.emit("sendMessage", messageData);
@@ -53,8 +52,9 @@ function Chatroom({ taskId }) {
   return (
     <>
       <Commentbox 
-      taskId={taskId}
+      socketId={socketId}
       submitHandler={addMessage}
+      socketType={socketType}
       />
       <div className="flex flex-col gap-2 h-screen overflow-y-scroll w-full">
         {isLoading && <div>Loading....</div>}
