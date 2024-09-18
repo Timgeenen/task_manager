@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom"
 import { getTeamsByIds } from "../api/Event";
 import MembersTag from "../components/MembersTag";
+import Chatroom from "../components/Chatroom";
 
 function TeamInfo() {
   const { teamId } = useParams();
@@ -14,34 +15,25 @@ function TeamInfo() {
   if(isError) {console.error(error.message)};
   data && console.log(data[0]);
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full h-full border-4 flex justify-center">
       {isLoading && <div>Loading...</div>}
       {data && 
-        <div>
+        <div className="w-3/4 overflow-hidden">
           <h1 className="text-3xl font-semibold m-2 mt-10 mb-6">{data[0]?.name}</h1>
           {/* <span>{data[0].createdOn.split('T')[0]}</span> */}
-          <div className="flex border-2">
-            <div className="border-2 flex flex-col gap-y-1 p-2">
-              <div className="pb-2 font-semibold">
-                <MembersTag
-                member={data[0]?.manager.name}
-                memberId={data[0]?.manager.id}
-                isManager={true}
-                />
-                <span className="ml-6">
-                  {data[0]?.manager.name}
-                </span>
-              </div>
+          <div className="flex w-full">
+            <div className="w-60 border-2 flex flex-col gap-y-1 p-2 overflow-y-scroll">
+              <User
+              member={data[0].manager}
+              isManager={true}
+              />
               {data[0]?.members.map((member, i) =>
               member.id !== data[0].manager.id && (
-                <div>
-                <MembersTag
-                member={member.name}
-                memberId={member.id}
+                <User
+                member={member}
+                isManager={false}
                 index={i}
                 />
-                <span className="ml-6 text-sm">{member.name}</span>
-                </div>
               ))}
             </div>
             <div
@@ -49,7 +41,7 @@ function TeamInfo() {
             >
               {data[0]?.tasks.map((task, i) => (
                 <button
-                className="grid grid-flow-col auto-cols-fr border-2"
+                className="grid grid-flow-col auto-cols-fr border-2 p-2 hover:bg-blue-300"
                 onClick={() => navigate(`/task-info/${task.id}`)}
                 >
                   <span>{task.title}</span>
@@ -60,8 +52,29 @@ function TeamInfo() {
               ))}
             </div>
           </div>
+          <Chatroom
+          socketId={teamId}
+          socketType="team"
+          />
         </div>
       }
+    </div>
+  )
+}
+
+function User({member, isManager, index}) {
+  return (
+    <div className="font-semibold flex items-center">
+      <MembersTag
+      member={member.name}
+      memberId={member.id}
+      isManager={isManager}
+      index={index}
+      />
+      <div className="ml-6">
+        <div>{member.name}</div>
+        <div className="text-xs font-light">{member.role}</div>
+      </div>
     </div>
   )
 }
