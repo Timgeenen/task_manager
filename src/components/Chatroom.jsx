@@ -51,13 +51,13 @@ function Chatroom({ socketId, socketType }) {
   if (isError) { console.error(error.message) };
   
   return (
-    <>
+    <div className="bg-blue-50 p-2 rounded-lg shadow-lg">
       <Commentbox 
       socketId={socketId}
       submitHandler={addMessage}
       socketType={socketType}
       />
-      <div className="flex flex-col gap-2 h-screen overflow-y-scroll w-full">
+      <div className="flex flex-col gap-2 h-64 p-2 overflow-y-scroll w-full rounded-lg">
         {isLoading && <div>Loading....</div>}
         {isSuccess && data?.comments?.map((comment) => (
           <Comment
@@ -69,7 +69,7 @@ function Chatroom({ socketId, socketType }) {
           />
         ))}
       </div>
-    </>
+    </div>
   )
 }
 
