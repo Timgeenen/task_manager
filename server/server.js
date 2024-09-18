@@ -685,7 +685,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMessage", async (messageObj) => {
-    const { author, message, taskId } = messageObj;
+    const { author, message, socketId, socketType } = messageObj;
     const comment = {
       author,
       message,
@@ -693,14 +693,22 @@ io.on("connection", (socket) => {
     };
 
     try {
-      const updatedTask = await Task.findByIdAndUpdate(
-        taskId,
-        {
-          $push: { comments: { $each: [comment], $position: 0 } },
-        },
-        { new: true }
-      );
-      io.to(taskId).emit("receiveMessage", updatedTask.comments[0]);
+      let updatedDocument;
+      const query = { $push: { comments: { $each: [comment], $position: 0 }}};
+
+      if (socketType === "task") {
+        updatedDocument = await Task.findByIdAndUpdate(
+          socketId, query, { new: true }
+        );
+      };
+
+      if (socketType === "team") {
+        updatedDocument = await Team.findByIdAndUpdate(
+          socketId, query, { new: true }
+        )
+      }
+
+      io.to(socketId).emit("receiveMessage", updatedDocument.comments[0]);
     } catch (err) {
       console.error(err.message);
     }
