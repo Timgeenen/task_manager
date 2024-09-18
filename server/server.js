@@ -334,10 +334,19 @@ app.put("/add-connection", async (req, res) => {
   }
 });
 
-app.get("/user:id", (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => res.send(user))
-    .catch((err) => res.send(err));
+app.get("/user:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id, {
+      password: 0,
+      notifications: 0,
+      teams: 0,
+      connections: 0
+    });
+    res.send(user);
+  } catch (error) {
+    res.send(error)
+  }
 });
 
 app.get("/notifications:id", async (req, res) => {

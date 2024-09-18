@@ -26,7 +26,7 @@ export const getAllUsers = async () => {
 export const getConnections = async (idArray) => {
   const res = await axios.post("/get-connected", idArray);
   return res.data;
-}
+};
 
 export const addConnection = async (id) => {
   const userId = user._id;
@@ -44,6 +44,11 @@ export const getAllNotifications = async (unreadOnly) => {
   let route = `/notifications${user._id}`;
   if (unreadOnly) { route += "?unread=true"}
   const res = await axios.get(route);
+  return res.data;
+};
+
+export const getUserById = async (userId) => {
+  const res = await axios.get(`/user${userId}`);
   return res.data;
 }
 
