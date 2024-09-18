@@ -125,11 +125,12 @@ const teamSchema = new mongoose.Schema({
     },
   ],
   createdOn: Date,
-  messages: [
+  comments: [
     {
       author: {
         name: String,
         id: String,
+        _id: false
       },
       message: String,
       createdOn: Date,
@@ -373,16 +374,6 @@ app.get("/task:id", async (req, res) => {
   }
 });
 
-app.get("/comments:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const comments = await Task.findById(id, { comments: 1, _id: 0 });
-    res.send(comments);
-  } catch (err) {
-    res.send(err);
-  }
-});
-
 app.post("/get-all-tasks", async (req, res) => {
   const teamIds = req.body;
   try {
@@ -436,6 +427,28 @@ app.post("/get-team-tasksArr", async (req, res) => {
 
     const taskArr = tasks.flatMap((obj) => obj.tasks);
     res.send(taskArr);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+//general api calls
+app.get("/comments:id/:type", async (req, res) => {
+  const { id, type } = req.params;
+
+  try {
+    const query = { comments: 1, _id: 0 };
+    let comments;
+
+    if (type === "task") {
+      comments = await Task.findById(id, query);
+    }
+
+    if (type === "team") {
+      comments = await Team.findById(id, query);
+    }
+
+    res.send(comments);
   } catch (err) {
     res.send(err);
   }
