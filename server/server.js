@@ -420,7 +420,7 @@ app.get("/get-all-teams:id", async (req, res) => {
 });
 
 app.post("/get-teams", (req, res) => {
-  const { teamIds } = req.body;
+  const teamIds = req.body;
   Team.find({ _id: { $in: teamIds } })
     .then((data) => res.send(data))
     .catch((err) => res.send(err));

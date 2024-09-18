@@ -75,7 +75,7 @@ export const getAllTeams = async () => {
   return res.data
 }
 
-// export const getTeamsByIds = async (teamIds) => {
-//   const res = await axios.post("/get-teams", teamIds);
-//   return res.data;
-// };
+export const getTeamsByIds = async (teamIds) => {
+  const res = await axios.post("/get-teams", teamIds);
+  return res.data;
+};
