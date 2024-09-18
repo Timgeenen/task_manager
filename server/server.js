@@ -133,7 +133,10 @@ const teamSchema = new mongoose.Schema({
         _id: false
       },
       message: String,
-      createdOn: Date,
+      createdAt: {
+        type: Date,
+        default: new Date()
+      },
     },
   ],
   trash: [Map],
