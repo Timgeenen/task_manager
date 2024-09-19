@@ -5,6 +5,9 @@ import { getUserById } from "../api/Event";
 import { useSelector } from "react-redux";
 import { getTimePassed } from "../library/helperfunctions";
 import clsx from "clsx";
+import MembersTag from "../components/MembersTag";
+import TeamTagSmall from "../components/TeamTagSmall";
+import usePages from "../hooks/usePages";
 
 function Profile() {
   const { userId } = useParams();
@@ -16,29 +19,75 @@ function Profile() {
     queryFn: () => getUserById(userId)
   });
 
+  const [prev, next, low, high, page, lastPage] = usePages(data?.user?.teams?.length, 6);
+
   if (isError) { console.error(error.message)};
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col items-center mt-10">
       {isLoading && <div>Loading...</div>}
-      {data && 
+      {data &&
         <div>
-          <h2>User Info</h2>
-          <div className="flex">
-            <div className="flex flex-col p-2">
-              <span>Name</span>
-              <span>Email</span>
-              <span>Role</span>
-              <span>Last Online</span>
+          <div className="flex mb-4">
+            <div className="flex w-1/2 p-2">
+              <div className="flex flex-col p-2 font-semibold text-lg">
+                <span>Name</span>
+                <span>Email</span>
+                <span>Role</span>
+                <span>Last Online</span>
+              </div>
+              <div className="flex flex-col p-2 text-lg">
+                <span>{data?.user?.name}</span>
+                <span>{data?.user?.email}</span>
+                <span>{data?.user?.role}</span>
+                <span
+                className={clsx(data?.user?.isActive && "text-green-400")}
+                >{data?.user?.isActive ? "Online" : `${getTimePassed(data?.user?.updatedAt)} ago`}</span>
+              </div>
             </div>
-            <div className="flex flex-col p-2">
-              <span>{data?.name}</span>
-              <span>{data?.email}</span>
-              <span>{data?.role}</span>
-              <span
-              className={clsx(data?.isActive && "text-green-400")}
-              >{data?.isActive ? "Online" : `${getTimePassed(data?.updatedAt)} ago`}</span>
+            <div className="w-1/2">
+              {!myProfile && <div>Mutual Connections</div>}
+              <div className="flex flex-wrap pr-4">
+              {!myProfile &&
+              data?.mutualConnections.map((member, i) => (
+                <MembersTag
+                member={member.name}
+                memberId={member.id}
+                index={i}
+                />
+              ))}
+              </div>
             </div>
+          </div>
+          <div className="flex min-w-2xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
+            <button
+            className="bg-blue-200 p-3 hover:bg-blue-300"
+            onClick={prev}
+            >{"<"}</button>
+            <div className="flex flex-col items-center bg-blue-50">
+              <span>Mutual Teams</span>
+              <div className="flex flex-wrap gap-10 p-4 justify-center">
+                {data && !myProfile &&
+                data.mutualTeams.map((team, i) => {
+                  if (i < low || i > high) { return }
+                  const manager = team.members.find(member => member.id === (team.managerId ? team.managerId : user._id))//remove
+                  return (
+                    <TeamTagSmall
+                    name={team.name}
+                    managerName={manager.name}
+                    managerId={manager.id}
+                    memberCount={team.members.length}
+                    index={i}
+                    teamId={team.id}
+                    />
+                )})}
+              </div>
+              <span className="p-1">{page}/{lastPage}</span>
+            </div>
+            <button
+            className="bg-blue-200 p-3 hover:bg-blue-300"
+            onClick={next}
+            >{">"}</button>
           </div>
         </div>
       }
