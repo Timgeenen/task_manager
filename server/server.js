@@ -336,14 +336,36 @@ app.put("/add-connection", async (req, res) => {
 
 app.get("/user:id", async (req, res) => {
   const { id } = req.params;
+
   try {
     const user = await User.findById(id, {
       password: 0,
       notifications: 0,
-      teams: 0,
-      connections: 0
     });
-    res.send(user);
+
+    const userObj = {
+      user,
+      mutualTeams: [],
+      mutualConnections: [],
+    };
+
+    if (userId !== String(user._id)) {
+      const myProfile = await User.findById(userId, {
+        teams: 1,
+        connections: 1,
+        _id: 0
+      });
+      const teamIds = user.teams.map(team => team.id)
+      const connectionIds = user.connections.map(connection => connection.id);
+
+      const mutualTeams = myProfile.teams.filter(team => teamIds.includes(team.id));
+      const mutualConnections = myProfile.connections.filter(connection => connectionIds.includes(connection.id));
+
+      userObj.mutualTeams = mutualTeams;
+      userObj.mutualConnections = mutualConnections;
+    }
+
+    res.send(userObj);
   } catch (error) {
     res.send(error)
   }
