@@ -1,7 +1,11 @@
 function Optionbox({options, register, defaultValue, defaultText}) {
   return (
-    <select {...register}>
-      <option value={defaultValue}>{defaultText}</option>
+    <select
+    {...register}
+    className="rounded-full bg-blue-100 shadow-lg p-2"
+    >
+      <option
+      value={defaultValue}>{defaultText}</option>
       {options.map((item) => (
         <option value={item.id ? item.id : item}>
           {item.name ? item.name : item}
