@@ -9,7 +9,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
+    methods: ["GET", "PUT", "POST"],
   },
 });
 let userId;
@@ -495,16 +495,15 @@ io.on("connection", (socket) => {
   if (user) {
     User.findByIdAndUpdate(user._id, { $set: { isActive: true } })
       .then((user) => {
+        userId = user._id;
+        socket.join(user._id);
+        console.log(`${user.name} joined notification channel`);
         user.teams.map((team) => {
           socket.join(team.id);
           console.log(`${user.name} joined ${team.name}`);
         });
       })
       .catch((err) => console.error(err.message));
-
-    userId = user._id;
-    socket.join(user._id);
-    console.log(`${user.name} joined notification channel`);
   }
 
   socket.on("createTeam", async (teamData, callback) => {
