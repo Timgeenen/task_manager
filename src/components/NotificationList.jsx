@@ -5,6 +5,8 @@ import { getTimePassed } from "../library/helperfunctions";
 import useNavigateNotification from "../hooks/useNavigateNotification";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
+import useToggle from "../hooks/useToggle";
+import PopupMessage from "./PopupMessage";
 
 function NotificationList() {
   const { isLoading, isError, isSuccess, error, data, refetch } = useQuery({
@@ -13,18 +15,23 @@ function NotificationList() {
   });
   const { socket } = useSelector(state => state.auth);
 
+  const [open, toggle] = useToggle();
+
   const markAllAsRead = () => {
     socket.emit("markAllAsRead", (response) => {
-      console.log(response)
       if(response.err) { return console.err(response.err) };
       refetch();
     });
-  }
+  };
+
+  const deleteAllRead = () => {
+    console.log("deleted");
+  };
 
   if(isError) {console.log(error.message)};
 
   return (
-    <div className="w-2/3 m-auto border-2 relative rounded-lg">
+    <div className="w-2/3 m-auto mt-10 border-2 relative rounded-lg">
       {isLoading && <div>Loading...</div>}
       <div className="grid grid-cols-6 p-2 bg-blue-400 font-semibold rounded-t-md">
         <span className="col-span-1">Title</span>
@@ -53,6 +60,18 @@ function NotificationList() {
       >
         Mark all as read
       </button>
+      <button
+      className="text-xs text-red-600 absolute -bottom-6 right-0"
+      onClick={toggle}
+      >
+        Delete all read messages
+      </button>
+      <PopupMessage
+      open={open}
+      toggleOpen={toggle}
+      message="Are you sure you want to delete all read messages?"
+      proceed={deleteAllRead}
+      />
     </div>
   )
 }
