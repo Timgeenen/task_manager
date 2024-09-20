@@ -9,7 +9,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
-    methods: ["GET", "PUT", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
 let userId;
@@ -385,6 +385,17 @@ app.get("/notifications:id", async (req, res) => {
     res.send(err);
   }
 });
+
+// app.put("/delete-read-notifications", async (req, res) => {
+//   try {
+//     const user = await User.findById(userId, 
+//       {notifications: 1, _id: 0}
+//     );
+//     console.log(user)
+//   } catch (error) {
+    
+//   }
+// })
 
 //task api calls
 app.get("/task:id", async (req, res) => {
