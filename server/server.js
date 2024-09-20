@@ -3,6 +3,7 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
+import helmet from "helmet";
 
 const app = express();
 const httpServer = createServer(app);
@@ -23,6 +24,7 @@ const corsOptions = { origin: "http://localhost:3000" };
 app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(helmet())
 
 const userSchema = new mongoose.Schema({
   name: String,
