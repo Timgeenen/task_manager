@@ -17,7 +17,6 @@ function Teams() {
   const [prev, next, low, high, page, lastPage] = usePages(data?.length, 6);
 
   if (isError) { console.error(error.message) };
-  if (data) {console.log(data)}
 
   return (
     <div

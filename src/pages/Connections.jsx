@@ -17,7 +17,6 @@ function Connections() {
   })
 
   if (isError) { console.error(error.message) };
-  if (data) { data.map(item => console.log(item.isActive))}
 
   return (
     <div className="w-full p-2">
