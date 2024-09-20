@@ -16,11 +16,9 @@ function Notifications() {
     data
   } = useQuery({
     queryKey: ["notifications"],
-    queryFn: async () => {
-      const notifications = await getAllNotifications(true)
-      notifications.length > 1 && setNewNotifications(true);
-      return notifications;
-    },
+    queryFn: () => getAllNotifications(true),
+    staleTime: 5000,
+    cacheTime: 5000
   });
 
   const queryClient = useQueryClient();
@@ -36,6 +34,10 @@ function Notifications() {
   const [openNotifications, setOpenNotifications] = useState(false);
 
   if (isError) { console.error(error.message) };
+
+  useEffect(() => {
+    data?.length > 1 && setNewNotifications(true)
+  }, [data])
 
   useEffect(() => {
     socket.on("receiveNotification", (newUpdate) => {
