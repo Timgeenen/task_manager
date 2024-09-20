@@ -218,10 +218,10 @@ let Task = mongoose.model("task", taskSchema);
 app.put("/login", async (req, res) => {
   const { password, email } = req.body;
   try {
-    const user = await User.where({
-      password: password,
+    const user = await User.findOne({
       email: email,
-    }).findOne();
+      password: password
+    }, {password: 0, notifications: 0, });
     if (!user) {
       res.status(404);
       res.send({ message: "email and password don't match" });
