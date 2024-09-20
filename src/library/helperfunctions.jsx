@@ -125,9 +125,56 @@ export const countTasksByPriority = (tasks) => {
   ]
 
   tasks.filter((task) => {
-    if (task.priority === "high") { return data[0].tasks += 1 }
+    if (task.priority === "high") {return data[0].tasks += 1 }
     if (task.priority === "medium") { return data[1].tasks += 1 }
     if (task.priority === "low") { return data[2].tasks += 1 }
+  });
+
+  return data;
+};
+
+export const getGraphData = (tasks) => {
+  let data = [
+    {
+      priority: "high",
+      tasks: 0,
+      pending: 0,
+      inProgress: 0,
+      completed: 0,
+      overDue: 0,
+      thisWeek: 0,
+      color: "red"
+    }, {
+      priority: "medium",
+      tasks: 0,
+      pending: 0,
+      inProgress: 0,
+      completed: 0,
+      overDue: 0,
+      thisWeek: 0,
+      color: "orange"
+    }, {
+      priority: "low",
+      tasks: 0,
+      pending: 0,
+      inProgress: 0,
+      completed: 0,
+      overDue: 0,
+      thisWeek: 0,
+      color: "green"
+    }
+  ]
+
+  tasks.filter((task) => {
+    const index = task.priority === "high" ? 0 : task.priority !== "medium" ? 1 : 2;
+
+    data[index].tasks += 1;
+    const timeLeft = getHoursLeft(task.deadline);
+    if (timeLeft < 0 && task.status !== "completed") { data[index].overDue += 1 };
+    if (timeLeft > 0 && timeLeft < 168 && task.status !== "completed") { data[index].thisWeek += 1};
+    if (task.status === "pending") { return data[index].pending += 1};
+    if (task.status === "in progress") { return data[index].inProgress += 1};
+    if (task.status === "completed") { return data[index].completed += 1};
   });
 
   return data;
