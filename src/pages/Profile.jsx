@@ -34,7 +34,7 @@ function Profile() {
                 <span>Name</span>
                 <span>Email</span>
                 <span>Role</span>
-                <span>Last Online</span>
+                <span className="text-nowrap">Last Online</span>
               </div>
               <div className="flex flex-col p-2 text-lg">
                 <span>{data?.user?.name}</span>
@@ -59,7 +59,8 @@ function Profile() {
               </div>
             </div>
           </div>
-          <div className="flex min-w-2xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
+
+          {!myProfile && <div className="flex min-w-2xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
             <button
             className="bg-blue-200 p-3 hover:bg-blue-300"
             onClick={prev}
@@ -88,7 +89,7 @@ function Profile() {
             className="bg-blue-200 p-3 hover:bg-blue-300"
             onClick={next}
             >{">"}</button>
-          </div>
+          </div>}
         </div>
       }
       {myProfile && <NotificationList />}
