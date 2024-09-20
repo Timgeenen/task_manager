@@ -25,7 +25,10 @@ function NotificationList() {
   };
 
   const deleteAllRead = () => {
-    console.log("deleted");
+    socket.emit("deleteReadNotifications", (response) => {
+      if(response.err) { return console.error(response.err)};
+      refetch();
+    })
   };
 
   if(isError) {console.log(error.message)};

@@ -386,17 +386,6 @@ app.get("/notifications:id", async (req, res) => {
   }
 });
 
-// app.put("/delete-read-notifications", async (req, res) => {
-//   try {
-//     const user = await User.findById(userId, 
-//       {notifications: 1, _id: 0}
-//     );
-//     console.log(user)
-//   } catch (error) {
-    
-//   }
-// })
-
 //task api calls
 app.get("/task:id", async (req, res) => {
   const { id } = req.params;
@@ -726,6 +715,17 @@ io.on("connection", (socket) => {
       });
       
       callback({res})
+    } catch (err) {
+      callback(err)
+    }
+  });
+
+  socket.on("deleteReadNotifications", async (callback) => {
+    try {
+      await User.findByIdAndUpdate(userId, 
+        { $pull: { notifications: { isRead: true }} }
+      );
+      callback("success")
     } catch (err) {
       callback(err)
     }
