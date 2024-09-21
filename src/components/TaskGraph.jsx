@@ -11,14 +11,14 @@ function TaskGraph({data}) {
   }, []);
 
   return (
-    <BarChart width={700} height={300} data={graphData}>
+    <BarChart width={300} height={300} data={graphData}>
       <CartesianGrid strokeDasharray="3 3"/>
       <XAxis dataKey="priority" color="red"/>
       <YAxis />
       <Tooltip content={<CustomTooltip />}/>
       <Bar 
       dataKey="tasks">
-        {graphData.map((item, i) => (
+        {graphData?.map((item, i) => (
           <Cell key={`cell-${i}`} fill={item.color} />
         ))}
       </Bar>
@@ -30,7 +30,6 @@ function CustomTooltip({ active, payload, label }) {
   if (active && payload && payload.length)
   {
     const { color, completed, inProgress, overDue, pending, tasks, thisWeek } = payload[0].payload;
-    console.log(color)
     return (
     <div className="bg-slate-600 text-white p-4 flex flex-col rounded-xl">
       <div className="pb-4 text-center flex flex-col">
