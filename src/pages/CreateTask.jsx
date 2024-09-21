@@ -69,11 +69,11 @@ function CreateTask() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
+    <div className="w-full h-full flex flex-col mt-10 items-center">
       {isLoading && <div>Loading...</div>}
       {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
-      className="flex flex-col gap-2"
+      className="flex flex-col gap-4 p-8 rounded-lg bg-blue-100 min-w-72"
       onSubmit={handleSubmit(submitHandler)}
       >
 
@@ -89,8 +89,10 @@ function CreateTask() {
         options={user.teams}
         register={register("team")}
         defaultText="--Select Team"
+        classes="bg-white"
         />
 
+        <div className="flex flex-wrap">
         {
           user.teams.map((team) => (
             team.id === selectedTeam &&
@@ -98,12 +100,12 @@ function CreateTask() {
               <Checkbox 
               value={member.id}
               text={member.name}
-
               register={register("members")}
               />
             ))
           ))
         }
+        </div>
 
         <textarea 
         type="text"
@@ -132,14 +134,14 @@ function CreateTask() {
         minDate={new Date()}
         control={control}
         defaultValue={new Date()}
+        classes="bg-white"
         />
-        
-        <label>Priority</label>
-        <select {...register("priority")}>
-          {["low", "medium", "high"].map(priority => (
-            <option value={priority}>{priority}</option>
-          ))}
-        </select>
+
+        <Optionbox
+        options={["low", "medium", "high"]}
+        register={register("priority")}
+        classes="bg-white"
+        />
         
         <AddButton 
         text="Add Subtask"
@@ -149,9 +151,11 @@ function CreateTask() {
         }}
         />
 
-        <SubmitButton
-        disabled={isLoading}
-        />
+        <div className="flex justify-center p-2 pt-4">
+          <SubmitButton
+          disabled={isLoading}
+          />
+        </div>
       </form>
     </div>
   )
