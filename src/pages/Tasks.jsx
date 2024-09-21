@@ -37,6 +37,8 @@ function Tasks () {
   const status = ["in progress", "pending", "completed"];
   const priority = ["high", "medium", "low"];
 
+  const paramClasses = "bg-blue-100"
+
   if (isError) { alert(error.message) };
   if (isSuccess) { sortTasksByDeadline(data) };
 
@@ -49,18 +51,21 @@ function Tasks () {
           text="From"
           name="from"
           maxDate={toDate}
+          classes={paramClasses}
           />
           <DateSelect
           control={control}
           text="To"
           name="to"
           minDate={fromDate}
+          classes={paramClasses}
           />
           <Optionbox
           options={status}
           register={register("status")}
           defaultText="--Select Status"
           defaultValue="all"
+          classes={paramClasses}
           />
         </div>
         <div className="grid grid-flow-col auto-cols-fr mt-2 mb-2 gap-4">
@@ -69,12 +74,14 @@ function Tasks () {
           register={register("priority")}
           defaultText="--Select Priority"
           defaultValue="all"
+          classes={paramClasses}
           />
           <Optionbox
           options={teams}
           register={register("team")}
           defaultValue="all"
           defaultText="--Select Team"
+          classes={paramClasses}
           />
           <button
           className="flex justify-center text-white bg-red-600 p-2 rounded-full shadow-lg"
@@ -87,26 +94,28 @@ function Tasks () {
         </div>
       </div>
       {isLoading && <div>Loading...</div>}
-      <div className="sticky grid grid-flow-col auto-cols-fr items-center bg-blue-400 rounded-t-xl pl-2 pr-2 font-semibold">
-        {
-          headers.map((item, i) => (
-            <span
-            className="p-2"
-            key={`header-${i}`}
-            >{item}</span>
-          ))
+      <div className="m-2">
+        <div className="sticky grid grid-flow-col auto-cols-fr items-center bg-blue-400 rounded-t-xl pl-2 pr-2 font-semibold">
+          {
+            headers.map((item, i) => (
+              <span
+              className="p-2"
+              key={`header-${i}`}
+              >{item}</span>
+            ))
+          }
+        </div>
+        {isSuccess && 
+          <TaskList
+          data={data}
+          status={currentStatus}
+          from={fromDate}
+          to={toDate}
+          team={currentTeam}
+          priority={currentPriority}
+          />
         }
       </div>
-      {isSuccess && 
-        <TaskList
-        data={data}
-        status={currentStatus}
-        from={fromDate}
-        to={toDate}
-        team={currentTeam}
-        priority={currentPriority}
-        />
-      }
     </div>
   )
 }
