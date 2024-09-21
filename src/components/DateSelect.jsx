@@ -1,7 +1,8 @@
 import { Controller, useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
+import clsx from "clsx";
 
-function DateSelect({ text, name, control, minDate, maxDate, defaultValue }) {
+function DateSelect({ text, name, control, minDate, maxDate, defaultValue, classes }) {
 
   return (
     <Controller
@@ -9,7 +10,7 @@ function DateSelect({ text, name, control, minDate, maxDate, defaultValue }) {
     name={name}
     defaultValue={defaultValue}
     render={({ field }) => (
-      <span className="flex flex-nowrap p-2 shadow-lg rounded-full bg-blue-100">
+      <span className={clsx(classes, "flex flex-nowrap p-2 shadow-lg rounded-full")}>
         <label className="mr-2">{text}</label>
         <DatePicker
         {...field}

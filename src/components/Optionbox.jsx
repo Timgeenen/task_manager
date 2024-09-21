@@ -1,11 +1,17 @@
-function Optionbox({options, register, defaultValue, defaultText}) {
+import clsx from "clsx"
+
+function Optionbox({options, register, defaultValue, defaultText, classes}) {
   return (
     <select
     {...register}
-    className="rounded-full bg-blue-100 shadow-lg p-2"
+    className={clsx(classes, "rounded-full shadow-lg p-2")}
     >
+      {defaultValue && 
       <option
-      value={defaultValue}>{defaultText}</option>
+      value={defaultValue}>
+        {defaultText}
+      </option>
+      }
       {options.map((item) => (
         <option value={item.id ? item.id : item}>
           {item.name ? item.name : item}
