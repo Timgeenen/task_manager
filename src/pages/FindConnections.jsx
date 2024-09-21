@@ -1,9 +1,9 @@
-import { FaPlus } from "react-icons/fa";
-import { getFilteredConnections, getTimePassed } from "../library/helperfunctions";
+import { getFilteredConnections } from "../library/helperfunctions";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { addConnection, getAllUsers } from "../api/Event";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../redux/state/authSlice";
+import UserInfo from "../components/UserInfo";
 
 function FindConnections() {
   const dispatch = useDispatch();
@@ -39,26 +39,19 @@ function FindConnections() {
   }
 
   return (
-    <div className="w-full m-4">
+    <div className="w-full m-4 mt-10 flex flex-col gap-2 text-lg">
       {mutation.isSuccess && <div className="text-xs text-green-400">Succesfully added connection</div>}
       {getFilteredConnections(data)?.map((item, i) => (
-        <div 
-        className="w-full flex justify-between border-2 border-slate-400 p-2"
-        key={item._id}>
-          <span className="">{item.name}</span>
-          <span className="">{item.role}</span>
-          <span>{
-            item.isActive
-            ? <span className="text-green-400">Online</span>
-            : getTimePassed(item.updatedAt)
-        }</span>
-          <button
-          onClick={() => addFriend(item._id)}
-          disabled={mutation.isLoading ? true : false}
-          >
-            <FaPlus />
-          </button>
-        </div>
+        <UserInfo
+        name={item.name}
+        email={item.email}
+        role={item.role}
+        isActive={item.isActive}
+        lastOnline={item.updatedAt}
+        userId={item._id}
+        isFriend={false}
+        onClick={addFriend}
+        />
       ))}
     </div>
   )

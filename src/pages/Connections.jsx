@@ -5,6 +5,7 @@ import { getConnections } from "../api/Event";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { ellipsis } from "../library/styles";
+import UserInfo from "../components/UserInfo";
 
 function Connections() {
   const { user } = useSelector(state => state.auth);
@@ -23,28 +24,16 @@ function Connections() {
       {isLoading && <div>Loading...</div>}
       {
         data?.map(item => (
-        <span className="flex hover:bg-blue-300 border-2 bg-blue-50 rounded-full shadow-lg pl-2 pr-2">
-          <div className="grid grid-flow-col auto-cols-fr text-lg text-start w-full border-r-0 p-2">
-            <span className={ellipsis}>{item.name}</span>
-            <span className={ellipsis}>{item.email}</span>
-            <span className={ellipsis}>{item.role}</span>
-          </div>
-          <span className="flex rounded-full">
-            {
-              item.isActive ?
-              <span className="text-green-400 p-2 w-20">Online</span> :
-              <span className="text-gray-400 p-2 w-20">{
-                getTimePassed(item.updatedAt)
-              }</span>
-            }
-              <button
-              className="p-2"
-              onClick={() => {navigate(`/profile/${item._id}`)}}
-              >
-                <HiMagnifyingGlass size={24} />
-              </button>
-          </span>
-        </span>
+          <UserInfo
+          name={item.name}
+          email={item.email}
+          role={item.role}
+          isActive={item.isActive}
+          lastOnline={item.updatedAt}
+          userId={item._id}
+          isFriend={true}
+          onClick={() => {navigate(`/profile/${item._id}`)}}
+          />
         ))
       }
     </div>
