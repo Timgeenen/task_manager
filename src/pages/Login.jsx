@@ -93,15 +93,15 @@ function Login() {
         register={register("password", {required: "Password Is Required!"})}
         error={errors.password ? errors.password.message : ""} />
 
-        <Textbox 
-        label="Verify Password"
-        type="password"
-        placeholder="verify password"
-        register={register("verifyPassword", {required: "Please Verify Password"})}
-        />
-
         { isOpen && 
         <>
+          <Textbox 
+          label="Verify Password"
+          type="password"
+          placeholder="verify password"
+          register={register("verifyPassword", {required: "Please Verify Password"})}
+          />
+          
           <Textbox
           label="Name"
           type="text"
