@@ -50,7 +50,12 @@ export const getAllNotifications = async (unreadOnly) => {
 export const getUserById = async (userId) => {
   const res = await axios.get(`/user${userId}`);
   return res.data;
-}
+};
+
+// export const deleteRead = async () => {
+//   const res = await axios.put("/delete-read-notifications");
+//   return res.data;
+// }
 
 //task api calls
 export const getTaskById = async (taskId) => {
