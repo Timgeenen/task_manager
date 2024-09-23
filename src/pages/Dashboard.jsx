@@ -8,11 +8,10 @@ import { getTeamTaskArr } from "../api/Event";
 
 function Dashboard() {
   const { user } = useSelector(state => state.auth);
-  const allTeams = user.teams.map(team => ({name: team.name, id: team.id}));
 
-  const [selectedTeam, setSelectedTeam] = useState(allTeams);
+  const [selectedTeam, setSelectedTeam] = useState(null);
 
-  const { isError, isPending, isSuccess, data, error, mutateAsync} = useMutation({
+  const { isError, isPending, data, error, mutateAsync} = useMutation({
     mutationKey: ["tasks"],
     mutationFn: (teamIdArray) => getTeamTaskArr(teamIdArray)
   });
@@ -24,25 +23,37 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    const teamIdArray = getTeamIdArray(selectedTeam);
-    mutateAsync(teamIdArray);
+    if (!selectedTeam) {
+      const allTeams = user.teams.map(team => ({name: team.name, id: team.id}));
+      setSelectedTeam(allTeams);
+      const teamIdArray = getTeamIdArray(allTeams);
+      mutateAsync(teamIdArray);
+    } else {
+      const teamIdArray = getTeamIdArray(selectedTeam);
+      mutateAsync(teamIdArray); 
+    }
   }, [selectedTeam]);
 
   if (isError) { alert(error.message) };
 
   return (
     <div className="w-full flex flex-col gap-2 items-center">
-      <select onChange={changeTeam}>
-        <option value="all">All Teams</option>
-        {allTeams.map((team, i) => (
-          <option value={team.id}>{team.name}</option>
-        ))}
-      </select>
       {isPending && <div>Loading...</div>}
-      {isSuccess && 
+      {data &&
       <>
-        <TaskGraph data={data} />
-        <Stats data={data}/>
+        <select onChange={changeTeam}>
+          <option value="all">All Teams</option>
+          {selectedTeam.map((team, i) => (
+            <option
+            key={`team-${i}`}
+            value={team.id}
+            >{team.name}</option>
+          ))}
+        </select>
+        <>
+          <TaskGraph data={data} />
+          <Stats data={data}/>
+        </>
       </>
       }
     </div>

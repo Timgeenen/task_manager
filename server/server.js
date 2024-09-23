@@ -3,7 +3,9 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
+
 const helmet = require("helmet");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const httpServer = createServer(app);
@@ -230,7 +232,9 @@ app.put("/login", async (req, res) => {
       res.status(404);
       res.send({ message: "email and password don't match" });
     } else {
-      res.send(user);
+      const payload = { user: user._id };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h"});
+      res.send({ user, token});
     }
   } catch (err) {
     res.send(err);

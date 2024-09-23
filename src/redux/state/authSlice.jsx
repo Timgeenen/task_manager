@@ -28,9 +28,10 @@ export const authSlice = createSlice({
 
   reducers: {
     login: (state, action) => {
-      state.user = action.payload;
+      state.user = action.payload.user;
       state.isSidebarOpen = true;
-      localStorage.setItem('userInfo', JSON.stringify(action.payload));
+      localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
+      localStorage.setItem('token', JSON.stringify(action.payload.token))
       state.socket = io(BACKEND, {
         auth: {
           user: action.payload
@@ -48,6 +49,7 @@ export const authSlice = createSlice({
       state.isSidebarOpen = false;
       state.cache.clear();
       localStorage.removeItem('userInfo');
+      localStorage.removeItem('token');
     },
 
     setOpenSidebar: (state, action) => {
