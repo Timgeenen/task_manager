@@ -57,13 +57,15 @@ export const getUserById = async (userId) => {
 
 //task api calls
 export const getTaskById = async (taskId) => {
-  const res = await axios.get("/task" + taskId);
+  const auth = getAuthHeader();
+  const res = await axios.get("/task" + taskId, auth);
   return res.data;
 };
 
 export const getAllTasks = async () => {
+  const auth = getAuthHeader();
   const teamIds = getTeamIdArray(user.teams);
-  const res = await axios.post("/get-all-tasks", teamIds);
+  const res = await axios.post("/get-all-tasks", teamIds, auth);
   return res.data;
 };
 
@@ -74,17 +76,20 @@ export const getTeamTaskArr = async (teamIds) => {
 };
 
 export const getAllTeams = async () => {
-  const res = await axios.get(`/get-all-teams${user._id}`);
+  const auth = getAuthHeader();
+  const res = await axios.get(`/get-all-teams`, auth);
   return res.data;
 };
 
-export const getTeamsByIds = async (teamIds) => {
-  const res = await axios.post("/get-teams", teamIds);
+export const getTeamById = async (teamId) => {
+  const auth = getAuthHeader();
+  const res = await axios.get(`/get-team${teamId}`, auth);
   return res.data;
 };
 
 //general api calls
 export const getCommentsById = async (id, type) => {
-  const res = await axios.get(`/comments${id}/${type}`);
+  const auth = getAuthHeader();
+  const res = await axios.get(`/comments${id}/${type}`, auth);
   return res.data;
 };

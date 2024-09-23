@@ -399,10 +399,10 @@ app.get("/user:id", authMiddleware, async (req, res) => {
       notifications: 0,
     });
 
-    if (!user.connections.find(user => user.id === myId)) {
+    if (!user.connections.find((user) => user.id === myId)) {
       res.status(401);
       res.send("unauthorized access");
-    };
+    }
 
     const userObj = {
       user,
@@ -443,7 +443,7 @@ app.get("/notifications:id", authMiddleware, async (req, res) => {
 
   if (id !== myId) {
     res.status(401);
-    res.send({ message: "unauthorized access"});
+    res.send({ message: "unauthorized access" });
   }
 
   try {
@@ -458,7 +458,7 @@ app.get("/notifications:id", authMiddleware, async (req, res) => {
 });
 
 //task api calls
-app.get("/task:id", async (req, res) => {
+app.get("/task:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   try {
     const task = await Task.findById(id, {
@@ -479,7 +479,7 @@ app.get("/task:id", async (req, res) => {
   }
 });
 
-app.post("/get-all-tasks", async (req, res) => {
+app.post("/get-all-tasks", authMiddleware, async (req, res) => {
   const teamIds = req.body;
   try {
     const tasks = await Task.find({ "assignedTeam.id": { $in: teamIds } });
@@ -489,24 +489,25 @@ app.post("/get-all-tasks", async (req, res) => {
   }
 });
 
-app.post("/get-tasks-by-teamId", (req, res) => {
-  const { teamIds } = req.body;
-  Team.find({ _id: { $in: teamIds } })
-    .then((data) => {
-      const tasks = data.flatMap((team) => team.tasks);
-      const taskIds = tasks.map((task) => task.id);
-      Task.find({ _id: { $in: taskIds } })
-        .then((tasks) => res.send(tasks))
-        .catch((err) => res.send(err.message));
-    })
-    .catch((err) => res.send({ message: err.message }));
-});
+// app.post("/get-tasks-by-teamId", authMiddleware, (req, res) => {
+//   const { teamIds } = req.body;
+//   Team.find({ _id: { $in: teamIds } })
+//     .then((data) => {
+//       const tasks = data.flatMap((team) => team.tasks);
+//       const taskIds = tasks.map((task) => task.id);
+//       Task.find({ _id: { $in: taskIds } })
+//         .then((tasks) => res.send(tasks))
+//         .catch((err) => res.send(err.message));
+//     })
+//     .catch((err) => res.send({ message: err.message }));
+// });
 
 //team api calls
-app.get("/get-all-teams:id", async (req, res) => {
-  const { id } = req.params;
+app.get("/get-all-teams", authMiddleware, async (req, res) => {
+  const { myId } = req.user;
+
   try {
-    const user = await User.findById(id, { teams: 1, _id: 0 });
+    const user = await User.findById(myId, { teams: 1, _id: 0 });
     const teamIdsArray = user.teams.map((team) => team.id);
     const allTeams = await Team.find({ _id: { $in: teamIdsArray } });
     res.send(allTeams);
@@ -515,11 +516,29 @@ app.get("/get-all-teams:id", async (req, res) => {
   }
 });
 
-app.post("/get-teams", (req, res) => {
-  const teamIds = req.body;
-  Team.find({ _id: { $in: teamIds } })
-    .then((data) => res.send(data))
-    .catch((err) => res.send(err));
+app.get("/get-team:teamId", authMiddleware, async (req, res) => {
+  const { myId } = req.user;
+  const { teamId } = req.params;
+
+  try {
+    const team = await Team.findById(teamId);
+    const valid = team.members.find((member) => member.id === myId);
+    if (valid) {
+      res.send(team);
+    } else {
+      res.status(401);
+      res.send({ message: "unauthorized access" });
+    }
+  } catch (error) {
+    res.send(error);
+  }
+
+  // Team.findById(teamId)
+  //   .then((data) => {
+  //     console.log(data);
+  //     res.send(data)
+  //   })
+  //   .catch((err) => res.send(err));
 });
 
 app.post("/get-team-tasksArr", async (req, res) => {
@@ -538,7 +557,7 @@ app.post("/get-team-tasksArr", async (req, res) => {
 });
 
 //general api calls
-app.get("/comments:id/:type", async (req, res) => {
+app.get("/comments:id/:type", authMiddleware, async (req, res) => {
   const { id, type } = req.params;
 
   try {
