@@ -10,7 +10,7 @@ function Navbar() {
   const linkSize = 30
   return (
     <div className="w-full flex items-center justify-between bg-blue-100 p-2">
-      <img src="../../public/logoipsum-297.svg" />
+      <img src="../../logoipsum-297.svg" />
       <div className="flex gap-6">
         <NavbarLink
         icon={<VscNewFile size={linkSize} />}

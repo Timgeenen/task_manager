@@ -3,6 +3,7 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
 
 const app = express();
 const httpServer = createServer(app);
@@ -23,6 +24,9 @@ const corsOptions = { origin: "http://localhost:3000" };
 app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+//helmetjs configuration
+app.use(helmet({crossOriginEmbedderPolicy: true}));
 
 const userSchema = new mongoose.Schema({
   name: String,
