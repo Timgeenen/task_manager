@@ -1,5 +1,15 @@
 import { store } from "../redux/store";
 
+export const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  const headerObj = {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  };
+    return headerObj;
+}
+
 export const getTeamDataObj = (data, user) => {
   const assignedTo = user.connections.filter(item => data.members.includes(item.name));
 
