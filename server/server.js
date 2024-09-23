@@ -18,8 +18,12 @@ const verifyPassword = async (password, hashedPassword) => {
   return isMatch;
 };
 const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
-  if (!token) {res.status(401); res.send({message: "no token provided"})};
+  const token = req.header("Authorization")?.split(" ")[1];
+
+  if (!token) {
+    res.status(401);
+    res.send({ message: "no token provided" });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -29,7 +33,7 @@ const authMiddleware = (req, res, next) => {
     res.status(401);
     res.send("invalid token");
   }
-}
+};
 
 const app = express();
 const httpServer = createServer(app);
@@ -348,7 +352,7 @@ app.post("/get-connected", async (req, res) => {
   }
 });
 
-app.put("/add-connection", async (req, res) => {
+app.put("/add-connection", authMiddleware, async (req, res) => {
   const { user, id } = req.body;
 
   const activeUser = await User.findById(user);
