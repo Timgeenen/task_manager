@@ -15,6 +15,7 @@ function Login() {
     register, 
     handleSubmit,
     setError,
+    reset,
     formState: { errors }
    } = useForm({
     defaultValues: {
@@ -25,7 +26,7 @@ function Login() {
     }
    });
 
-   const [isOpen, toggle] = useToggle();
+  const [isOpen, toggle] = useToggle();
 
   const loginMutation = useMutation({
     mutationKey: ["login"],
@@ -49,6 +50,12 @@ function Login() {
   }
 
   const registerUser = (data) => {
+    if (data.password !== data.verifyPassword) {
+      return setError("password", {
+        type: "custom",
+        message: "passwords don't match"
+      })
+    }
     registerMutation.mutate(data);
     if (registerMutation.isError) {
       setError("email", {
@@ -56,7 +63,10 @@ function Login() {
         message: registerMutation.error.response?.data?.message || registerMutation.error.message
       })
     }
-    registerMutation.isSuccess && dispatch(login(registerMutation.data));
+    if (registerMutation.isSuccess) {
+      reset();
+      toggle();
+    }
   }
  
   return user 
@@ -68,6 +78,7 @@ function Login() {
       className="flex flex-col justify-center gap-4 border p-8 rounded-md"
       onSubmit={handleSubmit(isOpen ? registerUser : loginUser)}>
         <h3 className="text-xl font-medium text-blue-600">{isOpen ? "Register" : "Login"}</h3>
+        {registerMutation.isSuccess && <div className="text-xs text-green-400">succesfully registered new account</div>}
         <Textbox 
         label="Email Adress"
         type="email"
@@ -81,6 +92,13 @@ function Login() {
         placeholder="enter password"
         register={register("password", {required: "Password Is Required!"})}
         error={errors.password ? errors.password.message : ""} />
+
+        <Textbox 
+        label="Verify Password"
+        type="password"
+        placeholder="verify password"
+        register={register("verifyPassword", {required: "Please Verify Password"})}
+        />
 
         { isOpen && 
         <>
