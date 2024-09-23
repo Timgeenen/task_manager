@@ -31,7 +31,7 @@ export const authSlice = createSlice({
       state.user = action.payload.user;
       state.isSidebarOpen = true;
       localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
-      localStorage.setItem('token', JSON.stringify(action.payload.token))
+      localStorage.setItem('token', action.payload.token);
       state.socket = io(BACKEND, {
         auth: {
           user: action.payload
