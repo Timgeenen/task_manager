@@ -50,7 +50,7 @@ function FindConnections() {
         lastOnline={item.updatedAt}
         userId={item._id}
         isFriend={false}
-        onClick={addFriend}
+        onClick={() => addFriend(item._id)}
         />
       ))}
     </div>
