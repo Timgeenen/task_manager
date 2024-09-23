@@ -6,6 +6,30 @@ const mongoose = require("mongoose");
 
 const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
+const hashPassword = async (password) => {
+  const salt = await bcrypt.genSalt(12);
+  const hashedPassword = bcrypt.hash(password, salt);
+  return hashedPassword;
+};
+const verifyPassword = async (password, hashedPassword) => {
+  const isMatch = await bcrypt.compare(password, hashedPassword);
+  return isMatch;
+};
+const authMiddleware = (req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
+  if (!token) {res.status(401); res.send({message: "no token provided"})};
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401);
+    res.send("invalid token");
+  }
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -28,7 +52,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //helmetjs configuration
-app.use(helmet({crossOriginEmbedderPolicy: true}));
+app.use(helmet());
 
 const userSchema = new mongoose.Schema({
   name: String,
@@ -97,7 +121,7 @@ const userSchema = new mongoose.Schema({
       createdAt: {
         type: Date,
         default: new Date(),
-      }
+      },
     },
   ],
 });
@@ -136,12 +160,12 @@ const teamSchema = new mongoose.Schema({
       author: {
         name: String,
         id: String,
-        _id: false
+        _id: false,
       },
       message: String,
       createdAt: {
         type: Date,
-        default: new Date()
+        default: new Date(),
       },
     },
   ],
@@ -224,17 +248,33 @@ let Task = mongoose.model("task", taskSchema);
 app.put("/login", async (req, res) => {
   const { password, email } = req.body;
   try {
-    const user = await User.findOne({
-      email: email,
-      password: password
-    }, {password: 0, notifications: 0, });
-    if (!user) {
-      res.status(404);
+    const match = await User.findOne(
+      {
+        email: email,
+      },
+      {
+        password: 1,
+      }
+    );
+    if (!match) {
+      res.status(400);
       res.send({ message: "email and password don't match" });
     } else {
-      const payload = { user: user._id };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h"});
-      res.send({ user, token});
+      const valid = verifyPassword(match.password, password);
+      if (valid) {
+        const user = await User.findById(match._id, {
+          password: 0,
+          notifications: 0,
+        });
+        const payload = { user: user._id };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
+        res.send({ user, token });
+      } else {
+        res.status(400);
+        res.send({ message: "email and password don't match" });
+      }
     }
   } catch (err) {
     res.send(err);
@@ -257,19 +297,20 @@ app.post("/register", async (req, res) => {
     res.send({ message: "email adress is already in use" });
   } else {
     try {
+      const hashedPassword = await hashPassword(password);
       const newDate = func.newDate();
-      const user = await User.create({
+      await User.create({
         name: name,
         role: role,
         email: email,
-        password: password,
+        password: hashedPassword,
         createdAt: newDate,
         updatedAt: newDate,
         teams: [],
         connections: [],
         notifications: [],
       });
-      res.send(user);
+      res.send({ message: "succesfully created account" });
     } catch (error) {
       res.send(error);
     }
@@ -361,13 +402,17 @@ app.get("/user:id", async (req, res) => {
       const myProfile = await User.findById(userId, {
         teams: 1,
         connections: 1,
-        _id: 0
+        _id: 0,
       });
-      const teamIds = user.teams.map(team => team.id)
-      const connectionIds = user.connections.map(connection => connection.id);
+      const teamIds = user.teams.map((team) => team.id);
+      const connectionIds = user.connections.map((connection) => connection.id);
 
-      const mutualTeams = myProfile.teams.filter(team => teamIds.includes(team.id));
-      const mutualConnections = myProfile.connections.filter(connection => connectionIds.includes(connection.id));
+      const mutualTeams = myProfile.teams.filter((team) =>
+        teamIds.includes(team.id)
+      );
+      const mutualConnections = myProfile.connections.filter((connection) =>
+        connectionIds.includes(connection.id)
+      );
 
       userObj.mutualTeams = mutualTeams;
       userObj.mutualConnections = mutualConnections;
@@ -375,7 +420,7 @@ app.get("/user:id", async (req, res) => {
 
     res.send(userObj);
   } catch (error) {
-    res.send(error)
+    res.send(error);
   }
 });
 
@@ -714,30 +759,32 @@ io.on("connection", (socket) => {
 
   socket.on("markAllAsRead", async (callback) => {
     try {
-      const res = await User.updateOne({_id: userId}, {
-        $set: { "notifications.$[notification].isRead": true }
-      }, {
-        arrayFilters: [
-          {"notification.isRead": false}
-        ]
-      });
-      
-      callback({res})
+      const res = await User.updateOne(
+        { _id: userId },
+        {
+          $set: { "notifications.$[notification].isRead": true },
+        },
+        {
+          arrayFilters: [{ "notification.isRead": false }],
+        }
+      );
+
+      callback({ res });
     } catch (err) {
-      callback(err)
+      callback(err);
     }
   });
 
   socket.on("deleteReadNotifications", async (callback) => {
     try {
-      await User.findByIdAndUpdate(userId, 
-        { $pull: { notifications: { isRead: true }} }
-      );
-      callback("success")
+      await User.findByIdAndUpdate(userId, {
+        $pull: { notifications: { isRead: true } },
+      });
+      callback("success");
     } catch (err) {
-      callback(err)
+      callback(err);
     }
-  })
+  });
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
@@ -759,18 +806,18 @@ io.on("connection", (socket) => {
 
     try {
       let updatedDocument;
-      const query = { $push: { comments: { $each: [comment], $position: 0 }}};
+      const query = { $push: { comments: { $each: [comment], $position: 0 } } };
 
       if (socketType === "task") {
-        updatedDocument = await Task.findByIdAndUpdate(
-          socketId, query, { new: true }
-        );
-      };
+        updatedDocument = await Task.findByIdAndUpdate(socketId, query, {
+          new: true,
+        });
+      }
 
       if (socketType === "team") {
-        updatedDocument = await Team.findByIdAndUpdate(
-          socketId, query, { new: true }
-        )
+        updatedDocument = await Team.findByIdAndUpdate(socketId, query, {
+          new: true,
+        });
       }
 
       io.to(socketId).emit("receiveMessage", updatedDocument.comments[0]);
