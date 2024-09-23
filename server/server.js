@@ -43,6 +43,8 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
+
+//TODO: REMOVE
 let userId;
 
 mongoose.connect(process.env.MONGO_URI);
@@ -270,7 +272,7 @@ app.put("/login", async (req, res) => {
           password: 0,
           notifications: 0,
         });
-        const payload = { user: user._id };
+        const payload = { myId: user._id };
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: "1h",
         });
@@ -328,7 +330,6 @@ app.get("/connections", async (req, res) => {
       {
         name: 1,
         role: 1,
-        email: 1,
         isActive: 1,
         updatedAt: 1,
       }
@@ -339,7 +340,7 @@ app.get("/connections", async (req, res) => {
   }
 });
 
-app.post("/get-connected", async (req, res) => {
+app.post("/get-connected", authMiddleware, async (req, res) => {
   const idArray = req.body;
   try {
     const users = await User.find(
@@ -353,9 +354,10 @@ app.post("/get-connected", async (req, res) => {
 });
 
 app.put("/add-connection", authMiddleware, async (req, res) => {
-  const { user, id } = req.body;
+  const { id } = req.body;
+  const { myId } = req.user;
 
-  const activeUser = await User.findById(user);
+  const activeUser = await User.findById(myId);
   const addedUser = await User.findById(id);
 
   if (!activeUser || !addedUser) {
@@ -387,8 +389,9 @@ app.put("/add-connection", authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/user:id", async (req, res) => {
+app.get("/user:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
+  const { myId } = req.user;
 
   try {
     const user = await User.findById(id, {
@@ -396,13 +399,18 @@ app.get("/user:id", async (req, res) => {
       notifications: 0,
     });
 
+    if (!user.connections.find(user => user.id === myId)) {
+      res.status(401);
+      res.send("unauthorized access");
+    };
+
     const userObj = {
       user,
       mutualTeams: [],
       mutualConnections: [],
     };
 
-    if (userId !== String(user._id)) {
+    if (myId !== String(user._id)) {
       const myProfile = await User.findById(userId, {
         teams: 1,
         connections: 1,
@@ -428,9 +436,15 @@ app.get("/user:id", async (req, res) => {
   }
 });
 
-app.get("/notifications:id", async (req, res) => {
+app.get("/notifications:id", authMiddleware, async (req, res) => {
   const id = req.params.id;
   const { unread } = req.query;
+  const { myId } = req.user;
+
+  if (id !== myId) {
+    res.status(401);
+    res.send({ message: "unauthorized access"});
+  }
 
   try {
     const user = await User.findById(id, { notifications: 1 });

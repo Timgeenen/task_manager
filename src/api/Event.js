@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BACKEND } from "../library/constants";
+import { getAuthHeader, getTeamIdArray } from "../library/helperfunctions";
 import { store } from "../redux/store";
-import { getTeamIdArray } from "../library/helperfunctions";
 
 axios.defaults.baseURL = BACKEND;
 
@@ -24,38 +24,36 @@ export const getAllUsers = async () => {
 };
 
 export const getConnections = async (idArray) => {
-  const res = await axios.post("/get-connected", idArray);
+  const auth = getAuthHeader();
+  const res = await axios.post("/get-connected", idArray, auth);
   return res.data;
 };
 
 export const addConnection = async (id) => {
-  const userId = user._id;
 
-  const userData = {
-    user: userId,
-    id,
-  };
+  const auth = getAuthHeader();
 
-  const res = await axios.put("/add-connection", userData);
+  const res = await axios.put("/add-connection", { id }, auth);
   return res.data;
 };
 
 export const getAllNotifications = async (unreadOnly) => {
   let route = `/notifications${user._id}`;
-  if (unreadOnly) { route += "?unread=true"}
-  const res = await axios.get(route);
+  if (unreadOnly) {
+    route += "?unread=true";
+  };
+
+  const auth = getAuthHeader();
+  const res = await axios.get(route, auth);
+  
   return res.data;
 };
 
 export const getUserById = async (userId) => {
-  const res = await axios.get(`/user${userId}`);
+  const auth = getAuthHeader();
+  const res = await axios.get(`/user${userId}`, auth);
   return res.data;
 };
-
-// export const deleteRead = async () => {
-//   const res = await axios.put("/delete-read-notifications");
-//   return res.data;
-// }
 
 //task api calls
 export const getTaskById = async (taskId) => {
@@ -77,8 +75,8 @@ export const getTeamTaskArr = async (teamIds) => {
 
 export const getAllTeams = async () => {
   const res = await axios.get(`/get-all-teams${user._id}`);
-  return res.data
-}
+  return res.data;
+};
 
 export const getTeamsByIds = async (teamIds) => {
   const res = await axios.post("/get-teams", teamIds);
