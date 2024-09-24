@@ -29,11 +29,11 @@ function TaskGraph({data}) {
 function CustomTooltip({ active, payload, label }) {
   if (active && payload && payload.length)
   {
-    const { color, completed, inProgress, overDue, pending, tasks, thisWeek } = payload[0].payload;
+    const { color, completed, inProgress, overDue, pending, tasks, thisWeek } = payload[0]?.payload;
     return (
     <div className="bg-slate-600 text-white p-4 flex flex-col rounded-xl">
       <div className="pb-4 text-center flex flex-col">
-        <span className={`text-${color === "orange" ? "yellow" : color}-${color === "orange" ? "400" : "600"}`}>{label.toUpperCase()}
+        <span className={`text-${color === "orange" ? "yellow" : color}-${color === "orange" ? "400" : "600"}`}>{label?.toUpperCase()}
         </span>
         <span>Priority Tasks</span>
       </div>
