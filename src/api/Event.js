@@ -1,15 +1,30 @@
 import axios from "axios";
 import { BACKEND } from "../library/constants";
-import { getAuthHeader, getTeamIdArray } from "../library/helperfunctions";
+import { getTeamIdArray } from "../library/helperfunctions";
 import { store } from "../redux/store";
+import { logout } from "../redux/state/authSlice";
 
 axios.defaults.baseURL = BACKEND;
+axios.defaults.withCredentials = true
 
 const user = store.getState().auth.user;
 
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if(error.response && (
+      error.response.message === "Invalid refresh-token"||
+      error.response.message === "No refresh-token provided"
+    )) {
+      store.dispatch(logout());
+      alert("Your session has expired, please log in again");
+    }
+  }
+)
+
 //user api calls
 export const authenticateUser = async (userData) => {
-  const res = await axios.put("/login", userData);
+  const res = await axios.post("/login", userData);
   return res.data;
 };
 
@@ -24,48 +39,35 @@ export const getAllUsers = async () => {
 };
 
 export const getConnections = async (idArray) => {
-  const auth = getAuthHeader();
-  const res = await axios.post("/get-connected", idArray, auth);
+  const res = await axios.post("/get-connected", idArray);
   return res.data;
 };
 
 export const addConnection = async (id) => {
-
-  const auth = getAuthHeader();
-
-  const res = await axios.put("/add-connection", { id }, auth);
+  const res = await axios.put("/add-connection", { id });
   return res.data;
 };
 
 export const getAllNotifications = async (unreadOnly) => {
-  let route = `/notifications${user._id}`;
-  if (unreadOnly) {
-    route += "?unread=true";
-  };
-
-  const auth = getAuthHeader();
-  const res = await axios.get(route, auth);
-  
+  let route = `/notifications${unreadOnly && "?unread=true"}`;
+  const res = await axios.get(route);
   return res.data;
 };
 
 export const getUserById = async (userId) => {
-  const auth = getAuthHeader();
-  const res = await axios.get(`/user${userId}`, auth);
+  const res = await axios.get(`/user${userId}`);
   return res.data;
 };
 
 //task api calls
 export const getTaskById = async (taskId) => {
-  const auth = getAuthHeader();
-  const res = await axios.get("/task" + taskId, auth);
+  const res = await axios.get("/task" + taskId);
   return res.data;
 };
 
 export const getAllTasks = async () => {
-  const auth = getAuthHeader();
   const teamIds = getTeamIdArray(user.teams);
-  const res = await axios.post("/get-all-tasks", teamIds, auth);
+  const res = await axios.post("/get-all-tasks", teamIds);
   return res.data;
 };
 
@@ -76,20 +78,17 @@ export const getTeamTaskArr = async (teamIds) => {
 };
 
 export const getAllTeams = async () => {
-  const auth = getAuthHeader();
-  const res = await axios.get(`/get-all-teams`, auth);
+  const res = await axios.get(`/get-all-teams`);
   return res.data;
 };
 
 export const getTeamById = async (teamId) => {
-  const auth = getAuthHeader();
-  const res = await axios.get(`/get-team${teamId}`, auth);
+  const res = await axios.get(`/get-team${teamId}`);
   return res.data;
 };
 
 //general api calls
 export const getCommentsById = async (id, type) => {
-  const auth = getAuthHeader();
-  const res = await axios.get(`/comments${id}/${type}`, auth);
+  const res = await axios.get(`/comments${id}/${type}`);
   return res.data;
 };

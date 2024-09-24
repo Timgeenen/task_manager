@@ -7,33 +7,10 @@ const mongoose = require("mongoose");
 const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(12);
-  const hashedPassword = bcrypt.hash(password, salt);
-  return hashedPassword;
-};
-const verifyPassword = async (password, hashedPassword) => {
-  const isMatch = await bcrypt.compare(password, hashedPassword);
-  return isMatch;
-};
-const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1];
-
-  if (!token) {
-    res.status(401);
-    res.send({ message: "no token provided" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401);
-    res.send("invalid token");
-  }
-};
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const func = require("./functions");
 
 const app = express();
 const httpServer = createServer(app);
@@ -47,24 +24,84 @@ const io = new Server(httpServer, {
 //TODO: REMOVE
 let userId;
 
-mongoose.connect(process.env.MONGO_URI);
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
 
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const func = require("./functions");
-const corsOptions = { origin: "http://localhost:3000" };
+const hashPassword = async (password) => {
+  const salt = await bcrypt.genSalt(12);
+  const hashedPassword = bcrypt.hash(password, salt);
+  return hashedPassword;
+};
+const verifyPassword = async (password, hashedPassword) => {
+  const isMatch = await bcrypt.compare(password, hashedPassword);
+  return isMatch;
+};
+const authMiddleware = (req, res, next) => {
+  const accessToken = req.cookies.accessToken;
+  const refreshToken = req.cookies.refreshToken;
+
+  if (accessToken) {
+    jwt.verify(accessToken, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        if (refreshToken) {
+          jwt.verify(
+            refreshToken,
+            process.env.JWT_REFRESH_SECRET,
+            (err, user) => {
+              if (err) {
+                res.status(403);
+                res.send({ message: "Invalid refresh-token" });
+              }
+
+              const newToken = generateAccessToken(user.myId);
+
+              res.cookie("accessToken", newToken, {
+                httpOnly: true,
+                // secure: false, //TODO: set true
+                maxAge: 1000 * 60 * 15,
+                sameSite: "Strict",
+              });
+
+              req.user = user;
+              next();
+            }
+          );
+        } else {
+          res.status(403);
+          res.send({ message: "No refresh-token provided" });
+        }
+      } else {
+        req.user = user;
+        next();
+      }
+    });
+  } else {
+    res.status(403);
+    res.send({ message: "No access-token provided" });
+  };
+};
+const generateAccessToken = (id) => {
+  const token = jwt.sign({ myId: id }, process.env.JWT_SECRET, {
+    expiresIn: "15m",
+  });
+  return token;
+};
+const generateRefreshToken = (id) => {
+  const token = jwt.sign({ myId: id }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
+  return token;
+};
+
+app.use(helmet());
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//helmetjs configuration
-app.use(helmet());
-
-//TODO: remove
-app.use((err, req, res, next) => {
-  console.error("Error:", err.stack); // Logs the full stack trace
-  res.status(500).send("Something went wrong!");
-});
+mongoose.connect(process.env.MONGO_URI);
 
 const userSchema = new mongoose.Schema({
   name: String,
@@ -136,6 +173,10 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  refreshToken: {
+    type: String,
+    default: null,
+  },
 });
 
 const teamSchema = new mongoose.Schema({
@@ -256,8 +297,9 @@ const taskSchema = new mongoose.Schema({
 let User = mongoose.model("user", userSchema);
 let Team = mongoose.model("team", teamSchema);
 let Task = mongoose.model("task", taskSchema);
+
 //user api calls
-app.put("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   const { password, email } = req.body;
   try {
     const match = await User.findOne(
@@ -269,7 +311,7 @@ app.put("/login", async (req, res) => {
       }
     );
     if (!match) {
-      res.status(400);
+      res.status(404);
       res.send({ message: "email and password don't match" });
     } else {
       const valid = verifyPassword(match.password, password);
@@ -278,13 +320,27 @@ app.put("/login", async (req, res) => {
           password: 0,
           notifications: 0,
         });
-        const payload = { myId: user._id };
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {
-          expiresIn: "1h",
+
+        const token = generateAccessToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
+
+        res.cookie("accessToken", token, {
+          httpOnly: true,
+          // secure: false, //TODO: set true
+          maxAge: 1000 * 60 * 15,
+          sameSite: "Strict",
         });
+
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          // secure: false, //TODO: set true
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          sameSite: "Strict",
+        });
+
         res.send({ user, token });
       } else {
-        res.status(400);
+        res.status(404);
         res.send({ message: "email and password don't match" });
       }
     }
@@ -329,7 +385,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/connections", async (req, res) => {
+app.get("/connections", authMiddleware, async (req, res) => {
   try {
     const users = await User.find(
       {},
@@ -408,7 +464,7 @@ app.get("/user:id", authMiddleware, async (req, res) => {
     if (!user.connections.find((user) => user.id === myId) && !myId === id) {
       res.status(401);
       res.send("unauthorized access");
-    };
+    }
 
     const userObj = {
       user,
@@ -442,18 +498,12 @@ app.get("/user:id", authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/notifications:id", authMiddleware, async (req, res) => {
-  const id = req.params.id;
+app.get("/notifications", authMiddleware, async (req, res) => {
   const { unread } = req.query;
   const { myId } = req.user;
 
-  if (id !== myId) {
-    res.status(401);
-    res.send({ message: "unauthorized access" });
-  }
-
   try {
-    const user = await User.findById(id, { notifications: 1 });
+    const user = await User.findById(myId, { notifications: 1 });
     if (unread) {
       user.notifications = user.notifications.filter((item) => !item.isRead);
     }
