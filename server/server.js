@@ -60,6 +60,12 @@ app.use(bodyParser.json());
 //helmetjs configuration
 app.use(helmet());
 
+//TODO: remove
+app.use((err, req, res, next) => {
+  console.error("Error:", err.stack); // Logs the full stack trace
+  res.status(500).send("Something went wrong!");
+});
+
 const userSchema = new mongoose.Schema({
   name: String,
   role: String,
@@ -399,10 +405,10 @@ app.get("/user:id", authMiddleware, async (req, res) => {
       notifications: 0,
     });
 
-    if (!user.connections.find((user) => user.id === myId)) {
+    if (!user.connections.find((user) => user.id === myId) && !myId === id) {
       res.status(401);
       res.send("unauthorized access");
-    }
+    };
 
     const userObj = {
       user,
