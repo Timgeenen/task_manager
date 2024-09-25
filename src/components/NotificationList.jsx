@@ -4,16 +4,17 @@ import { getAllNotifications } from "../api/Event";
 import { getTimePassed } from "../library/helperfunctions";
 import useNavigateNotification from "../hooks/useNavigateNotification";
 import clsx from "clsx";
-import { useSelector } from "react-redux";
 import useToggle from "../hooks/useToggle";
 import PopupMessage from "./PopupMessage";
+import { useSocket } from "../context/SocketProvider";
 
 function NotificationList() {
   const { isLoading, isError, isSuccess, error, data, refetch } = useQuery({
     queryKey: ["all-notifications"],
     queryFn: () => getAllNotifications(false),
   });
-  const { socket } = useSelector(state => state.auth);
+
+  const socket = useSocket();
 
   const [open, toggle] = useToggle();
 

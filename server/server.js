@@ -398,6 +398,23 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/logout", (req, res) => {
+
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: false, //TODO: set to true,
+    sameSite: "Strict"
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false, //TODO: set to true,
+    sameSite: "Strict",
+  });
+
+  res.send({ message: "succesfully logged out user"});
+})
+
 app.get("/connections", authMiddleware, async (req, res) => {
   try {
     const users = await User.find(
