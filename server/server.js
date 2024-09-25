@@ -503,7 +503,7 @@ app.get("/user:id", authMiddleware, async (req, res) => {
     };
 
     if (myId !== String(user._id)) {
-      const myProfile = await User.findById(userId, {
+      const myProfile = await User.findById(myId, {
         teams: 1,
         connections: 1,
         _id: 0,
