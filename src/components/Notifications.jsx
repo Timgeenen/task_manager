@@ -2,10 +2,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Tippy from "@tippyjs/react";
 import { memo, useEffect, useState } from "react";
 import { getAllNotifications } from "../api/Event";
-import { useSelector } from "react-redux";
 import NotificationLink from "./NotificationLink";
 import { useNavigate } from "react-router-dom";
 import { IoIosNotificationsOutline } from "react-icons/io";
+import { useSocket } from "../context/SocketProvider";
+import { useSelector } from "react-redux";
 
 function Notifications() {
   const {
@@ -21,14 +22,15 @@ function Notifications() {
     cacheTime: 5000
   });
 
+  const socket = useSocket();
   const queryClient = useQueryClient();
+
+  const { user } = useSelector(state => state.auth);
 
   const navigate = useNavigate();
   const navigateToNotifications = () => {
-    console.log("navigated to notifcations page")
+    navigate(`/profile/${user._id}`)
   }
-
-  const { socket } = useSelector(state => state.auth);
 
   const [newNotifications, setNewNotifications] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
@@ -40,12 +42,14 @@ function Notifications() {
   }, [data])
 
   useEffect(() => {
-    socket.on("receiveNotification", (newUpdate) => {
-      const notifications = queryClient.getQueryData(["notifications"]);
-      queryClient.setQueryData(["notifications"], [newUpdate, ...notifications]);
-      setNewNotifications(true);
-    });
-  }, []);
+    if (socket) {
+      socket.on("receiveNotification", (newUpdate) => {
+        const notifications = queryClient.getQueryData(["notifications"]);
+        queryClient.setQueryData(["notifications"], [newUpdate, ...notifications]);
+        setNewNotifications(true);
+      });
+    }
+  }, [socket]);
 
   const updateNotificationQuery = (index) => {
     const notifications = queryClient.getQueryData(["notifications"]);
