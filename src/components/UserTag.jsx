@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/state/authSlice";
 import { getInitials } from "../library/helperfunctions";
 import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../api/Event";
 
 function UserTag() {
   const { user } = useSelector(state => state.auth);
@@ -23,7 +24,8 @@ function UserTag() {
 
   const dispatch = useDispatch();
 
-  const logoutUser = () => {
+  const handleClick = async () => {
+    logoutUser();
     dispatch(logout());
   };
 
@@ -37,7 +39,7 @@ function UserTag() {
       content={
         <div className="flex flex-col p-2 gap-2">
           <UserLink name="Profile" handleClick={navigateProfile}/>
-          <UserLink name="Logout" handleClick={logoutUser}/>
+          <UserLink name="Logout" handleClick={handleClick}/>
         </div>
       }
       onClickOutside={() => {
