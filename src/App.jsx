@@ -16,6 +16,7 @@ import { setOpenSidebar } from "./redux/state/authSlice";
 import CreateTeam from "./pages/CreateTeam";
 import CreateTask from "./pages/CreateTask";
 import TeamInfo from "./pages/TeamInfo";
+import SocketProvider from "./context/SocketProvider";
 
 
 function App() {
@@ -50,23 +51,24 @@ function Layout() {
   const { user } = useSelector(state => state.auth);
   const { isSidebarOpen } = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  const location = useLocation();
 
   return user ? (
-    <div className="h-screen overflow-y-hidden">
-      <Navbar />
-      <div className="h-full flex w-screen">
-        {
-        isSidebarOpen ? 
-        <Sidebar /> : 
-        <RxHamburgerMenu 
-        className="left-5 top-4 absolute hover:cursor-pointer"
-        size={24}
-        onClick={() => { dispatch(setOpenSidebar(true)) }}/>
-        }
-        <Outlet />
+    <SocketProvider>
+      <div className="h-screen overflow-y-hidden">
+        <Navbar />
+        <div className="h-full flex w-screen">
+          {
+          isSidebarOpen ? 
+          <Sidebar /> : 
+          <RxHamburgerMenu 
+          className="left-5 top-4 absolute hover:cursor-pointer"
+          size={24}
+          onClick={() => { dispatch(setOpenSidebar(true)) }}/>
+          }
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </SocketProvider>
   ) : (
     <Navigate to="/login" replace/>
   )
