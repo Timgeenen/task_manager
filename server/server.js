@@ -11,7 +11,6 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const func = require("./functions");
-const { default: axios } = require("axios");
 
 const app = express();
 const httpServer = createServer(app);
@@ -559,19 +558,6 @@ app.post("/get-all-tasks", authMiddleware, async (req, res) => {
   }
 });
 
-// app.post("/get-tasks-by-teamId", authMiddleware, (req, res) => {
-//   const { teamIds } = req.body;
-//   Team.find({ _id: { $in: teamIds } })
-//     .then((data) => {
-//       const tasks = data.flatMap((team) => team.tasks);
-//       const taskIds = tasks.map((task) => task.id);
-//       Task.find({ _id: { $in: taskIds } })
-//         .then((tasks) => res.send(tasks))
-//         .catch((err) => res.send(err.message));
-//     })
-//     .catch((err) => res.send({ message: err.message }));
-// });
-
 //team api calls
 app.get("/get-all-teams", authMiddleware, async (req, res) => {
   const { myId } = req.user;
@@ -649,7 +635,7 @@ app.get("/comments:id/:type", authMiddleware, async (req, res) => {
 });
 
 app.get("/authorize", authMiddleware, (req, res) => {
-  res.send({ message: "Successfully authorized user" });
+  res.send({ message: "Succesfully authorized user" });
 });
 
 //io sockets
@@ -660,328 +646,298 @@ const getCookies = (cookie) => {
   return cookies;
 };
 
-const authSocketMiddleware = (socket, next) => {
-  const { accessToken, refreshToken } = getCookies(
-    socket.handshake.headers.cookie
-  );
-
-  if (accessToken) {
-    jwt.verify(accessToken, process.env.JWT_SECRET, (err, user) => {
-      if (err) {
-        if (refreshToken) {
-          jwt.verify(
-            refreshToken,
-            process.env.JWT_REFRESH_SECRET,
-            (err, user) => {
-              if (err) {
-                return next(new Error("Invalid refresh-token"));
-              } else {
-                console.log("regenerated");
-                return next(new Error("Need token refresh"));
-              }
-            }
-          );
-        } else {
-          return next(new Error("No refresh-token provided"));
-        }
-      } else {
-        socket.user = user;
-        next();
-      }
-    });
-  } else {
-    return next(new Error("No access-token provided"));
-  }
-};
-
-io.use(authSocketMiddleware);
-
 io.on("connection", (socket) => {
-  // if (user) {
-  //   User.findByIdAndUpdate(user._id, { $set: { isActive: true } })
-  //     .then((user) => {
-  //       userId = user._id;
-  //       socket.join(user._id);
-  //       console.log(`${user.name} joined notification channel`);
-  //       user.teams.map((team) => {
-  //         socket.join(team.id);
-  //         console.log(`${user.name} joined ${team.name}`);
-  //       });
-  //     })
-  //     .catch((err) => console.error(err.message));
-  // }
+  const { accessToken } = getCookies(socket.handshake.headers.cookie);
+  const { myId } = jwt.decode(accessToken);
+  const type = socket.handshake.auth.type;
 
-  // socket.on("createTeam", async (teamData, callback) => {
-  //   const { name, manager, members } = teamData;
+  if (type === "login") {
+    User.findByIdAndUpdate(myId, { $set: { isActive: true } })
+      .then((user) => {
+        socket.join(user._id);
+        console.log(`${user.name} joined notification channel`);
+        user.teams.map((team) => {
+          socket.join(team.id);
+          console.log(`${user.name} joined ${team.name}`);
+        });
+      })
+      .catch((err) => console.error(err.message));
+  };
 
-  //   try {
-  //     const team = await Team.create({
-  //       name,
-  //       manager,
-  //       members,
-  //       tasks: [],
-  //       createdOn: func.newDate(),
-  //       messages: [],
-  //       trash: [],
-  //     });
+  socket.on("createTeam", async (teamData, callback) => {
+    const { name, manager, members } = teamData;
 
-  //     const teamObj = {
-  //       name,
-  //       members,
-  //       id: team._id,
-  //       managerId: manager.id,
-  //     };
+    try {
+      const team = await Team.create({
+        name,
+        manager,
+        members,
+        tasks: [],
+        createdOn: func.newDate(),
+        messages: [],
+        trash: [],
+      });
 
-  //     const ids = members.map((member) => member.id);
+      const teamObj = {
+        name,
+        members,
+        id: team._id,
+        managerId: manager.id,
+      };
 
-  //     const notificationObj = {
-  //       nType: "New Team",
-  //       team: {
-  //         name: team.name,
-  //         id: team._id,
-  //       },
-  //       message: `You have been added to ${team.name}, created by ${team.manager.name}`,
-  //     };
+      const ids = members.map((member) => member.id);
 
-  //     await User.updateMany(
-  //       { _id: { $in: ids } },
-  //       {
-  //         $push: {
-  //           teams: teamObj,
-  //           notifications: { $each: [notificationObj], $position: 0 },
-  //         },
-  //       }
-  //     );
+      const notificationObj = {
+        nType: "New Team",
+        team: {
+          name: team.name,
+          id: team._id,
+        },
+        message: `You have been added to ${team.name}, created by ${team.manager.name}`,
+      };
 
-  //     const user = await User.findById(manager.id);
+      await User.updateMany(
+        { _id: { $in: ids } },
+        {
+          $push: {
+            teams: teamObj,
+            notifications: { $each: [notificationObj], $position: 0 },
+          },
+        }
+      );
 
-  //     ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
+      const user = await User.findById(manager.id);
 
-  //     callback({ user });
-  //   } catch (err) {
-  //     callback({
-  //       error: err,
-  //     });
-  //   }
-  // });
+      ids.map((id) => io.to(id).emit("receiveNotification", notificationObj));
 
-  // socket.on("createTask", async (taskData, callback) => {
-  //   const {
-  //     subtasks,
-  //     title,
-  //     team,
-  //     description,
-  //     deadline,
-  //     members,
-  //     priority,
-  //     user,
-  //   } = taskData;
+      callback({ user });
+    } catch (err) {
+      callback({
+        error: err,
+      });
+    }
+  });
 
-  //   const ids = members.map((member) => member.id);
+  socket.on("createTask", async (taskData, callback) => {
+    const {
+      subtasks,
+      title,
+      team,
+      description,
+      deadline,
+      members,
+      priority,
+      user,
+    } = taskData;
 
-  //   const data = {
-  //     title,
-  //     description,
-  //     subtasks,
-  //     createdOn: func.newDate(),
-  //     deadline,
-  //     priority,
-  //     status: "pending",
-  //     assignedTo: members,
-  //     assignedTeam: team,
-  //     comments: [],
-  //     updates: [],
-  //   };
+    const ids = members.map((member) => member.id);
 
-  //   try {
-  //     const newTask = await Task.create(data);
+    const data = {
+      title,
+      description,
+      subtasks,
+      createdOn: func.newDate(),
+      deadline,
+      priority,
+      status: "pending",
+      assignedTo: members,
+      assignedTeam: team,
+      comments: [],
+      updates: [],
+    };
 
-  //     const notificationObj = {
-  //       nType: "New Task",
-  //       task: {
-  //         name: title,
-  //         id: newTask._id,
-  //       },
-  //       message: `${user} has added a new task to ${team.name}`,
-  //     };
+    try {
+      const newTask = await Task.create(data);
 
-  //     const taskPointer = {
-  //       title,
-  //       priority,
-  //       status: "pending",
-  //       deadline,
-  //       id: newTask._id,
-  //     };
+      const notificationObj = {
+        nType: "New Task",
+        task: {
+          name: title,
+          id: newTask._id,
+        },
+        message: `${user} has added a new task to ${team.name}`,
+      };
 
-  //     await Team.findByIdAndUpdate(team.id, {
-  //       $push: { tasks: taskPointer },
-  //     });
+      const taskPointer = {
+        title,
+        priority,
+        status: "pending",
+        deadline,
+        id: newTask._id,
+      };
 
-  //     await User.updateMany(
-  //       { _id: { $in: ids } },
-  //       { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
-  //     );
+      await Team.findByIdAndUpdate(team.id, {
+        $push: { tasks: taskPointer },
+      });
 
-  //     io.to(team.id).emit("receiveNotification", notificationObj);
-  //     callback({
-  //       message: "succesfully created task",
-  //     });
-  //   } catch (err) {
-  //     callback({
-  //       error: err,
-  //     });
-  //   }
-  // });
+      await User.updateMany(
+        { _id: { $in: ids } },
+        { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
+      );
 
-  // socket.on("updateTask", async (taskData, callback) => {
-  //   const { taskId, teamId, subtasks, description, completed } = taskData;
+      io.to(team.id).emit("receiveNotification", notificationObj);
+      callback({
+        message: "succesfully created task",
+      });
+    } catch (err) {
+      callback({
+        error: err,
+      });
+    }
+  });
 
-  //   try {
-  //     const task = await Task.findById(taskId);
+  socket.on("updateTask", async (taskData, callback) => {
+    const { taskId, teamId, subtasks, description, completed } = taskData;
 
-  //     const updateObj = {
-  //       author: {
-  //         name: user.name,
-  //         id: user._id,
-  //       },
-  //       previousState: {
-  //         description: task.description,
-  //         subtasks: task.subtasks,
-  //         status: task.status,
-  //       },
-  //       updatedAt: func.newDate(),
-  //     };
+    try {
+      const task = await Task.findById(taskId);
+      const user = await User.findById(myId, {
+        name: 1
+      })
 
-  //     task.updates.unshift(updateObj);
-  //     task.subtasks = subtasks;
-  //     task.description = description;
+      const updateObj = {
+        author: {
+          name: user.name,
+          id: user._id,
+        },
+        previousState: {
+          description: task.description,
+          subtasks: task.subtasks,
+          status: task.status,
+        },
+        updatedAt: func.newDate(),
+      };
 
-  //     if (completed) {
-  //       task.status = "completed";
-  //     }
+      task.updates.unshift(updateObj);
+      task.subtasks = subtasks;
+      task.description = description;
 
-  //     await task.save();
+      if (completed) {
+        task.status = "completed";
+      }
 
-  //     const notificationObj = {
-  //       nType: completed ? "Task Completed" : "Task Updated",
-  //       task: {
-  //         name: task.title,
-  //         id: task._id,
-  //       },
-  //       message: completed
-  //         ? `${task.title} has been completed`
-  //         : `${user.name} has updated ${task.title}`,
-  //     };
+      await task.save();
 
-  //     if (completed) {
-  //       await Team.updateOne(
-  //         { _id: teamId, "tasks.id": taskId },
-  //         {
-  //           $set: { "tasks.$.status": "completed" },
-  //         }
-  //       );
-  //     }
+      const notificationObj = {
+        nType: completed ? "Task Completed" : "Task Updated",
+        task: {
+          name: task.title,
+          id: task._id,
+        },
+        message: completed
+          ? `${task.title} has been completed`
+          : `${user.name} has updated ${task.title}`,
+      };
 
-  //     const ids = task.assignedTo.map((member) => member.id);
+      if (completed) {
+        await Team.updateOne(
+          { _id: teamId, "tasks.id": taskId },
+          {
+            $set: { "tasks.$.status": "completed" },
+          }
+        );
+      }
 
-  //     await User.updateMany(
-  //       { _id: { $in: ids } },
-  //       { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
-  //     );
+      const ids = task.assignedTo.map((member) => member.id);
 
-  //     io.to(task.assignedTeam.id).emit("receiveNotification", notificationObj);
+      await User.updateMany(
+        { _id: { $in: ids } },
+        { $push: { notifications: { $each: [notificationObj], $position: 0 } } }
+      );
 
-  //     callback(updateObj);
-  //   } catch (error) {
-  //     callback(error);
-  //   }
-  // });
+      io.to(task.assignedTeam.id).emit("receiveNotification", notificationObj);
 
-  // socket.on("readNotification", async (userId, notificationId, callback) => {
-  //   try {
-  //     await User.updateOne(
-  //       { _id: userId, "notifications._id": notificationId },
-  //       { $set: { "notifications.$.isRead": true } }
-  //     );
-  //     callback({});
-  //   } catch (error) {
-  //     callback({ error });
-  //   }
-  // });
+      callback(updateObj);
+    } catch (error) {
+      callback(error);
+    }
+  });
 
-  // socket.on("markAllAsRead", async (callback) => {
-  //   try {
-  //     const res = await User.updateOne(
-  //       { _id: userId },
-  //       {
-  //         $set: { "notifications.$[notification].isRead": true },
-  //       },
-  //       {
-  //         arrayFilters: [{ "notification.isRead": false }],
-  //       }
-  //     );
+  socket.on("readNotification", async (notificationId, callback) => {
+    try {
+      await User.updateOne(
+        { _id: myId, "notifications._id": notificationId },
+        { $set: { "notifications.$.isRead": true } }
+      );
+      callback({});
+    } catch (error) {
+      callback({ error });
+    }
+  });
 
-  //     callback({ res });
-  //   } catch (err) {
-  //     callback(err);
-  //   }
-  // });
+  socket.on("markAllAsRead", async (callback) => {
+    try {
+      const res = await User.updateOne(
+        { _id: userId },
+        {
+          $set: { "notifications.$[notification].isRead": true },
+        },
+        {
+          arrayFilters: [{ "notification.isRead": false }],
+        }
+      );
 
-  // socket.on("deleteReadNotifications", async (callback) => {
-  //   try {
-  //     await User.findByIdAndUpdate(userId, {
-  //       $pull: { notifications: { isRead: true } },
-  //     });
-  //     callback("success");
-  //   } catch (err) {
-  //     callback(err);
-  //   }
-  // });
+      callback({ res });
+    } catch (err) {
+      callback(err);
+    }
+  });
 
-  // socket.on("joinNewTeam", (teamId) => {
-  //   socket.join(teamId);
-  //   console.log(`user joined new team: ${teamId}`);
-  // });
+  socket.on("deleteReadNotifications", async (callback) => {
+    try {
+      await User.findByIdAndUpdate(userId, {
+        $pull: { notifications: { isRead: true } },
+      });
+      callback("success");
+    } catch (err) {
+      callback(err);
+    }
+  });
 
-  // socket.on("joinTaskRoom", (taskId) => {
-  //   socket.join(taskId);
-  //   console.log(`User {add name} joined the chat for ${taskId}`);
-  // });
+  socket.on("joinNewTeam", (teamId) => {
+    socket.join(teamId);
+    console.log(`user joined new team: ${teamId}`);
+  });
 
-  // socket.on("sendMessage", async (messageObj) => {
-  //   const { author, message, socketId, socketType } = messageObj;
-  //   const comment = {
-  //     author,
-  //     message,
-  //     createdAt: func.newDate(),
-  //   };
+  socket.on("joinTaskRoom", (taskId) => {
+    socket.join(taskId);
+    console.log(`User {add name} joined the chat for ${taskId}`);
+  });
 
-  //   try {
-  //     let updatedDocument;
-  //     const query = { $push: { comments: { $each: [comment], $position: 0 } } };
+  socket.on("sendMessage", async (messageObj) => {
+    const { author, message, socketId, socketType } = messageObj;
+    const comment = {
+      author,
+      message,
+      createdAt: func.newDate(),
+    };
 
-  //     if (socketType === "task") {
-  //       updatedDocument = await Task.findByIdAndUpdate(socketId, query, {
-  //         new: true,
-  //       });
-  //     }
+    try {
+      let updatedDocument;
+      const query = { $push: { comments: { $each: [comment], $position: 0 } } };
 
-  //     if (socketType === "team") {
-  //       updatedDocument = await Team.findByIdAndUpdate(socketId, query, {
-  //         new: true,
-  //       });
-  //     }
+      if (socketType === "task") {
+        updatedDocument = await Task.findByIdAndUpdate(socketId, query, {
+          new: true,
+        });
+      }
 
-  //     io.to(socketId).emit("receiveMessage", updatedDocument.comments[0]);
-  //   } catch (err) {
-  //     console.error(err.message);
-  //   }
-  // });
+      if (socketType === "team") {
+        updatedDocument = await Team.findByIdAndUpdate(socketId, query, {
+          new: true,
+        });
+      }
+
+      io.to(socketId).emit("receiveMessage", updatedDocument.comments[0]);
+    } catch (err) {
+      console.error(err.message);
+    }
+  });
 
   socket.on("disconnect", async () => {
-    // await User.findByIdAndUpdate(userId, {
-    //   $set: { isActive: false, updatedAt: new Date() },
-    // });
+    await User.findByIdAndUpdate(myId, {
+      $set: { isActive: false, updatedAt: new Date() },
+    });
     console.log(`You have been disconnected`);
   });
 });
