@@ -96,8 +96,7 @@ export const getCommentsById = async (id, type) => {
   return res.data;
 };
 
-export const authorizeUser = () => {
-  axios.get("/authorize")
-    .then(data => console.log(data))
-    .catch(err => console.log(err.message))
+export const authorizeUser = async () => {
+  const res = await axios.get("/authorize");
+  return res.data;
 }

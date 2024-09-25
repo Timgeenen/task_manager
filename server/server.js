@@ -896,12 +896,12 @@ io.on("connection", (socket) => {
 
   socket.on("joinNewTeam", (teamId) => {
     socket.join(teamId);
-    console.log(`user joined new team: ${teamId}`);
+    console.log(`You joined a new team: ${teamId}`);
   });
 
   socket.on("joinTaskRoom", (taskId) => {
     socket.join(taskId);
-    console.log(`User {add name} joined the chat for ${taskId}`);
+    console.log(`You joined the task chat for task: ${taskId}`);
   });
 
   socket.on("sendMessage", async (messageObj) => {
