@@ -21,7 +21,7 @@ function TaskInfo() {
 
   if (isPending) { return ( <div>Loading...</div> ) };
   if (isError) { return ( <div>{ error.message }</div> ) };
-console.log(data)
+
   return (
     <div className="w-10/12 flex flex-col justify-between m-auto border-2">
       <TaskOverview
