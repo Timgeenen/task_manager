@@ -45,31 +45,32 @@ function Profile() {
                 >{data?.user?.isActive ? "Online" : `${getTimePassed(data?.user?.updatedAt)} ago`}</span>
               </div>
             </div>
-            <div className="w-1/2">
-              {!myProfile && <div>Mutual Connections</div>}
-              <div className="flex flex-wrap pr-4">
-              {!myProfile &&
-              data?.mutualConnections.map((member, i) => (
-                <MembersTag
-                member={member.name}
-                memberId={member.id}
-                index={i}
-                />
-              ))}
+            {!myProfile && data?.mutualConnections.length > 0 &&
+              <div className="w-1/2">
+                <div>Mutual Connections</div>
+                <div className="flex flex-wrap pr-4">
+                {data?.mutualConnections?.map((member, i) => (
+                  <MembersTag
+                  member={member.name}
+                  memberId={member.id}
+                  index={i}
+                  />
+                ))}
+                </div>
               </div>
-            </div>
+            }
           </div>
 
-          {!myProfile && <div className="flex min-w-2xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
+          {!myProfile && data?.mutualTeams.length > 0 &&
+          <div className="flex min-w-2xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
             <button
             className="bg-blue-200 p-3 hover:bg-blue-300"
             onClick={prev}
             >{"<"}</button>
             <div className="flex flex-col items-center bg-blue-50">
               <span>Mutual Teams</span>
-              <div className="flex flex-wrap gap-10 p-4 justify-center">
-                {data && !myProfile &&
-                data.mutualTeams.map((team, i) => {
+              <div className="flex flex-wrap gap-10 p-5 justify-center">
+                {data?.mutualTeams?.map((team, i) => {
                   if (i < low || i > high) { return }
                   const manager = team.members.find(member => member.id === (team.managerId ? team.managerId : user._id))//remove
                   return (
