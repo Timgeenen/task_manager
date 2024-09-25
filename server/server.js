@@ -885,7 +885,7 @@ io.on("connection", (socket) => {
   socket.on("markAllAsRead", async (callback) => {
     try {
       const res = await User.updateOne(
-        { _id: userId },
+        { _id: myId },
         {
           $set: { "notifications.$[notification].isRead": true },
         },
@@ -902,7 +902,7 @@ io.on("connection", (socket) => {
 
   socket.on("deleteReadNotifications", async (callback) => {
     try {
-      await User.findByIdAndUpdate(userId, {
+      await User.findByIdAndUpdate(myId, {
         $pull: { notifications: { isRead: true } },
       });
       callback("success");
