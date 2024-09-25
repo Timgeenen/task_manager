@@ -12,6 +12,7 @@ const user = store.getState().auth.user;
 axios.interceptors.response.use(
   response => response,
   error => {
+
     if(error.response && (
       error.response.message === "Invalid refresh-token"||
       error.response.message === "No refresh-token provided"
@@ -19,6 +20,8 @@ axios.interceptors.response.use(
       store.dispatch(logout());
       alert("Your session has expired, please log in again");
     }
+
+  return Promise.reject(error);
   }
 )
 
@@ -49,7 +52,7 @@ export const addConnection = async (id) => {
 };
 
 export const getAllNotifications = async (unreadOnly) => {
-  let route = `/notifications${unreadOnly && "?unread=true"}`;
+  let route = `/notifications${unreadOnly ? "?unread=true" : ""}`;
   const res = await axios.get(route);
   return res.data;
 };
@@ -92,3 +95,9 @@ export const getCommentsById = async (id, type) => {
   const res = await axios.get(`/comments${id}/${type}`);
   return res.data;
 };
+
+export const authorizeUser = () => {
+  axios.get("/authorize")
+    .then(data => console.log(data))
+    .catch(err => console.log(err.message))
+}
