@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import { BACKEND } from "../library/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCommentsById } from "../api/Event";
+import useAuthorize from "../hooks/useAuthorize";
 
 function Chatroom({ socketId, socketType }) {
   const [socket, setSocket] = useState(null);
@@ -21,28 +22,35 @@ function Chatroom({ socketId, socketType }) {
     queryFn: () => getCommentsById(socketId, socketType)
   });
 
+  const [isAuthorized] = useAuthorize();
+
   useEffect(() => {
-    const newSocket = io(BACKEND);
-    setSocket(newSocket)
-
-    newSocket.emit("joinTaskRoom", socketId);
-
-    newSocket.on("receiveMessage", (newMessage) => {
-      queryClient.setQueryData(
-        [`comments-${socketId}`],
-        (oldValue) => {
-          const { comments } = oldValue;
-          return { comments: [newMessage, ...(comments || [])] };
-        }
-      );
-    });
-
-    return () => {
-      if (newSocket) {
-        newSocket.disconnect();
-      }
-    }
-  }, [socketId]);
+    if (isAuthorized) {
+      const newSocket = io(BACKEND, {
+        withCredentials: true
+      });
+      setSocket(newSocket)
+  
+      newSocket.emit("joinTaskRoom", socketId);
+  
+      newSocket.on("receiveMessage", (newMessage) => {
+        queryClient.setQueryData(
+          [`comments-${socketId}`],
+          (oldValue) => {
+            const { comments } = oldValue;
+            return { comments: [newMessage, ...(comments || [])] };
+          }
+        );
+      });
+  
+      return () => {
+        if (newSocket) {
+          newSocket.disconnect();
+          setSocket(null);
+        };
+      };
+    };
+  }, [isAuthorized]);
 
   const addMessage = async (messageData) => {
     await socket.emit("sendMessage", messageData);
