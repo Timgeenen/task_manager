@@ -9,11 +9,14 @@ import { useSelector } from "react-redux";
 import "react-datepicker/dist/react-datepicker.css";
 import DateSelect from "../components/DateSelect";
 import { useState } from "react";
+import { useSocket } from "../context/SocketProvider";
 
 function CreateTask() {
-  const { user, socket } = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
   const [newTask, setNewTask] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const socket = useSocket();
 
   const {
     register,
@@ -89,6 +92,7 @@ function CreateTask() {
         options={user.teams}
         register={register("team")}
         defaultText="--Select Team"
+        defaultValue=""
         classes="bg-white"
         />
 

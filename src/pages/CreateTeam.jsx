@@ -6,11 +6,14 @@ import Checkbox from "../components/Checkbox.jsx";
 import { getTeamDataObj } from '../library/helperfunctions';
 import { useState } from "react";
 import { updateUser } from "../redux/state/authSlice.jsx";
+import { useSocket } from "../context/SocketProvider.jsx";
 
 
 function CreateTeam() {
-  const { user, socket } = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+
+  const socket = useSocket();
 
   const {
     register,
