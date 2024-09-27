@@ -6,7 +6,7 @@ function Optionbox({options, register, defaultValue, defaultText, classes}) {
     {...register}
     className={clsx(classes, "rounded-full shadow-lg p-2")}
     >
-      {defaultValue && 
+      {defaultText && 
       <option
       value={defaultValue}>
         {defaultText}
