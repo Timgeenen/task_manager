@@ -11,6 +11,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const func = require("./functions");
+const { rateLimit } = require("express-rate-limit");
 
 const app = express();
 const httpServer = createServer(app);
@@ -25,6 +26,15 @@ const corsOptions = {
   origin: "http://localhost:3000",
   credentials: true,
 };
+
+const limiter = rateLimit({
+  windowMs: 1000 * 60 * 10,
+  limit: 100,
+  message: "maximum number of requests reached, please try again in 10 minutes",
+  legacyHeaders: true,
+  standardHeaders: "draft-7",
+  skipFailedRequests: true
+})
 
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(12);
@@ -110,6 +120,7 @@ const generateRefreshToken = (id) => {
 
 app.use(helmet());
 app.use(cors(corsOptions));
+app.use(limiter());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
