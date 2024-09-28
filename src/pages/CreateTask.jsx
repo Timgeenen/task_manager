@@ -10,6 +10,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import DateSelect from "../components/DateSelect";
 import { useState } from "react";
 import { useSocket } from "../context/SocketProvider";
+import DOMPurify from "dompurify";
+import { errorMessage } from "../library/styles";
 
 function CreateTask() {
   const { user } = useSelector(state => state.auth);
@@ -22,6 +24,7 @@ function CreateTask() {
     register,
     control,
     handleSubmit,
+    setError,
     watch,
     reset,
     formState: { errors }
@@ -39,8 +42,12 @@ function CreateTask() {
   const selectedTeam = watch("team");
 
   const submitHandler = (formData) => {
+    console.log(formData)
     if (formData.team === "") { return alert("please select a valid team")};
-    if (formData.members.length === 0) {return alert("please make sure to select at least 1 team member")};
+    if (!formData.members) {
+      console.log("No members selected")
+      return setError("members", {type: "custom", message: "Please select at least 1 team member"})
+    };
 
     setIsLoading(true);
     setNewTask(null);
@@ -57,6 +64,28 @@ function CreateTask() {
     formData.members = assignedTo;
     formData.team = teamObj;
     formData.user = user.name;
+
+    formData.title = DOMPurify.sanitize(formData.title);
+    formData.description = DOMPurify.sanitize(formData.description);
+    formData.subtasks = formData.subtasks.map(item => item.name = DOMPurify.sanitize(item.name));
+
+    const emptySubtask = formData.subtasks.filter(item => !item.name);
+    const noTitle = !formData.title;
+    const noDescription = !formData.description;
+
+    if (noTitle || noDescription || emptySubtask) {
+      if (noTitle) {
+        console.log("no title")
+        errors.title.message = "Please enter a valid title"
+      }
+      if (noDescription) {
+        console.log("no description");
+      }
+      if (emptySubtask) {
+        console.log("empty subtask found")
+      }
+      return 
+    }
 
     socket.emit("createTask", formData, (response) => {
       if (response.error) {
@@ -110,6 +139,7 @@ function CreateTask() {
           ))
         }
         </div>
+        {errors.members && <p className={errorMessage}>{errors.members.message}</p>}
 
         <textarea 
         type="text"
