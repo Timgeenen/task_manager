@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import SubmitButton from "./SubmitButton";
+import DOMPurify from "dompurify";
 
 function Commentbox({ socketId, submitHandler, socketType }) {
   const { user } = useSelector(state => state.auth);
@@ -21,8 +22,24 @@ function Commentbox({ socketId, submitHandler, socketType }) {
   });
 
   const submitFn = (data) => {
-    submitHandler(data)
-    reset()
+
+    const cleanData = {
+      author: {
+        name: user.name,
+        id: user._id
+      },
+      message: DOMPurify.sanitize(data.message),
+      socketId,
+      socketType
+    };
+
+    if (cleanData.message.length > 0) {
+      submitHandler(data)
+    } else {
+      console.log("please enter valid message");
+    }
+
+    reset();
   }
 
   return (
