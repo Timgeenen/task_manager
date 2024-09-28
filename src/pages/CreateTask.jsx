@@ -16,7 +16,6 @@ import { errorMessage } from "../library/styles";
 function CreateTask() {
   const { user } = useSelector(state => state.auth);
   const [newTask, setNewTask] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const socket = useSocket();
 
@@ -42,14 +41,36 @@ function CreateTask() {
   const selectedTeam = watch("team");
 
   const submitHandler = (formData) => {
-    console.log(formData)
-    if (formData.team === "") { return alert("please select a valid team")};
+    if (formData.team === "") { 
+      return setError("team", {type: "custom", message: "Please select a team"})
+    };
     if (!formData.members) {
-      console.log("No members selected")
       return setError("members", {type: "custom", message: "Please select at least 1 team member"})
     };
 
-    setIsLoading(true);
+    formData.title = DOMPurify.sanitize(formData.title);
+    formData.description = DOMPurify.sanitize(formData.description);
+    formData.subtasks = formData.subtasks.map(item => {
+      return { name: DOMPurify.sanitize(item.name) }
+    });
+
+    const emptySubtask = formData.subtasks.includes(item => !item.name);
+    const noTitle = !formData.title;
+    const noDescription = !formData.description;
+
+    if (noTitle || noDescription || emptySubtask) {
+      if (noTitle) {
+        setError("title", { type: "custom", message: "Please enter a valid title" });
+      }
+      if (noDescription) {
+        setError("description", { type: "custom", message: "Please set a valid description" });
+      }
+      if (emptySubtask) {
+        setError("subtasks", { type: "custom", message: "Please set a valid description" });
+      }
+      return;
+    }
+
     setNewTask(null);
     
     const team = user.teams.find(item => item.id === selectedTeam);
@@ -65,44 +86,20 @@ function CreateTask() {
     formData.team = teamObj;
     formData.user = user.name;
 
-    formData.title = DOMPurify.sanitize(formData.title);
-    formData.description = DOMPurify.sanitize(formData.description);
-    formData.subtasks = formData.subtasks.map(item => item.name = DOMPurify.sanitize(item.name));
-
-    const emptySubtask = formData.subtasks.filter(item => !item.name);
-    const noTitle = !formData.title;
-    const noDescription = !formData.description;
-
-    if (noTitle || noDescription || emptySubtask) {
-      if (noTitle) {
-        console.log("no title")
-        errors.title.message = "Please enter a valid title"
-      }
-      if (noDescription) {
-        console.log("no description");
-      }
-      if (emptySubtask) {
-        console.log("empty subtask found")
-      }
-      return 
-    }
-
+    
     socket.emit("createTask", formData, (response) => {
       if (response.error) {
         const { error } = response
         return console.error(`Creating task failed.\nError message: ${error.message}.\nStatus:${error.status}`);
       } else {
-        console.log(response.message);
         setNewTask(formData.title);
         reset();
       }
-      setIsLoading(false);
     });
   }
 
   return (
     <div className="w-full h-full flex flex-col mt-10 items-center">
-      {isLoading && <div>Loading...</div>}
       {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
       className="flex flex-col gap-4 p-8 rounded-lg bg-blue-100 min-w-72"
@@ -124,6 +121,7 @@ function CreateTask() {
         defaultValue=""
         classes="bg-white"
         />
+        {errors.team && <p className={errorMessage}>{errors.team.message}</p>}
 
         <div className="flex flex-wrap">
         {
@@ -146,6 +144,7 @@ function CreateTask() {
         placeholder="add task description"
         {...register("description", {required: "Description is required"})}
         />
+        {errors.description && <p className={errorMessage}>{errors.description.message}</p>}
 
         {fields.map((item, i) => (
           <span key={item.id} className="relative">
@@ -161,6 +160,7 @@ function CreateTask() {
             />
           </span>
         ))}
+        {errors.subtasks && <p className={errorMessage}>{errors.subtasks.message}</p>}
 
         <DateSelect
         text="Deadline"
@@ -186,9 +186,7 @@ function CreateTask() {
         />
 
         <div className="flex justify-center p-2 pt-4">
-          <SubmitButton
-          disabled={isLoading}
-          />
+          <SubmitButton />
         </div>
       </form>
     </div>
