@@ -5,6 +5,9 @@ import { useForm, useFieldArray } from "react-hook-form";
 import SubmitButton from "./SubmitButton";
 import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import DOMPurify from "dompurify";
+import clsx from "clsx";
+import { errorMessage } from "../library/styles";
 
 function TaskEdit({
   teamId,
@@ -52,8 +55,9 @@ function TaskEdit({
 
   const addSubtask = (e) => {
     e.preventDefault();
-    if (newSubtask === "") { return setError("please add description")};
-    const newSubtaskObj = { name: newSubtask, completed: false };
+    const cleanSubtask = DOMPurify.sanitize(newSubtask);
+    if (cleanSubtask === "") { return setError("please add description")};
+    const newSubtaskObj = { name: cleanSubtask, completed: false };
     append(newSubtaskObj);
     setSubtasksArr([...subtasksArr, newSubtaskObj]);
     setNewSubtask("");
@@ -67,6 +71,8 @@ function TaskEdit({
 
   const submitHandler = (data) => {
     if (isDirty) {
+      data.description = DOMPurify.sanitize(data.description);
+
       socket.emit("updateTask", data, (response) => {
         if (response.error) {
           return console.error(response.error.message);
@@ -126,7 +132,7 @@ function TaskEdit({
             disabled={isCompleted}
             onChange={handleChange}
             />
-            {error && <span className="text-xs text-red-600">{error}</span>}
+            {error && <span className={errorMessage}>{error}</span>}
             <AddButton
             text="Add Subtask"
             disabled={isCompleted}
@@ -142,7 +148,7 @@ function TaskEdit({
           <SubmitButton
           disabled={isCompleted}
           />
-          {submitError && <div className="text-xs text-red-600 text-center">{submitError}</div>}
+          {submitError && <div className={clsx("text-center", errorMessage)}>{submitError}</div>}
           </div>
         </div>
       </form>
