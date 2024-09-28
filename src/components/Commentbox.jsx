@@ -22,18 +22,9 @@ function Commentbox({ socketId, submitHandler, socketType }) {
   });
 
   const submitFn = (data) => {
+   data.message = DOMPurify.sanitize(data.message);
 
-    const cleanData = {
-      author: {
-        name: user.name,
-        id: user._id
-      },
-      message: DOMPurify.sanitize(data.message),
-      socketId,
-      socketType
-    };
-
-    if (cleanData.message.length > 0) {
+    if (data.message.length > 0) {
       submitHandler(data)
     } else {
       console.log("please enter valid message");
