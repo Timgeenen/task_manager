@@ -120,7 +120,7 @@ const generateRefreshToken = (id) => {
 
 app.use(helmet());
 app.use(cors(corsOptions));
-app.use(limiter());
+app.use(limiter);
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
