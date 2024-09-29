@@ -7,6 +7,8 @@ import { getTeamDataObj } from '../library/helperfunctions';
 import { useState } from "react";
 import { updateUser } from "../redux/state/authSlice.jsx";
 import { useSocket } from "../context/SocketProvider.jsx";
+import DOMPurify from "dompurify";
+import { errorMessage } from "../library/styles.jsx";
 
 
 function CreateTeam() {
@@ -18,15 +20,19 @@ function CreateTeam() {
   const {
     register,
     handleSubmit,
+    setError,
     reset,
     formState: { errors }
   } = useForm();
 
   const [newTeam, setNewTeam] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const createTeam = (data) => {
-    setIsLoading(true);
+    data.name = DOMPurify.sanitize(data.name);
+    if (!data.name) {
+      reset();
+      return setError("name", { type: "custom", message: "Please enter valid team name" });
+    }
     newTeam && setNewTeam(null);
     const teamData = getTeamDataObj(data, user);
     socket.emit("createTeam", teamData, (response) => {
@@ -36,9 +42,8 @@ function CreateTeam() {
       } else {
         dispatch(updateUser(response.user));
         setNewTeam(data.name);
-        reset();
       }
-      setIsLoading(false);
+      reset();
     });
   }
 
@@ -47,7 +52,6 @@ function CreateTeam() {
       <form 
       className="flex flex-col mt-10 w-2/3 min-w-72 max-w-3xl m-auto items-center p-2 rounded-xl shadow-lg bg-blue-100"
       onSubmit={handleSubmit(createTeam)}>
-        {isLoading && <div>Loading...</div>}
         {newTeam && <div className="text-xs text-green-400">
           Succesfully created new team: {newTeam}</div>}
         <div className="p-4">
