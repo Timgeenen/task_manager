@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const mongoose = require("mongoose");
 
 const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
@@ -12,6 +11,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const func = require("./functions");
 const { rateLimit } = require("express-rate-limit");
+const { User, Team, Task } = require("./mongoose")
 
 const app = express();
 const httpServer = createServer(app);
@@ -33,7 +33,6 @@ const limiter = rateLimit({
   message: "maximum number of requests reached, please try again in 10 minutes",
   legacyHeaders: true,
   standardHeaders: "draft-7",
-  skipFailedRequests: true
 })
 
 const hashPassword = async (password) => {
@@ -124,203 +123,6 @@ app.use(limiter);
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-mongoose.connect(process.env.MONGO_URI);
-
-const userSchema = new mongoose.Schema({
-  name: String,
-  role: String,
-  email: String,
-  password: String,
-  createdAt: Date,
-  updatedAt: Date,
-  isAdmin: {
-    type: Boolean,
-    default: false,
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  teams: [
-    {
-      name: String,
-      id: String,
-      managerId: String,
-      members: [
-        {
-          name: String,
-          role: String,
-          email: String,
-          id: String,
-          _id: false,
-        },
-      ],
-      _id: false,
-    },
-  ],
-  connections: [
-    {
-      name: String,
-      role: String,
-      email: String,
-      id: String,
-      _id: false,
-    },
-  ],
-  notifications: [
-    {
-      nType: String,
-      team: {
-        name: String,
-        id: String,
-        _id: false,
-      },
-      task: {
-        name: String,
-        id: String,
-        _id: false,
-      },
-      user: {
-        name: String,
-        id: String,
-        _id: false,
-      },
-      message: String,
-      isRead: {
-        type: Boolean,
-        default: false,
-      },
-      createdAt: {
-        type: Date,
-        default: new Date(),
-      },
-    },
-  ],
-  refreshToken: {
-    type: String,
-    default: null,
-  },
-});
-
-const teamSchema = new mongoose.Schema({
-  name: String,
-  manager: {
-    name: String,
-    role: String,
-    email: String,
-    id: String,
-    _id: false,
-  },
-  members: [
-    {
-      name: String,
-      role: String,
-      email: String,
-      id: String,
-      _id: false,
-    },
-  ],
-  tasks: [
-    {
-      title: String,
-      priority: String,
-      status: String,
-      deadline: Date,
-      id: String,
-      _id: false,
-    },
-  ],
-  createdOn: Date,
-  comments: [
-    {
-      author: {
-        name: String,
-        id: String,
-        _id: false,
-      },
-      message: String,
-      createdAt: {
-        type: Date,
-        default: new Date(),
-      },
-    },
-  ],
-  trash: [Map],
-});
-
-const taskSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  subtasks: [
-    {
-      name: String,
-      completed: {
-        type: Boolean,
-        default: false,
-      },
-    },
-  ],
-  createdAt: Date,
-  deadline: Date,
-  priority: String,
-  status: String,
-  assignedTo: [
-    {
-      name: String,
-      id: String,
-      _id: false,
-    },
-  ],
-  assignedTeam: {
-    name: String,
-    id: String,
-    managerId: String,
-    _id: false,
-  },
-  // activelyWorking: [
-  //   {
-  //     name: String,
-  //     id: String,
-  //     _id: false,
-  //   },
-  // ],
-  comments: [
-    {
-      author: {
-        name: String,
-        id: String,
-        _id: false,
-      },
-      message: String,
-      createdAt: Date,
-    },
-  ],
-  updates: [
-    {
-      author: {
-        name: String,
-        id: String,
-        _id: false,
-      },
-      previousState: {
-        description: String,
-        subTasks: [
-          {
-            name: String,
-            completed: Boolean,
-          },
-        ],
-        status: String,
-      },
-      updatedAt: Date,
-    },
-  ],
-});
-
-let User = mongoose.model("user", userSchema);
-let Team = mongoose.model("team", teamSchema);
-let Task = mongoose.model("task", taskSchema);
 
 //user api calls
 app.post("/login", async (req, res) => {
