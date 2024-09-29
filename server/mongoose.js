@@ -150,25 +150,60 @@ const userSchema = new mongoose.Schema(
               "New Connection",
               "New Message",
             ],
-            message: "type must be one of the following: 'New Task', 'New Team', 'Task Updated', 'New Connection', 'New Message'"
+            message:
+              "type must be one of the following: 'New Task', 'New Team', 'Task Updated', 'New Connection', 'New Message'",
           },
         },
         team: {
-          name: String,
-          id: String,
+          name: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          id: {
+            type: String,
+            required: true,
+            trim: true,
+            ref: "Team",
+          },
+          // required: () => { return this.nType === "New Task" || this.nType === "New Team" },
           _id: false,
         },
         task: {
-          name: String,
-          id: String,
+          name: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          id: {
+            type: String,
+            required: true,
+            trim: true,
+            ref: "Task",
+          },
           _id: false,
         },
         user: {
-          name: String,
-          id: String,
+          name: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          id: {
+            type: String,
+            required: true,
+            trim: true,
+            ref: "User",
+          },
           _id: false,
         },
-        message: String,
+        message: {
+          type: String,
+          required: true,
+          trim: true,
+          minLength: [3, "message must be at least 3 characters long"],
+          maxLength: [254, "message can be a maximum of 254 characters long"]
+        },
         isRead: {
           type: Boolean,
           default: false,
@@ -188,42 +223,119 @@ const userSchema = new mongoose.Schema(
 );
 
 const teamSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+    match: ["/^[A-Za-z0-9 ]*$/", "name cannot contain any special characters"],
+    minLength: [8, "team name must be at least 8 characters long"],
+    maxLength: [50, "team name can be a maximum of 50 characters long"],
+    trim: true,
+  },
   manager: {
-    name: String,
-    role: String,
-    email: String,
-    id: String,
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    role: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    id: {
+      type: String,
+      required: true,
+      trim: true,
+      ref: "User",
+    },
     _id: false,
   },
   members: [
     {
-      name: String,
-      role: String,
-      email: String,
-      id: String,
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      role: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      email: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      id: {
+        type: String,
+        required: true,
+        trim: true,
+        ref: "User"
+      },
       _id: false,
     },
   ],
   tasks: [
     {
-      title: String,
-      priority: String,
-      status: String,
-      deadline: Date,
-      id: String,
+      title: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      priority: {
+        type: String,
+        required: true,
+        trim: true,
+        enum: ["low", "medium", "high"]
+      },
+      status: {
+        type: String,
+        required: true,
+        trim: true,
+        enum: ["pending", "in progress", "completed"]
+      },
+      deadline: {
+        type: Date,
+        required: true,
+        trim: true
+      },
+      id: {
+        type: String,
+        required: true,
+        trim: true,
+        ref: "Task"
+      },
       _id: false,
     },
   ],
-  createdOn: Date,
   comments: [
     {
       author: {
-        name: String,
-        id: String,
+        name: {
+          type: String,
+          required: true,
+          trim: true
+        },
+        id: {
+          type: String,
+          required: true,
+          trim: true,
+          ref: "User"
+        },
         _id: false,
       },
-      message: String,
+      message: {
+        type: String,
+        required: true,
+        minLength: [1, "message must contain at least 1 char"],
+        maxLength: [500, "message can contain a maximum of 500 characters"]
+      },
       createdAt: {
         type: Date,
         default: new Date(),
@@ -231,10 +343,14 @@ const teamSchema = new mongoose.Schema({
     },
   ],
   trash: [Map],
-});
+}, { timestamps: true});
 
 const taskSchema = new mongoose.Schema({
-  title: String,
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   description: String,
   subtasks: [
     {
