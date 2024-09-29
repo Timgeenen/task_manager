@@ -350,73 +350,159 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    match: [
+      "/^[A-Za-z0-9 ]*$/",
+      "task name cannot contain any special characters",
+    ],
+    minLength: [8, "task name must be at least 8 characters long"],
+    maxLength: [50, "task name can be a maximum of 50 characters long"],
   },
-  description: String,
+  description: {
+    type: String,
+    required: true,
+    minLength: [1, "task description must contain at least 1 character"],
+  },
   subtasks: [
     {
-      name: String,
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
       completed: {
         type: Boolean,
         default: false,
       },
     },
   ],
-  createdAt: Date,
-  deadline: Date,
-  priority: String,
-  status: String,
+  deadline: {
+    type: Date,
+    required: true,
+    trim: true,
+  },
+  priority: {
+    type: String,
+    required: true,
+    trim: true,
+    enum: ["low", "medium", "high"],
+  },
+  status: {
+    type: String,
+    required: true,
+    trim: true,
+    enum: ["pending", "in progress", "completed"],
+  },
   assignedTo: [
     {
-      name: String,
-      id: String,
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      id: {
+        type: String,
+        required: true,
+        trim: true,
+        ref: "User",
+      },
       _id: false,
     },
   ],
   assignedTeam: {
-    name: String,
-    id: String,
-    managerId: String,
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    id: {
+      type: String,
+      required: true,
+      trim: true,
+      ref: "Team",
+    },
+    managerId: {
+      type: String,
+      required: true,
+      trim: true,
+      ref: "User",
+    },
     _id: false,
   },
-  // activelyWorking: [
-  //   {
-  //     name: String,
-  //     id: String,
-  //     _id: false,
-  //   },
-  // ],
   comments: [
     {
       author: {
-        name: String,
-        id: String,
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        id: {
+          type: String,
+          required: true,
+          trim: true,
+          ref: "User",
+        },
         _id: false,
       },
-      message: String,
-      createdAt: Date,
+      message: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: [1, "message must be at least 1 char long"],
+      },
+      createdAt: {
+        type: Date,
+        required: true,
+        default: new Date(),
+        trim: true,
+      },
     },
   ],
   updates: [
     {
       author: {
-        name: String,
-        id: String,
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        id: {
+          type: String,
+          required: true,
+          trim: true,
+          ref: "User",
+        },
         _id: false,
       },
       previousState: {
-        description: String,
+        description: {
+          type: String,
+          required: true,
+          trim: true
+        },
         subTasks: [
           {
-            name: String,
-            completed: Boolean,
+            name: {
+              type: String,
+              required: true,
+              trim: true
+            },
+            completed: {
+              type: Boolean,
+              required: true
+            },
           },
         ],
-        status: String,
+        status: {
+          type: String,
+          required: true,
+          trim: true,
+          enum: ["pending", "in progress", "completed"]
+        },
       },
-      updatedAt: Date,
     },
   ],
-});
+}, { timestamps: true });
 
 let User = mongoose.model("user", userSchema);
 let Team = mongoose.model("team", teamSchema);
