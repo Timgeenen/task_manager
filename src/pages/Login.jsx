@@ -7,6 +7,7 @@ import { login } from "../redux/state/authSlice";
 import { useMutation } from "@tanstack/react-query";
 import { createUser, authenticateUser } from "../api/Event";
 import useToggle from "../hooks/useToggle";
+import DOMPurify from "dompurify";
 
 function Login() {
   const { user } = useSelector(state => state.auth);
@@ -39,6 +40,16 @@ function Login() {
   });
 
   const loginUser = (data) => {
+    data.email = DOMPurify.sanitize(data.email);
+    data.password = DOMPurify.sanitize(data.password);
+
+    if (!data.email) {
+      return setError("email", {type: "custom", message: "Please enter a valid email adress"});
+    }
+    if (data.password === "") {
+      return setError("password", {type: "custom", message: "Please enter a valid password"});
+    }
+
     loginMutation.mutate(data);
     if (loginMutation.isError) {
       setError("password", {
@@ -50,6 +61,25 @@ function Login() {
   }
 
   const registerUser = (data) => {
+    data.email = DOMPurify.sanitize(data.email);
+    data.password = DOMPurify.sanitize(data.password);
+    data.verifyPassword = DOMPurify.sanitize(data.verifyPassword);
+    data.name = DOMPurify.sanitize(data.name);
+    data.role = DOMPurify.sanitize(data.role);
+
+    if (!data.email) {
+      return setError("email", { type: "custom", message: "Please enter a valid email adress" });
+    }
+    if (!data.password) {
+      return setError("password", { type: "custom", message: "Please enter a valid password" });
+    }
+    if (!data.name) {
+      return setError("name", { type: "custom", message: "Please enter a valid name"});
+    }
+    if (!data.role) {
+      return setError("role", { type: "custom", message: "Please enter a valid role"});
+    }
+
     if (data.password !== data.verifyPassword) {
       return setError("password", {
         type: "custom",
