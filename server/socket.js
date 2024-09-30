@@ -7,13 +7,13 @@ const initializeSocket = (httpServer) => {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: "*",
+      origin: "http://localhost:3000",
       methods: ["GET", "POST", "PUT", "DELETE"],
     },
   });
 
   io.on("connection", (socket) => {
-    console.log("connecting")
+
     const { accessToken } = func.getCookies(socket.handshake.headers.cookie);
     const { myId } = jwt.decode(accessToken);
     const type = socket.handshake.auth.type;
@@ -98,6 +98,7 @@ const initializeSocket = (httpServer) => {
       } = taskData;
 
       const ids = members.map((member) => member.id);
+      ids.push(myId);
 
       const data = {
         title,
@@ -179,9 +180,10 @@ const initializeSocket = (httpServer) => {
           updatedAt: func.newDate(),
         };
 
-        task.updates.unshift(updateObj);
         task.subtasks = subtasks;
         task.description = description;
+        task.updates.unshift(updateObj);
+
 
         if (completed) {
           task.status = "completed";
@@ -225,11 +227,47 @@ const initializeSocket = (httpServer) => {
           notificationObj
         );
 
-        callback(updateObj);
+        callback(task);
       } catch (error) {
         callback(error);
       }
     });
+
+    socket.on("addConnection", async (id, callback) => {
+
+      const activeUser = await User.findById(myId);
+      const addedUser = await User.findById(id);
+
+      if (!activeUser || !addedUser) {
+        return callback({ error: "user not found" });
+      }
+
+      const activeUserData = func.createConnectionObj(activeUser);
+      const addedUserData = func.createConnectionObj(addedUser);
+
+      const notificationObj = {
+        nType: "New Connection",
+        user: {
+          name: activeUser.name,
+          id: activeUser._id,
+        },
+        message: `${activeUser.name} has been added to your connections`,
+      };
+
+      try {
+        activeUser.connections.push(addedUserData);
+        addedUser.connections.push(activeUserData);
+        addedUser.notifications.unshift(notificationObj);
+        await activeUser.save();
+        await addedUser.save();
+
+        io.to(id).emit("receiveNotification", notificationObj);
+
+        callback({ user: activeUser });
+      } catch (error) {
+        callback(error);
+      }
+    })
 
     socket.on("readNotification", async (notificationId, callback) => {
       try {

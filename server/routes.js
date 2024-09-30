@@ -137,42 +137,6 @@ router.post("/get-connected", authMiddleware, async (req, res) => {
   }
 });
 
-router.put("/add-connection", authMiddleware, async (req, res) => {
-  const { id } = req.body;
-  const { myId } = req.user;
-
-  const activeUser = await User.findById(myId);
-  const addedUser = await User.findById(id);
-
-  if (!activeUser || !addedUser) {
-    res.send({ error: "user not found" });
-  }
-
-  const activeUserData = func.createConnectionObj(activeUser);
-  const addedUserData = func.createConnectionObj(addedUser);
-  const notificationObj = {
-    nType: "New Connection",
-    user: {
-      name: activeUser.name,
-      id: activeUser._id,
-    },
-    message: `${activeUser.name} has been added to your connections`,
-  };
-
-  try {
-    activeUser.connections.push(addedUserData);
-    addedUser.connections.push(activeUserData);
-    addedUser.notifications.unshift(notificationObj);
-    await activeUser.save();
-    await addedUser.save();
-
-    io.to(id).emit("receiveNotification", notificationObj);
-    res.send({ user: activeUser });
-  } catch (error) {
-    res.send(error);
-  }
-});
-
 router.get("/user:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { myId } = req.user;
@@ -239,18 +203,7 @@ router.get("/notifications", authMiddleware, async (req, res) => {
 router.get("/task:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   try {
-    const task = await Task.findById(id, {
-      title: 1,
-      description: 1,
-      subtasks: 1,
-      deadline: 1,
-      priority: 1,
-      status: 1,
-      assignedTo: 1,
-      assignedTeam: 1,
-      comments: 1,
-      updates: 1,
-    });
+    const task = await Task.findById(id);
     res.send(task);
   } catch (err) {
     res.send(err);
