@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddButton from "./AddButton";
 import Checkbox from "./Checkbox";
 import { useForm, useFieldArray } from "react-hook-form";
 import SubmitButton from "./SubmitButton";
 import { IoClose } from "react-icons/io5";
-import { useSelector } from "react-redux";
 import DOMPurify from "dompurify";
 import clsx from "clsx";
 import { errorMessage } from "../library/styles";
+import { useSocket } from "../context/SocketProvider";
+import { QueryClient } from "@tanstack/react-query";
 
 function TaskEdit({
   teamId,
@@ -16,9 +17,10 @@ function TaskEdit({
   subtasks,
   priority,
   status,
-  refetch
 }) {
-  const { socket } = useSelector(state => state.auth);
+
+  const socket = useSocket();
+  const queryClient = new QueryClient();
 
   const {
     register,
@@ -52,6 +54,7 @@ function TaskEdit({
   const [error, setError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [isCompleted, setIsCompleted] = useState(status === "completed" ? true : false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   const addSubtask = (e) => {
     e.preventDefault();
@@ -72,12 +75,14 @@ function TaskEdit({
   const submitHandler = (data) => {
     if (isDirty) {
       data.description = DOMPurify.sanitize(data.description);
+      setUpdateSuccess(false);
 
       socket.emit("updateTask", data, (response) => {
         if (response.error) {
           return console.error(response.error.message);
         } else {
-          refetch();
+          setUpdateSuccess(true);
+          queryClient.setQueryData([`task-${taskId}`], response);
         }
       })
     } else {
@@ -89,6 +94,7 @@ function TaskEdit({
 
   return (
     <div>
+      {updateSuccess && <div className="text-xs text-green-500 text-center">Succesfully updated task</div>}
       {isCompleted && <div className="text-center pt-5 text-3xl font-semibold text-green-500">Completed!</div>}
       <form
       className="flex gap-8 items-center"
