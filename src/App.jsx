@@ -1,48 +1,95 @@
-import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import { useDispatch, useSelector } from "react-redux";
-import Dashboard from "./pages/Dashboard";
-import Tasks from "./pages/Tasks";
-import TaskInfo from "./pages/TaskInfo";
-import Connections from "./pages/Connections";
-import FindConnections from "./pages/FindConnections";
-import Teams from "./pages/Teams";
-import Trash from "./pages/Trash";
-import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { setOpenSidebar } from "./redux/state/authSlice";
-import CreateTeam from "./pages/CreateTeam";
-import CreateTask from "./pages/CreateTask";
-import TeamInfo from "./pages/TeamInfo";
 import SocketProvider from "./context/SocketProvider";
+import { lazy, Suspense } from "react";
+import Loading from "./components/Loading";
 
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const CreateTask = lazy(() => import("./pages/CreateTask"));
+const Tasks = lazy(() => import("./pages/Tasks"));
+const TaskInfo = lazy(() => import("./pages/TaskInfo"))
+const Teams = lazy(() => import("./pages/Teams"));
+const TeamInfo = lazy(() => import("./pages/TeamInfo"));
+const CreateTeam = lazy(() => import("./pages/CreateTeam"));
+const Connections = lazy(() => import("./pages/Connections"));
+const FindConnections = lazy(() => import("./pages/FindConnections"));
+const Trash = lazy(() => import("./pages/Trash"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Navigate to="/dashboard" />} index />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/create-task" element={<CreateTask />} />
-        <Route path="/tasks" element={<Tasks />} />
+        <Route path="/dashboard" element={
+          <Suspense fallback={<Loading />}>
+            <Dashboard />
+          </Suspense>
+          } />
+        <Route path="/create-task" element={
+          <Suspense fallback={<Loading />}>
+            <CreateTask />
+          </Suspense>
+          } />
+        <Route path="/tasks" element={
+          <Suspense fallback={<Loading />}>
+            <Tasks />
+          </Suspense>
+          } />
         <Route path="/task-info">
-          <Route path=":taskId" element={<TaskInfo />} />
+          <Route path=":taskId" element={
+            <Suspense fallback={<Loading />}>
+              <TaskInfo />
+            </Suspense>
+            } />
         </Route>
-        <Route path="/teams" element={<Teams />} />
+        <Route path="/teams" element={
+          <Suspense fallback={<Loading />}>
+            <Teams />
+          </Suspense>
+          } />
         <Route path="/team-info">
-          <Route path=":teamId" element={<TeamInfo />} />
+          <Route path=":teamId" element={
+            <Suspense fallback={<Loading />}>
+              <TeamInfo />
+            </Suspense>
+            } />
         </Route>
-        <Route path="/create-team" element={<CreateTeam />} />
-        <Route path="/connections" element={<Connections />} />
-        <Route path="/find-connections" element={<FindConnections />} />
-        <Route path="/trash" element={<Trash />} />
+        <Route path="/create-team" element={
+          <Suspense fallback={<Loading />}>
+            <CreateTeam />
+          </Suspense>
+          } />
+        <Route path="/connections" element={
+          <Suspense fallback={<Loading />}>
+            <Connections />
+          </Suspense>
+          } />
+        <Route path="/find-connections" element={
+          <Suspense fallback={<Loading />}>
+            <FindConnections />
+          </Suspense>
+          } />
+        <Route path="/trash" element={
+          <Suspense fallback={<Loading />}>
+            <Trash />
+          </Suspense>
+          } />
         <Route path="/profile">
-          <Route path=":userId" element={<Profile />} />
+          <Route path=":userId" element={
+            <Suspense fallback={<Loading />}>
+              <Profile />
+            </Suspense>
+            } />
         </Route>
       </Route>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={
+        <Login />} />
     </Routes>
   )
 }
