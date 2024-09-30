@@ -1,9 +1,12 @@
 import { getFilteredConnections } from "../library/helperfunctions";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { addConnection, getAllUsers } from "../api/Event";
+import { useQuery } from "@tanstack/react-query";
+import { getAllUsers } from "../api/Event";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../redux/state/authSlice";
 import UserInfo from "../components/UserInfo";
+import { useSocket } from "../context/SocketProvider";
+import { useState } from "react";
+import { errorMessage } from "../library/styles";
 
 function FindConnections() {
   const dispatch = useDispatch();
@@ -12,10 +15,9 @@ function FindConnections() {
     queryFn: getAllUsers,
   });
 
-  const mutation = useMutation({
-    mutationKey: ["add-connection"],
-    mutationFn: (userId) => addConnection(userId)
-  });
+  const socket = useSocket();
+  const [updateError, setUpdateError] = useState(null);
+  const [isSuccess, setIsSuccess] = useState(null);
 
   if (isPending) {
     return (
@@ -29,18 +31,23 @@ function FindConnections() {
   }
 
   const addFriend = async (id) => {
-    mutation.mutateAsync(id);
+    setIsSuccess(null);
+    setUpdateError(null)
+    socket.emit("addConnection", id, (response => {
+      if (response.error) {
+        setUpdateError(response.error.message);
+      } else {
+        setIsSuccess(true);
+        dispatch(updateUser(response.user));
+        refetch();
+      }
+    }))
   };
-
-  if (mutation.isError) { alert(mutation.error.message)};
-  if (mutation.isSuccess)  { 
-    dispatch(updateUser(mutation.data.user))
-    refetch();
-  }
 
   return (
     <div className="w-full m-4 mt-10 flex flex-col gap-2 text-lg">
-      {mutation.isSuccess && <div className="text-xs text-green-400">Succesfully added connection</div>}
+      {isSuccess && <div className="text-xs text-green-400">Succesfully added connection</div>}
+      {updateError && <div className={errorMessage}>{updateError}</div>}
       {getFilteredConnections(data)?.map((item, i) => (
         <UserInfo
         name={item.name}
