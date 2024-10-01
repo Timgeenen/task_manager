@@ -115,7 +115,7 @@ function CreateTask() {
         />
 
         <Optionbox 
-        options={user.teams}
+        options={user?.teams?.filter(team => team.managerId === user._id)}
         register={register("team")}
         defaultText="--Select Team"
         defaultValue=""
@@ -127,13 +127,16 @@ function CreateTask() {
         {
           user.teams.map((team) => (
             team.id === selectedTeam &&
-            team.members.map((member) => (
-              <Checkbox 
-              value={member.id}
-              text={member.name}
-              register={register("members")}
-              />
-            ))
+            team.members.map((member) => {
+              if (member.id === user._id) { return }
+              return (
+                <Checkbox 
+                value={member.id}
+                text={member.name}
+                register={register("members")}
+                />
+              )
+            })
           ))
         }
         </div>
