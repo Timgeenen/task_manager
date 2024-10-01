@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Chatroom from "../components/Chatroom";
 import TaskEdit from "../components/TaskEdit";
 import TaskOverview from "../components/TaskOverview";
+import Loading from "../components/Loading";
 
 function TaskInfo() {
   const { taskId } = useParams();
@@ -19,7 +20,7 @@ function TaskInfo() {
     queryFn: () => getTaskById(taskId),
   });
 
-  if (isPending) { return ( <div>Loading...</div> ) };
+  if (isPending) { return ( <Loading /> ) };
   if (isError) { return ( <div>{ error.message }</div> ) };
 
   return (

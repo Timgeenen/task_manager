@@ -7,6 +7,7 @@ import UserInfo from "../components/UserInfo";
 import { useSocket } from "../context/SocketProvider";
 import { useState } from "react";
 import { errorMessage } from "../library/styles";
+import Loading from "../components/Loading";
 
 function FindConnections() {
   const dispatch = useDispatch();
@@ -21,7 +22,7 @@ function FindConnections() {
 
   if (isPending) {
     return (
-      <div>Loading...</div>
+      <Loading />
     )
   }
   if (isError) {

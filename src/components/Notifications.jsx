@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { useSocket } from "../context/SocketProvider";
 import { useSelector } from "react-redux";
+import Loading from "./Loading";
 
 function Notifications() {
   const {
@@ -67,7 +68,7 @@ function Notifications() {
     appendTo={document.body}
     content={
       <div className="flex flex-col p-2 gap-2">
-        {isLoading && <span>Loading...</span>}
+        {isLoading && <Loading />}
         {isSuccess && data?.slice(0, 10).map((item, i) => (
           <NotificationLink
           message={item.message}

@@ -7,6 +7,7 @@ import clsx from "clsx";
 import useToggle from "../hooks/useToggle";
 import PopupMessage from "./PopupMessage";
 import { useSocket } from "../context/SocketProvider";
+import Loading from "./Loading";
 
 function NotificationList() {
   const { isLoading, isError, isSuccess, error, data, refetch } = useQuery({
@@ -36,7 +37,7 @@ function NotificationList() {
 
   return (
     <div className="w-2/3 m-auto mt-10 border-2 relative rounded-lg">
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Loading />}
       <div className="grid grid-cols-6 p-2 bg-blue-400 font-semibold rounded-t-md">
         <span className="col-span-1">Title</span>
         <span className="col-span-1">Type</span>

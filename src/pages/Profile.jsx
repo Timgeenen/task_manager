@@ -8,6 +8,7 @@ import clsx from "clsx";
 import MembersTag from "../components/MembersTag";
 import TeamTagSmall from "../components/TeamTagSmall";
 import usePages from "../hooks/usePages";
+import Loading from "../components/Loading";
 
 function Profile() {
   const { userId } = useParams();
@@ -25,7 +26,7 @@ function Profile() {
 
   return (
     <div className="w-full flex flex-col items-center mt-10">
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Loading />}
       {data &&
         <div>
           <div className="flex mb-4">

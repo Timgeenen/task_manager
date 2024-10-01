@@ -1,11 +1,10 @@
 import { useSelector } from "react-redux"
-import { getTeamIdArray, getTimePassed } from "../library/helperfunctions";
+import { getTeamIdArray } from "../library/helperfunctions";
 import { useQuery } from "@tanstack/react-query";
 import { getConnections } from "../api/Event";
-import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-import { ellipsis } from "../library/styles";
 import UserInfo from "../components/UserInfo";
+import Loading from "../components/Loading";
 
 function Connections() {
   const { user } = useSelector(state => state.auth);
@@ -21,7 +20,7 @@ function Connections() {
 
   return (
     <div className="w-full p-4 flex flex-col gap-2 overflow-y-scroll">
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Loading />}
       {
         data?.map(item => (
           <UserInfo

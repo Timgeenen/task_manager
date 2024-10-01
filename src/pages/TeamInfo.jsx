@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { getTeamById } from "../api/Event";
 import MembersTag from "../components/MembersTag";
 import Chatroom from "../components/Chatroom";
+import Loading from "../components/Loading";
 
 function TeamInfo() {
   const { teamId } = useParams();
@@ -17,7 +18,7 @@ function TeamInfo() {
 
   return (
     <div className="w-full h-full flex justify-center">
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Loading />}
       {data && 
         <div className="w-3/4 mt-8">
           <div className="mb-4">

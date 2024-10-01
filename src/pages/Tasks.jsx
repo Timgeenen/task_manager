@@ -7,6 +7,8 @@ import DateSelect from "../components/DateSelect.jsx";
 import { useSelector } from "react-redux";
 import Optionbox from "../components/Optionbox.jsx";
 import { LuRefreshCcw } from "react-icons/lu";
+import Loading from "../components/Loading";
+
 
 function Tasks () {
   const teams = useSelector(state => state.auth.user.teams);
@@ -93,7 +95,6 @@ function Tasks () {
           </button>
         </div>
       </div>
-      {isLoading && <div>Loading...</div>}
       <div className="m-2">
         <div className="sticky grid grid-flow-col auto-cols-fr items-center bg-blue-400 rounded-t-xl pl-2 pr-2 font-semibold">
           {
@@ -105,6 +106,7 @@ function Tasks () {
             ))
           }
         </div>
+        {isLoading && <Loading />}
         {isSuccess && 
           <TaskList
           data={data}

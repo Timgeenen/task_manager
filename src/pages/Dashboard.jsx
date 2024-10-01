@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getTeamIdArray } from "../library/helperfunctions";
 import { getTeamTaskArr } from "../api/Event";
+import Loading from "../components/Loading";
 
 function Dashboard() {
   const { user } = useSelector(state => state.auth);
@@ -38,7 +39,7 @@ function Dashboard() {
 
   return (
     <div className="w-full flex flex-col gap-2 items-center">
-      {isPending && <div>Loading...</div>}
+      {isPending && <Loading />}
       {data &&
       <>
         <select onChange={changeTeam}>

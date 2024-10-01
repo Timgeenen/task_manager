@@ -6,6 +6,7 @@ import { BACKEND } from "../library/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCommentsById } from "../api/Event";
 import useAuthorize from "../hooks/useAuthorize";
+import Loading from "./Loading";
 
 function Chatroom({ socketId, socketType }) {
   const [socket, setSocket] = useState(null);
@@ -66,7 +67,7 @@ function Chatroom({ socketId, socketType }) {
       socketType={socketType}
       />
       <div className="flex flex-col gap-2 h-64 p-2 overflow-y-scroll w-full rounded-lg">
-        {isLoading && <div>Loading....</div>}
+        {isLoading && <Loading />}
         {isSuccess && data?.comments?.map((comment) => (
           <Comment
           authorName={comment.author.name}

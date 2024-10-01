@@ -5,6 +5,7 @@ import { getAllTeams } from "../api/Event";
 import { countTasksByPriority, countTasksByStatus, getUrgentDeadlines } from "../library/helperfunctions";
 import Countup from "../components/Countup";
 import usePages from "../hooks/usePages";
+import Loading from "../components/Loading";
 
 function Teams() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ function Teams() {
           </button>
         </div>
       }
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Loading />}
       {isSuccess && data?.map((team, i) => {
           if (i < low || i > high) {return}
           const status = countTasksByStatus(team.tasks);
