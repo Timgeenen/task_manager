@@ -4,7 +4,7 @@ import { getTeamIdArray } from "../library/helperfunctions";
 import { store } from "../redux/store";
 import { logout } from "../redux/state/authSlice";
 
-axios.defaults.baseURL = BACKEND;
+axios.defaults.baseURL = BACKEND + "/api";
 axios.defaults.withCredentials = true
 
 const user = store.getState().auth.user;
