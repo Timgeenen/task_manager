@@ -1,7 +1,9 @@
+import Loading from "../components/Loading"
+
 function Trash() {
   return (
     <div>
-      Trash
+      <Loading />
     </div>
   )
 }
