@@ -29,9 +29,9 @@ function Profile() {
       {isLoading && <Loading />}
       {data &&
         <div>
-          <div className="flex mb-4">
-            <div className="flex w-1/2 p-2">
-              <div className="flex flex-col p-2 font-semibold text-lg">
+          <div className="flex flex-col mb-4">
+            <div className="flex w-full p-2 pl-0">
+              <div className="flex flex-col p-2 pl-0 font-semibold text-lg">
                 <span>Name</span>
                 <span>Email</span>
                 <span>Role</span>
@@ -47,7 +47,7 @@ function Profile() {
               </div>
             </div>
             {!myProfile && data?.mutualConnections.length > 0 &&
-              <div className="w-1/2">
+              <div className="w-full">
                 <div>Mutual Connections</div>
                 <div className="flex flex-wrap pr-4">
                 {data?.mutualConnections?.map((member, i) => (
@@ -63,17 +63,17 @@ function Profile() {
           </div>
 
           {!myProfile && data?.mutualTeams.length > 0 &&
-          <div className="flex min-w-2xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
+          <div className="flex min-w-xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
             <button
             className="bg-blue-200 p-3 hover:bg-blue-300"
             onClick={prev}
             >{"<"}</button>
-            <div className="flex flex-col items-center bg-blue-50">
+            <div className="flex flex-col w-full items-center bg-blue-50">
               <span>Mutual Teams</span>
               <div className="flex flex-wrap gap-10 p-5 justify-center">
                 {data?.mutualTeams?.map((team, i) => {
                   if (i < low || i > high) { return }
-                  const manager = team.members.find(member => member.id === (team.managerId ? team.managerId : user._id))//remove
+                  const manager = team.members.find(member => member.id === (team.managerId ? team.managerId : user._id))
                   return (
                     <TeamTagSmall
                     name={team.name}
