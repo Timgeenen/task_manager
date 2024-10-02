@@ -32,7 +32,7 @@ function TaskList({data, status, from, to, team, priority}) {
         return (
         <div
         key={task._id}
-        className={clsx(`grid grid-flow-col auto-cols-fr items-center border-2 m-1 h-14 rounded-full bg-opacity-75 hover:shadow-md hover:bg-opacity-100`, overDue && "border-red-600 font-extrabold", task.status === "pending" ? "bg-red-400" : task.status === "completed" ? "bg-green-400" : "bg-blue-400")}
+        className={clsx(`grid grid-flow-col auto-cols-fr items-center border-2 m-1 h-14 rounded-full bg-opacity-75 hover:shadow-md hover:bg-opacity-100`, overDue && "border-red-600 font-extrabold", task.status === "pending" ? "bg-blue-400" : task.status === "completed" ? "bg-green-400" : "bg-yellow-400")}
         >
           <button
           onClick={() => navigate("/task-info/" + task._id)}

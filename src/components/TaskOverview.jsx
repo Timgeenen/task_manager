@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import MembersTag from "./MembersTag";
 
 function TaskOverview({
@@ -31,20 +32,34 @@ function TaskOverview({
       <TaskDescription
       label="Priority"
       value={priority}
+      textClass={
+        priority === "low" ?
+        "text-green-500" :
+        priority === "medium" ?
+        "text-yellow-500" :
+        "text-red-500"
+      }
       />
       <TaskDescription
       label="Status"
       value={status}
+      textClass={
+        status === "completed" ?
+        "text-green-500" :
+        status === "in progress" ?
+        "text-yellow-500" :
+        "text-blue-500"
+      }
       />
     </div>
   )
 }
 
-function TaskDescription({ label, value }) {
+function TaskDescription({ label, value, textClass, className }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className={clsx(className, "flex flex-col gap-1")}>
       <span className="text-sm">{label}</span>
-      <span className="text-lg">{value}</span>
+      <span className={clsx(textClass, "text-lg")}>{value}</span>
     </div>
   )
 }
