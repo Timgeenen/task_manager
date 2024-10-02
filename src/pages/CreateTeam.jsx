@@ -8,8 +8,6 @@ import { useState } from "react";
 import { updateUser } from "../redux/state/authSlice.jsx";
 import { useSocket } from "../context/SocketProvider.jsx";
 import DOMPurify from "dompurify";
-import { errorMessage } from "../library/styles.jsx";
-
 
 function CreateTeam() {
   const { user } = useSelector(state => state.auth);
@@ -38,7 +36,7 @@ function CreateTeam() {
     socket.emit("createTeam", teamData, (response) => {
       if (response.error) {
         const { error } = response;
-        return console.error(`Creating task failed.\nError message: ${error.message}.\nStatus:${error.status}`);
+        return setError("name", {type: "custom", message: error.message});
       } else {
         dispatch(updateUser(response.user));
         setNewTeam(data.name);
