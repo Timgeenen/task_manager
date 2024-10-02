@@ -13,7 +13,6 @@ function TaskInfo() {
     isPending,
     isError,
     error,
-    refetch,
     data
   } = useQuery({
     queryKey: [`task-${taskId}`],
@@ -40,7 +39,9 @@ function TaskInfo() {
       subtasks={data?.subtasks}
       priority={data?.priority}
       status={data?.status}
-      refetch={refetch}
+      workingOnTask={data?.workingOnTask}
+      teamMembers={data?.assignedTo}
+      managerId={data?.managerId}
       />
       <Chatroom
       socketId={taskId}
