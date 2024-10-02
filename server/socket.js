@@ -4,16 +4,17 @@ const { User, Team, Task } = require("./mongoose");
 const { Server } = require("socket.io");
 
 const initializeSocket = (httpServer) => {
-
   const io = new Server(httpServer, {
     cors: {
       origin: "http://localhost:3000",
       methods: ["GET", "POST", "PUT", "DELETE"],
     },
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 1000 * 60 * 5,
+    },
   });
 
   io.on("connection", (socket) => {
-
     const { accessToken } = func.getCookies(socket.handshake.headers.cookie);
     const { myId } = jwt.decode(accessToken);
     const type = socket.handshake.auth.type;
@@ -30,6 +31,10 @@ const initializeSocket = (httpServer) => {
         })
         .catch((err) => console.error(err.message));
     }
+
+    socket.on("reconnect", () => {
+      console.log("Reconnected to sockets");
+    });
 
     socket.on("createTeam", async (teamData, callback) => {
       const { name, manager, members } = teamData;
@@ -184,7 +189,6 @@ const initializeSocket = (httpServer) => {
         task.description = description;
         task.updates.unshift(updateObj);
 
-
         if (completed) {
           task.status = "completed";
         }
@@ -233,8 +237,39 @@ const initializeSocket = (httpServer) => {
       }
     });
 
-    socket.on("addConnection", async (id, callback) => {
+    socket.on("startWorkingOnTask", async (taskId, callback) => {
+      const task = await Task.findById(taskId);
+      if (!task) {
+        return callback({ error: { message: "Invalid task id", status: 404 } });
+      }
+      if (task.status === "completed") {
+        return callback({
+          error: { message: "Task has already been completed", status: 403 },
+        });
+      }
+      if (task.workingOnTask.includes(myId)) {
+        return callback({
+          error: { message: "User is already working on task", status: 403 },
+        });
+      }
+      if (
+        task.assignedTo.find((item) => item.id === myId) ||
+        task.assignedTeam.managerId === myId
+      ) {
+        task.workingOnTask.push(myId);
+        if (task.status === "pending") {
+          task.status = "in progress";
+        }
+        task.save();
+        return callback(task);
+      } else {
+        return callback({
+          error: { message: "Unauthorized access", status: 403 },
+        });
+      }
+    });
 
+    socket.on("addConnection", async (id, callback) => {
       const activeUser = await User.findById(myId);
       const addedUser = await User.findById(id);
 
@@ -267,7 +302,7 @@ const initializeSocket = (httpServer) => {
       } catch (error) {
         callback(error);
       }
-    })
+    });
 
     socket.on("readNotification", async (notificationId, callback) => {
       try {
@@ -360,7 +395,7 @@ const initializeSocket = (httpServer) => {
     });
   });
 
-  return io
+  return io;
 };
 
 module.exports = initializeSocket;
