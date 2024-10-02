@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     teams: [
       {
@@ -205,10 +205,10 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    refreshToken: {
-      type: String,
-      default: null,
-    },
+    // refreshToken: {
+    //   type: String,
+    //   default: null,
+    // },
   },
   { timestamps: true }
 );
@@ -398,6 +398,12 @@ const taskSchema = new mongoose.Schema({
       },
       _id: false,
     },
+  ],
+  workingOnTask: [
+    {
+      type: String,
+      ref: "User"
+    }
   ],
   assignedTeam: {
     name: {
