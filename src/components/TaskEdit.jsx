@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddButton from "./AddButton";
 import Checkbox from "./Checkbox";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -34,6 +34,7 @@ function TaskEdit({
     control,
     handleSubmit,
     setValue,
+    reset,
     formState: { isDirty }
   } = useForm({
     defaultValues: {
@@ -103,6 +104,16 @@ function TaskEdit({
         } else {
           setUpdateSuccess(true);
           queryClient.setQueryData([`task-${taskId}`], response);
+          const updatedFormData = {
+            teamId,
+            taskId,
+            subtasks: response.subtasks,
+            priority,
+            status: response.status,
+            description: response.description,
+            completed: response.status === "completed" ? true : false
+          }
+          reset(updatedFormData)
         }
       })
     } else {
