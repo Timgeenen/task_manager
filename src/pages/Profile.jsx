@@ -46,7 +46,7 @@ function Profile() {
                 >{data?.user?.isActive ? "Online" : `${getTimePassed(data?.user?.updatedAt)} ago`}</span>
               </div>
             </div>
-            {!myProfile && data?.mutualConnections.length > 0 &&
+            {!myProfile && data?.mutualConnections?.length > 0 &&
               <div className="w-full">
                 <div>Mutual Connections</div>
                 <div className="flex flex-wrap pr-4">
@@ -62,7 +62,7 @@ function Profile() {
             }
           </div>
 
-          {!myProfile && data?.mutualTeams.length > 0 &&
+          {!myProfile && data?.mutualTeams?.length > 0 &&
           <div className="flex min-w-xl max-w-2xl shadow-lg rounded-3xl overflow-clip">
             <button
             className="bg-blue-200 p-3 hover:bg-blue-300"
