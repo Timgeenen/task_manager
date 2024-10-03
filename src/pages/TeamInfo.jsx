@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { getTeamById } from "../api/Event";
 import MembersTag from "../components/MembersTag";
 import Chatroom from "../components/Chatroom";
 import Loading from "../components/Loading";
+import TasksListSmall from "../components/TasksListSmall";
 
 function TeamInfo() {
   const { teamId } = useParams();
-  const navigate = useNavigate();
 
   const { isLoading, isError, error, data } = useQuery({
     queryKey: [`team-${teamId}`],
@@ -38,29 +38,7 @@ function TeamInfo() {
                   />
                 ))}
               </div>
-              <div
-              className="w-full h-68"
-              >
-                <span className="grid grid-flow-col auto-cols-fr p-1 text-center border-2 rounded-full font-semibold">
-                  <span>Title</span>
-                  <span>Priority</span>
-                  <span>Status</span>
-                  <span>Deadline</span>
-                </span>
-                <div className="flex flex-col h-52 overflow-y-scroll gap-1 mt-1">
-                {data?.tasks.map((task, i) => (
-                  <button
-                  className="grid grid-flow-col auto-cols-fr mr-1 ml-1 rounded-full shadow-md p-1 hover:bg-blue-300"
-                  onClick={() => navigate(`/task-info/${task.id}`)}
-                  >
-                    <span>{task.title}</span>
-                    <span>{task.priority}</span>
-                    <span>{task.status}</span>
-                    <span>{task.deadline.split("T")[0]}</span>
-                  </button>
-                ))}
-                </div>
-              </div>
+              <TasksListSmall data={data.tasks} />
             </div>
           </div>
           <Chatroom
