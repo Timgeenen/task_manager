@@ -258,6 +258,10 @@ const initializeSocket = (httpServer) => {
       ) {
         task.workingOnTask.push(myId);
         if (task.status === "pending") {
+          await Team.updateOne(
+            {_id: task.assignedTeam.id, "tasks.id": taskId},
+            {$set: {"tasks.$.status": "in progress"}}
+          )
           task.status = "in progress";
         }
         task.save();
