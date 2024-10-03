@@ -6,7 +6,6 @@ import Optionbox from "../components/Optionbox";
 import SubmitButton from "../components/SubmitButton";
 import Textbox from "../components/Textbox";
 import { useSelector } from "react-redux";
-import "react-datepicker/dist/react-datepicker.css";
 import DateSelect from "../components/DateSelect";
 import { useState } from "react";
 import { useSocket } from "../context/SocketProvider";
