@@ -11,7 +11,6 @@ function TaskList({data, status, from, to, team, priority}) {
   const [filteredData, setFilteredData] = useState(data);
 
   useEffect(() => {
-    console.log(status, from, to, team, priority)
       const selectedData = data.filter(item => {
         const x = status !== "all" ? item.status === status : true;
         const y = from ? getTimeDiff(from, item.deadline) > 0 : true;
@@ -32,7 +31,7 @@ function TaskList({data, status, from, to, team, priority}) {
         return (
         <div
         key={task._id}
-        className={clsx(`grid grid-flow-col auto-cols-fr items-center border-2 m-1 h-14 rounded-full bg-opacity-75 hover:shadow-md hover:bg-opacity-100`, overDue && "border-red-600 font-extrabold", task.status === "pending" ? "bg-blue-400" : task.status === "completed" ? "bg-green-400" : "bg-yellow-400")}
+        className={clsx(`grid grid-flow-col auto-cols-fr items-center border m-1 h-10 rounded-full bg-opacity-75 hover:shadow-md hover:bg-opacity-100 `, overDue && "bg-red-300 border-red-600 font-extrabold", task.status === "completed" ? "bg-green-400" : "bg-white")}
         >
           <button
           onClick={() => navigate("/task-info/" + task._id)}
@@ -50,7 +49,7 @@ function TaskList({data, status, from, to, team, priority}) {
           <span
           className={clsx("p-2", task.priority === "high" ? "text-red-600" : task.priority === "low" ? "text-green-600" : "text-yellow-300")}
           >{task.priority}</span>
-          <span className="p-2">{task.status}</span>
+          <span className={clsx("p-2", ellipsis)}>{task.status}</span>
           <span className={clsx("p-2", ellipsis)}>{task.assignedTeam.name}</span>
           <span className="ml-6 p-2">
             {task.assignedTo.length}
