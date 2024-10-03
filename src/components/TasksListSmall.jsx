@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getHoursLeft } from '../library/helperfunctions';
+import { getHoursLeft, sortTasksByDeadline } from '../library/helperfunctions';
+import clsx from 'clsx';
 
 function TasksListSmall({ data }) {
   const navigate = useNavigate();
+  const [sorted, setSorted] = useState([])
+
+  useEffect(() => {
+    setSorted(sortTasksByDeadline(data))
+  }, [])
 
   return (
     <div
@@ -16,11 +22,12 @@ function TasksListSmall({ data }) {
         <span>Deadline</span>
       </span>
       <div className="flex flex-col h-52 overflow-y-scroll gap-1 mt-1">
-      {data.map((task, i) => {
+      {sorted.map((task, i) => {
         if (task.status === "completed") { return }
+        const overdue = getHoursLeft(task.deadline) < 0;
         return (
         <button
-        className="grid grid-flow-col auto-cols-fr mr-1 ml-1 rounded-full shadow-md p-1 hover:bg-blue-300"
+        className={clsx("grid grid-flow-col auto-cols-fr mr-1 ml-1 rounded-full shadow-md p-1 hover:bg-blue-300", overdue && "border border-red-500")}
         onClick={() => navigate(`/task-info/${task.id}`)}
         key={i}
         >
@@ -35,9 +42,7 @@ function TasksListSmall({ data }) {
           }>{task.priority}</span>
           <span>{task.status}</span>
           <span
-          className={
-            getHoursLeft(task.deadline) < 0 ? "text-red-600": ""
-          }
+          className={ overdue ? "text-red-600": "" }
           >{task.deadline.split("T")[0]}</span>
         </button>
       )})}
