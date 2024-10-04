@@ -1,39 +1,24 @@
 import TaskGraph from "../components/TaskGraph";
 import Stats from "../components/Stats";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { getTeamIdArray } from "../library/helperfunctions";
-import { getTeamTaskArr } from "../api/Event";
+import { useState } from "react";
+import { getAllTasks } from "../api/Event";
 import Loading from "../components/Loading";
 
 function Dashboard() {
   const { user } = useSelector(state => state.auth);
 
-  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState("all");
 
-  const { isError, isPending, data, error, mutateAsync} = useMutation({
-    mutationKey: ["tasks"],
-    mutationFn: (teamIdArray) => getTeamTaskArr(teamIdArray)
+  const { isError, isPending, data, error} = useQuery({
+    queryKey: ["tasks"],
+    queryFn: getAllTasks
   });
 
   const changeTeam = (e) => {
-    e.target.value === "all" 
-    ? setSelectedTeam(allTeams)
-    : setSelectedTeam(allTeams.filter(team => team.id === e.target.value));
+    setSelectedTeam(e.target.value)
   };
-
-  useEffect(() => {
-    if (!selectedTeam) {
-      const allTeams = user.teams.map(team => ({name: team.name, id: team.id}));
-      setSelectedTeam(allTeams);
-      const teamIdArray = getTeamIdArray(allTeams);
-      mutateAsync(teamIdArray);
-    } else {
-      const teamIdArray = getTeamIdArray(selectedTeam);
-      mutateAsync(teamIdArray); 
-    }
-  }, [selectedTeam]);
 
   if (isError) { alert(error.message) };
 
@@ -44,7 +29,7 @@ function Dashboard() {
       <>
         <select onChange={changeTeam}>
           <option value="all">All Teams</option>
-          {selectedTeam.map((team, i) => (
+          {user.teams.map((team, i) => (
             <option
             key={`team-${i}`}
             value={team.id}
@@ -52,8 +37,14 @@ function Dashboard() {
           ))}
         </select>
         <>
-          <TaskGraph data={data} />
-          <Stats data={data}/>
+          <TaskGraph
+          selectedTeam={selectedTeam}
+          data={data}
+          />
+          <Stats
+          selectedTeam={selectedTeam}
+          data={data}
+          />
         </>
       </>
       }
