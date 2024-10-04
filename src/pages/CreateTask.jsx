@@ -101,7 +101,7 @@ function CreateTask() {
     <div className="w-full h-full flex flex-col mt-10 items-center">
       {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
-      className="flex flex-col gap-4 p-8 rounded-lg bg-blue-100 min-w-72"
+      className="flex flex-col gap-4 p-8 rounded-lg bg-blue-100 w-3/4 min-w-72 max-w-screen-sm"
       onSubmit={handleSubmit(submitHandler)}
       >
 
