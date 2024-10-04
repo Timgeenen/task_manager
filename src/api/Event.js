@@ -80,10 +80,6 @@ export const getAllTasks = async () => {
 };
 
 //team api calls
-export const getTeamTaskArr = async (teamIds) => {
-  const res = await axios.post("/get-team-tasksArr", teamIds);
-  return res.data;
-};
 
 export const getAllTeams = async () => {
   const res = await axios.get(`/get-all-teams`);

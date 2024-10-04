@@ -250,29 +250,8 @@ router.get("/get-team:teamId", authMiddleware, async (req, res) => {
   } catch (error) {
     res.send(error);
   }
-
-  // Team.findById(teamId)
-  //   .then((data) => {
-  //     console.log(data);
-  //     res.send(data)
-  //   })
-  //   .catch((err) => res.send(err));
 });
 
-router.post("/get-team-tasksArr", async (req, res) => {
-  const teamIds = req.body;
-  try {
-    const tasks = await Team.find(
-      { _id: { $in: teamIds } },
-      { tasks: 1, _id: 0 }
-    );
-
-    const taskArr = tasks.flatMap((obj) => obj.tasks);
-    res.send(taskArr);
-  } catch (err) {
-    res.send(err);
-  }
-});
 
 //general api calls
 router.get("/comments:id/:type", authMiddleware, async (req, res) => {
