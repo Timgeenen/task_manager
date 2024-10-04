@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getHoursLeft, sortTasksByDeadline } from '../library/helperfunctions';
 import clsx from 'clsx';
+import useToggle from "../hooks/useToggle";
+import { ellipsis } from "../library/styles";
 
 function TasksListSmall({ data, selectedTeam }) {
   const navigate = useNavigate();
   const [sorted, setSorted] = useState([])
+  const [showCompleted, toggle] = useToggle();
 
   useEffect(() => {
     if (selectedTeam) {
@@ -29,15 +32,15 @@ function TasksListSmall({ data, selectedTeam }) {
       </span>
       <div className="flex flex-col h-52 overflow-y-scroll gap-1 mt-1">
       {sorted.map((task, i) => {
-        if (task.status === "completed") { return }
+        if (!showCompleted && task.status === "completed") { return }
         const overdue = getHoursLeft(task.deadline) < 0;
         return (
         <button
-        className={clsx("grid grid-flow-col auto-cols-fr mr-1 ml-1 rounded-full shadow-md p-1 hover:bg-blue-300", overdue && "border border-red-500")}
+        className={clsx("grid grid-flow-col auto-cols-fr mr-1 ml-1 rounded-full shadow-md p-1 hover:bg-blue-300", overdue && "border border-red-500", task.status === "completed" && "bg-green-400")}
         onClick={() => navigate(`/task-info/${task.id}`)}
         key={i}
         >
-          <span>{task.title}</span>
+          <span className={ellipsis}>{task.title}</span>
           <span 
           className={
             task.priority === "low" ?
@@ -46,13 +49,18 @@ function TasksListSmall({ data, selectedTeam }) {
             "text-yellow-500" :
             "text-red-500"
           }>{task.priority}</span>
-          <span>{task.status}</span>
+          <span className={ellipsis}>{task.status}</span>
           <span
-          className={ overdue ? "text-red-600": "" }
+          className={clsx(ellipsis, overdue && "text-red-600")}
           >{task.deadline.split("T")[0]}</span>
         </button>
       )})}
       </div>
+      <button
+      className="p-1 pl-3 pr-3 mb-1 bg-blue-600 rounded-md text-white"
+      onClick={toggle}>
+        {showCompleted ? "Hide Completed": "Show Completed"}
+      </button>
     </div>
   )
 }
