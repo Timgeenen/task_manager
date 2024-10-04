@@ -19,7 +19,7 @@ const corsOptions = {
 
 const limiter = rateLimit({
   windowMs: 1000 * 60 * 10,
-  limit: 100,
+  limit: 200,
   message: "maximum number of requests reached, please try again in 10 minutes",
   legacyHeaders: true,
   standardHeaders: "draft-7",
