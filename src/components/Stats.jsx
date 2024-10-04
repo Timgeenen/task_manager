@@ -6,15 +6,17 @@ import TasksListSmall from "./TasksListSmall";
 const taskStyle = "text-nowrap overflow-hidden p-1 border-2 border-gray-300 border-black"
 const titleStyle = "pt-1"
 
-function Stats({data}) {
+function Stats({ data, selectedTeam }) {
 
   const [statusData, setStatusData] = useState([]);
 
   useEffect(() => {
-    sortTasksByDeadline(data);
-    const currentData = countTasksByStatus(data);
+    const selectedTasks = selectedTeam === "all" ?
+    data : data.filter(task => task.assignedTeam.id === selectedTeam);
+    sortTasksByDeadline(selectedTasks);
+    const currentData = countTasksByStatus(selectedTasks);
     setStatusData(currentData);
-  }, []);
+  }, [selectedTeam]);
 
   return (
     <div className="w-4/5">
@@ -37,6 +39,7 @@ function Stats({data}) {
       
       <TasksListSmall
       data={data}
+      selectedTeam={selectedTeam}
       />
     </div>
   )

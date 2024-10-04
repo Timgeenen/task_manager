@@ -2,13 +2,15 @@ import { BarChart, Tooltip, XAxis, YAxis, Bar, CartesianGrid, Cell } from "recha
 import { getGraphData } from "../library/helperfunctions";
 import { useEffect, useState } from "react";
 
-function TaskGraph({data}) {
+function TaskGraph({ data, selectedTeam }) {
   const [graphData, setGraphData] = useState([]);
   
   useEffect(() => {
-    const newData = getGraphData(data)
+    const selectedTasks = selectedTeam === "all" ?
+    data : data.filter(task => task.assignedTeam.id === selectedTeam);
+    const newData = getGraphData(selectedTasks)
     setGraphData(newData);
-  }, []);
+  }, [selectedTeam]);
 
   return (
     <BarChart width={300} height={300} data={graphData}>

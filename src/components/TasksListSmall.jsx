@@ -3,13 +3,19 @@ import { useNavigate } from 'react-router-dom'
 import { getHoursLeft, sortTasksByDeadline } from '../library/helperfunctions';
 import clsx from 'clsx';
 
-function TasksListSmall({ data }) {
+function TasksListSmall({ data, selectedTeam }) {
   const navigate = useNavigate();
   const [sorted, setSorted] = useState([])
 
   useEffect(() => {
-    setSorted(sortTasksByDeadline(data))
-  }, [])
+    if (selectedTeam) {
+      const selectedTasks = selectedTeam === "all" ?
+      data : data.filter(task => task.assignedTeam.id === selectedTeam);
+      setSorted(sortTasksByDeadline(selectedTasks))
+    } else {
+      setSorted(data)
+    }
+  }, [selectedTeam])
 
   return (
     <div
