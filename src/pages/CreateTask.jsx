@@ -101,25 +101,40 @@ function CreateTask() {
     <div className="w-full h-full flex flex-col mt-10 items-center">
       {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
-      className="flex flex-col gap-4 p-8 rounded-lg bg-blue-100 w-3/4 min-w-72 max-w-screen-sm"
+      className="flex flex-col gap-4 p-8 rounded-lg bg-blue-100 w-3/4 min-w-72 max-w-xl"
       onSubmit={handleSubmit(submitHandler)}
       >
 
         <Textbox
         label="Title"
         type="text"
-        placeholder="add title"
+        placeholder="Add Title"
         register={register("title", {required: "Title Is Required"})}
         error={errors.title ? errors.title.message : ""}
         />
+        <div className="flex flex-wrap gap-4 justify-between">
+          <Optionbox 
+          options={user?.teams?.filter(team => team.managerId === user._id)}
+          register={register("team")}
+          defaultText="--Select Team"
+          defaultValue=""
+          classes="bg-white"
+          />
+          <DateSelect
+          text="Deadline"
+          name="deadline"
+          minDate={new Date()}
+          control={control}
+          defaultValue={new Date()}
+          classes="bg-white"
+          />
 
-        <Optionbox 
-        options={user?.teams?.filter(team => team.managerId === user._id)}
-        register={register("team")}
-        defaultText="--Select Team"
-        defaultValue=""
-        classes="bg-white"
-        />
+          <Optionbox
+          options={["low", "medium", "high"]}
+          register={register("priority")}
+          classes="bg-white"
+          />
+        </div>
         {errors.team && <p className={errorMessage}>{errors.team.message}</p>}
 
         <div className="flex flex-wrap">
@@ -143,7 +158,7 @@ function CreateTask() {
 
         <textarea 
         type="text"
-        placeholder="add task description"
+        placeholder="Add Task Description"
         {...register("description", {required: "Description is required"})}
         />
         {errors.description && <p className={errorMessage}>{errors.description.message}</p>}
@@ -163,21 +178,6 @@ function CreateTask() {
           </span>
         ))}
         {errors.subtasks && <p className={errorMessage}>{errors.subtasks.message}</p>}
-
-        <DateSelect
-        text="Deadline"
-        name="deadline"
-        minDate={new Date()}
-        control={control}
-        defaultValue={new Date()}
-        classes="bg-white"
-        />
-
-        <Optionbox
-        options={["low", "medium", "high"]}
-        register={register("priority")}
-        classes="bg-white"
-        />
         
         <AddButton 
         text="Add Subtask"

@@ -48,7 +48,7 @@ function CreateTeam() {
   return (
     <div className="w-full h-full flex">
       <form 
-      className="flex flex-col mt-10 w-2/3 min-w-72 max-w-3xl m-auto items-center p-2 rounded-xl shadow-lg bg-blue-100"
+      className="flex flex-col mt-10 w-2/3 min-w-72 max-w-xl m-auto items-center p-2 rounded-xl shadow-lg bg-blue-100"
       onSubmit={handleSubmit(createTeam)}>
         {newTeam && <div className="text-xs text-green-400">
           Succesfully created new team: {newTeam}</div>}
