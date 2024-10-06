@@ -8,6 +8,7 @@ import useToggle from "../hooks/useToggle";
 import PopupMessage from "./PopupMessage";
 import { useSocket } from "../context/SocketProvider";
 import Loading from "./Loading";
+import { ellipsis } from "../library/styles";
 
 function NotificationList() {
   const { isLoading, isError, isSuccess, error, data, refetch } = useQuery({
@@ -36,7 +37,7 @@ function NotificationList() {
   if(isError) {console.log(error.message)};
 
   return (
-    <div className="w-2/3 m-auto mt-10 border-2 relative rounded-lg">
+    <div className="min-w-96 border-2 relative rounded-lg">
       {isLoading && <Loading />}
       <div className="grid grid-cols-6 p-2 bg-blue-400 font-semibold rounded-t-md">
         <span className="col-span-1">Title</span>
@@ -101,22 +102,22 @@ const CustomLink = React.memo(({
         onClick={handleClick}
         >
       <span
-      className="col-span-1 "
+      className={clsx(ellipsis, "col-span-1")}
       >
         {title}
       </span>
       <span
-      className="col-span-1"
+      className={clsx(ellipsis, "col-span-1")}
       >
         {type}
       </span>
       <span
-      className="col-span-1"
+      className={clsx(ellipsis, "col-span-1")}
       >
         {getTimePassed(createdAt)} ago
       </span>
       <span
-      className="col-span-3"
+      className={clsx(ellipsis, "col-span-3")}
       >
         {message}
       </span>
