@@ -4,14 +4,16 @@ import NavbarLink from "./NavbarLink";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { VscNewFile } from "react-icons/vsc";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
-
+import clsx from "clsx";
 
 function Navbar() {
   const linkSize = 30
   return (
-    <div className="w-full flex items-center justify-between bg-blue-100 p-2">
-      <img src="../../logoipsum-297.svg" />
-      <div className="flex gap-6">
+    <div className="w-full flex items-center justify-center sm:justify-between bg-blue-100 p-3">
+      <img
+      className={clsx("hidden", "sm:block")}
+      src="../../logoipsum-297.svg" />
+      <div className="flex w-96 justify-between sm:gap-6 sm:w-auto">
         <NavbarLink
         icon={<VscNewFile size={linkSize} />}
         path="/create-task"

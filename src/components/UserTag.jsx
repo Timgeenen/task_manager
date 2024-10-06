@@ -48,7 +48,7 @@ function UserTag() {
       interactive={true}
       visible={visible}>
       <button 
-      className="bg-blue-600 rounded-full font-bold text-xl text-white p-2"
+      className="bg-blue-600 rounded-full font-bold text-xl text-white p-3"
       onClick={visible ? hide : show}
       >
         {initials}
