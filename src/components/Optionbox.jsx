@@ -1,10 +1,11 @@
 import clsx from "clsx"
+import { ellipsis, inputStyle } from "../library/styles"
 
 function Optionbox({options, register, defaultValue, defaultText, classes}) {
   return (
     <select
     {...register}
-    className={clsx(classes, "rounded-full shadow-lg p-2")}
+    className={clsx(classes, inputStyle, ellipsis)}
     >
       {defaultText && 
       <option

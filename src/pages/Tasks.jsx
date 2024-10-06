@@ -8,6 +8,8 @@ import { useSelector } from "react-redux";
 import Optionbox from "../components/Optionbox.jsx";
 import { LuRefreshCcw } from "react-icons/lu";
 import Loading from "../components/Loading";
+import clsx from "clsx";
+import { inputStyle } from "../library/styles.jsx";
 
 
 function Tasks () {
@@ -45,9 +47,9 @@ function Tasks () {
   if (isSuccess) { sortTasksByDeadline(data) };
 
   return (
-    <div className="w-5/6 m-auto mt-10">
-      <div className="p-2 flex flex-col mb-4">
-        <div className="grid grid-flow-col auto-cols-fr mt-2 mb-2 gap-4">
+    <div className="w-5/6 max-w-3xl m-auto mt-10">
+      <div className="flex flex-wrap gap-2 justify-center">
+        {/* <div className="grid grid-flow-col auto-cols-fr mt-2 mb-2 gap-4"> */}
           <DateSelect
           control={control}
           text="From"
@@ -69,8 +71,8 @@ function Tasks () {
           defaultValue="all"
           classes={paramClasses}
           />
-        </div>
-        <div className="grid grid-flow-col auto-cols-fr mt-2 mb-2 gap-4">
+        {/* </div>
+        <div className="grid grid-flow-col auto-cols-fr mt-2 mb-2 gap-4"> */}
           <Optionbox
           options={priority}
           register={register("priority")}
@@ -86,14 +88,14 @@ function Tasks () {
           classes={paramClasses}
           />
           <button
-          className="flex justify-center text-white bg-red-600 p-2 rounded-full shadow-lg"
+          className={clsx(inputStyle, "flex justify-center items-center text-white bg-red-600")}
           onClick={() => reset(defaultValues)}>
-            <LuRefreshCcw size={24}/>
+            <LuRefreshCcw size={20}/>
             <span
             className="ml-2"
             >Reset Filters</span>
           </button>
-        </div>
+        {/* </div> */}
       </div>
       <div className="m-2">
         <div className="sticky grid grid-flow-col auto-cols-fr items-center bg-blue-400 rounded-t-xl pl-2 pr-2 font-semibold">

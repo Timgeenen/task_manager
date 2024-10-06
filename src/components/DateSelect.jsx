@@ -2,6 +2,7 @@ import { Controller } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import clsx from "clsx";
+import { ellipsis, inputStyle } from "../library/styles";
 
 function DateSelect({ text, name, control, minDate, maxDate, defaultValue, classes }) {
 
@@ -11,7 +12,7 @@ function DateSelect({ text, name, control, minDate, maxDate, defaultValue, class
     name={name}
     defaultValue={defaultValue}
     render={({ field }) => (
-      <span className={clsx(classes, "flex flex-nowrap p-2 shadow-lg rounded-full")}>
+      <span className={clsx(classes, inputStyle, ellipsis, "flex flex-nowrap")}>
         <label className="mr-2">{text}</label>
         <DatePicker
         {...field}

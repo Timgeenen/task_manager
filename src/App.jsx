@@ -108,8 +108,8 @@ function Layout() {
           isSidebarOpen ? 
           <Sidebar /> : 
           <RxHamburgerMenu 
-          className="left-5 top-4 absolute hover:cursor-pointer"
-          size={24}
+          className="left-4 top-20 absolute hover:cursor-pointer bg-blue-600 text-white p-2 rounded-full"
+          size={40}
           onClick={() => { dispatch(setOpenSidebar(true)) }}/>
           }
           <Outlet />
