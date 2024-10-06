@@ -37,7 +37,7 @@ function TasksListSmall({ data, selectedTeam }) {
         return (
         <button
         className={clsx("grid grid-flow-col auto-cols-fr mr-1 ml-1 rounded-full shadow-md p-1 hover:bg-blue-300", overdue && "border border-red-500", task.status === "completed" && "bg-green-400")}
-        onClick={() => navigate(`/task-info/${task.id}`)}
+        onClick={() => navigate(`/task-info/${task._id}`)}
         key={i}
         >
           <span className={ellipsis}>{task.title}</span>
