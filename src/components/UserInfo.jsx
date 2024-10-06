@@ -5,34 +5,36 @@ import clsx from "clsx";
 import { FaPlus } from "react-icons/fa";
 
 function UserInfo({ name, email, role, isActive, lastOnline, userId, onClick, isFriend }) {
+  console.log(role)
   return (
-     <span
-     key={userId}
-     className="flex hover:bg-blue-300 border-2 bg-blue-50 rounded-full shadow-lg pl-2 pr-2">
-        <div className={clsx(gridCols, "text-lg text-start w-full border-r-0 p-2")}>
+      <div
+      key={userId}
+      className="flex w-52 hover:bg-blue-400 bg-blue-50 rounded-md shadow-lg p-2">
+        <div className="flex flex-col p-2 font-semibold">
+          <span>Name</span>
+          {isFriend && <span>Email</span>}
+          <span>Role</span>
+          <span>Active</span>
+          <button onClick={onClick}>
+            {isFriend
+              ? <HiMagnifyingGlass size={20} />
+              : <FaPlus />
+            }
+          </button>
+        </div>
+        <div className="flex flex-col p-2">
           <span className={ellipsis}>{name}</span>
           {isFriend && <span className={ellipsis}>{email}</span>}
           <span className={ellipsis}>{role}</span>
-        </div>
-        <span className={"rounded-full flex space-between w-1/4"}>
           {
             isActive ?
-            <span className={clsx(ellipsis, "text-green-400 w-24 p-2")}>Online</span> :
-            <span className={clsx(ellipsis, "text-gray-400 w-24 p-2")}>{
+            <span className={clsx(ellipsis, "text-green-400 w-24")}>Online</span> :
+            <span className={clsx(ellipsis, "text-gray-400 w-24")}>{
               getTimePassed(lastOnline)
             }</span>
           }
-            <button
-            className="p-2"
-            onClick={onClick}
-            >
-              {isFriend
-              ? <HiMagnifyingGlass size={24} />
-              : <FaPlus />
-              }
-            </button>
-        </span>
-      </span>
+        </div>
+      </div>
   )
 }
 

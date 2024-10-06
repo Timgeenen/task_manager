@@ -44,10 +44,12 @@ function FindConnections() {
       }
     }))
   };
+  console.log(getFilteredConnections(data))
 
   return (
-    <div className="w-full m-4 mt-10 flex flex-col gap-2 text-lg">
+    <div className="w-full flex flex-col items-center">
       {isSuccess && <div className="text-xs text-green-400">Succesfully added connection</div>}
+       <div className="w-full m-auto mt-10 flex flex-wrap justify-center gap-4">
       {updateError && <div className={errorMessage}>{updateError}</div>}
       {getFilteredConnections(data)?.map((item, i) => (
         <UserInfo
@@ -61,6 +63,7 @@ function FindConnections() {
         onClick={() => addFriend(item._id)}
         />
       ))}
+    </div>
     </div>
   )
 }
