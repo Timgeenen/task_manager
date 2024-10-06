@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddButton from "./AddButton";
 import Checkbox from "./Checkbox";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -64,6 +64,7 @@ function TaskEdit({
   const [isCompleted, setIsCompleted] = useState(status === "completed" ? true : false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [canEdit, setCanEdit] = useState(workingOnTask.includes(user._id) || managerId === user._id);
+  const [activeWorkers, setActiveWorkers] = useState(teamMembers.filter(member => workingOnTask.includes(member.id)))
 
   const addSubtask = (e) => {
     e.preventDefault();
@@ -76,13 +77,14 @@ function TaskEdit({
     document.getElementById("taskEdit__newSubtask").value = "";
   };
 
-  const setActiveWorker = (e) => {
+  const addActiveWorker = (e) => {
     e.preventDefault();
     socket.emit("startWorkingOnTask", taskId, ((response) => {
       if (response.error) {
         console.log(response.error.message);
       } else {
         !canEdit && setCanEdit(true);
+        setActiveWorkers([...activeWorkers, {name: user.name, id: user._id}]);
         queryClient.setQueryData([`task-${taskId}`], response);
       }
     }))
@@ -130,14 +132,14 @@ function TaskEdit({
       <div className="flex items-center">
         <button
         className={clsx("ml-6 mt-2 p-1 pl-3 pr-3 border font-medium rounded-md text-nowrap bg-blue-600 text-white", (canEdit || isCompleted) && "bg-gray-300")}
-        onClick={setActiveWorker}
+        onClick={addActiveWorker}
         disabled={canEdit}
         >
           Start working on task
         </button>
         <div className="flex ml-8 items-center w-full">
           <span className="font-medium mr-2">Active Workers</span>
-          {teamMembers.filter(member => workingOnTask.includes(member.id)).map((member, i) => (
+          {activeWorkers.map((member, i) => (
             <MembersTag
             member={member.name}
             index={i}
