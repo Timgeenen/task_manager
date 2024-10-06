@@ -81,10 +81,11 @@ function TaskEdit({
     e.preventDefault();
     socket.emit("startWorkingOnTask", taskId, ((response) => {
       if (response.error) {
-        console.log(response.error.message);
+        console.error(response.error.message);
       } else {
         !canEdit && setCanEdit(true);
-        setActiveWorkers([...activeWorkers, {name: user.name, id: user._id}]);
+        const newWorker = {name: user.name, id: user._id};
+        setActiveWorkers([...activeWorkers, newWorker]);
         queryClient.setQueryData([`task-${taskId}`], response);
       }
     }))
