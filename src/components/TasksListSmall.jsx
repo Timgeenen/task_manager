@@ -30,7 +30,7 @@ function TasksListSmall({ data, selectedTeam }) {
         <span>Status</span>
         <span>Deadline</span>
       </span>
-      <div className="flex flex-col h-52 overflow-y-scroll gap-1 mt-1">
+      <div className="flex flex-col h-48 overflow-y-scroll gap-1 mt-1 mb-4 pb-2">
       {sorted.map((task, i) => {
         if (!showCompleted && task.status === "completed") { return }
         const overdue = getHoursLeft(task.deadline) < 0;
