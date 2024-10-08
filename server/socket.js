@@ -237,6 +237,42 @@ const initializeSocket = (httpServer) => {
       }
     });
 
+    socket.on("deleteTask", async (taskId, callback) => {
+      const task = await Task.findById(taskId, { _id: 0 });
+
+      if (!task) {
+        return callback({ error: { status: 404, message: "Invalid task id" } });
+      }
+      if (myId !== task.assignedTeam.managerId) {
+        return callback({
+          error: { status: 403, message: "Unauthorized access" },
+        });
+      }
+
+      try {
+        const updatedTeam = await Team.findByIdAndUpdate(task.assignedTeam.id, {
+          $pull: { tasks: { id: taskId } },
+        });
+
+
+        const trashedTask = {
+          tType: "task",
+          data: task,
+        };
+
+        await User.findByIdAndUpdate(myId, {
+          $push: { trash: { trashedTask, $position: 0 } },
+        });
+
+        await Task.findByIdAndDelete(taskId);
+
+        socket.to(taskId).emit("taskDeleted");
+        return callback({ message: "Succesfully deleted task" });
+      } catch (error) {
+        return callback(error);
+      }
+    });
+
     socket.on("startWorkingOnTask", async (taskId, callback) => {
       const task = await Task.findById(taskId);
       if (!task) {
@@ -259,9 +295,9 @@ const initializeSocket = (httpServer) => {
         task.workingOnTask.push(myId);
         if (task.status === "pending") {
           await Team.updateOne(
-            {_id: task.assignedTeam.id, "tasks.id": taskId},
-            {$set: {"tasks.$.status": "in progress"}}
-          )
+            { _id: task.assignedTeam.id, "tasks.id": taskId },
+            { $set: { "tasks.$.status": "in progress" } }
+          );
           task.status = "in progress";
         }
         task.save();
