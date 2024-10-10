@@ -2,7 +2,6 @@ import SidebarLink from "./SidebarLink"
 import { AiOutlineDashboard } from "react-icons/ai";
 import { MdTaskAlt } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";
-import { LiaTrashAltSolid } from "react-icons/lia";
 import { GrGroup } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,10 +26,6 @@ function Sidebar() {
       text: "Connections",
       target: "/connections",
       icon: <BsPeople size={iconSize} />
-    }, {
-      text: "Trash",
-      target: "/trash",
-      icon: <LiaTrashAltSolid size={iconSize} />
     }
   ];
 

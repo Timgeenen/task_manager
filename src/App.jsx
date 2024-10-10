@@ -18,7 +18,6 @@ const TeamInfo = lazy(() => import("./pages/TeamInfo"));
 const CreateTeam = lazy(() => import("./pages/CreateTeam"));
 const Connections = lazy(() => import("./pages/Connections"));
 const FindConnections = lazy(() => import("./pages/FindConnections"));
-const Trash = lazy(() => import("./pages/Trash"));
 const Profile = lazy(() => import("./pages/Profile"));
 
 function App() {
@@ -73,11 +72,6 @@ function App() {
         <Route path="/find-connections" element={
           <Suspense fallback={<Loading />}>
             <FindConnections />
-          </Suspense>
-          } />
-        <Route path="/trash" element={
-          <Suspense fallback={<Loading />}>
-            <Trash />
           </Suspense>
           } />
         <Route path="/profile">
