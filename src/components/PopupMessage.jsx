@@ -16,7 +16,8 @@ function PopupMessage({ open, toggleOpen, message, proceed }) {
             </button>
           <button
           className="w-20 bg-blue-600 text-white rounded-full"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             proceed();
             toggleOpen();
           }}
