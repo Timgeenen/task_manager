@@ -251,17 +251,7 @@ const initializeSocket = (httpServer) => {
 
       try {
         const updatedTeam = await Team.findByIdAndUpdate(task.assignedTeam.id, {
-          $pull: { tasks: { id: taskId } },
-        });
-
-
-        const trashedTask = {
-          tType: "task",
-          data: task,
-        };
-
-        await User.findByIdAndUpdate(myId, {
-          $push: { trash: { trashedTask, $position: 0 } },
+          $pull: { tasks: { $elemMatch: { id: taskId } } },
         });
 
         await Task.findByIdAndDelete(taskId);
