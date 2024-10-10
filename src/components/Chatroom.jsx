@@ -7,10 +7,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCommentsById } from "../api/Event";
 import useAuthorize from "../hooks/useAuthorize";
 import Loading from "./Loading";
+import { useNavigate } from "react-router-dom";
 
 function Chatroom({ socketId, socketType }) {
   const [socket, setSocket] = useState(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     isLoading,
@@ -43,6 +45,12 @@ function Chatroom({ socketId, socketType }) {
           }
         );
       });
+
+      newSocket.on("taskDeleted", () => {
+        navigate("/dashboard");
+        queryClient.setQueryData([`comments-${socketId}`], "");
+        alert("The task you were working on has been deleted");
+      })
   
       return () => {
         if (newSocket) {
