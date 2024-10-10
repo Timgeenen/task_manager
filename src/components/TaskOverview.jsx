@@ -10,7 +10,8 @@ function TaskOverview({
   status
 }) {
   return (
-    <div className="flex justify-between items-center w-full border-2 p-1 pr-2 pl-2">
+    <div className="sm:flex">
+    <div className="flex justify-between items-center w-full border-2 border-r-0 p-1 pr-2 pl-2">
       <TaskDescription
       label="Title"
       value={title}
@@ -25,6 +26,8 @@ function TaskOverview({
           <MembersTag member={member.name} index={i} />
         ))}
       />
+    </div>
+    <div className="flex justify-between items-center w-full border-2 border-l-0 p-1 pr-2 pl-2">
       <TaskDescription
       label="Deadline"
       value={deadline.split("T")[0]}
@@ -51,6 +54,7 @@ function TaskOverview({
         "text-blue-500"
       }
       />
+    </div>
     </div>
   )
 }
