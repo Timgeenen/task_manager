@@ -18,7 +18,7 @@ export const authSlice = createSlice({
 
   reducers: {
     login: (state, action) => {
-      state.user = action.payload.user;
+      state.user = action.payload;
       state.isSidebarOpen = true;
       localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
     },

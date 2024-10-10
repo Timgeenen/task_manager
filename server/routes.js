@@ -6,7 +6,7 @@ const router = express.Router();
 
 //user api calls
 router.post("/login", async (req, res) => {
-  const { password, email } = req.body;
+  const { password, email } = req.body.data;
   try {
     const match = await User.findOne(
       {
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
           sameSite: "Strict",
         });
 
-        res.send({ user, token });
+        res.send(user);
       } else {
         res.status(404);
         res.send({ message: "email and password don't match" });

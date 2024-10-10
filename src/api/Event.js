@@ -26,8 +26,8 @@ axios.interceptors.response.use(
 )
 
 //user api calls
-export const authenticateUser = async (userData) => {
-  const res = await axios.post("/login", userData);
+export const authenticateUser = async ({ data, signal }) => {
+  const res = await axios.post("/login", { data, signal });
   return res.data;
 };
 

@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createUser, authenticateUser } from "../api/Event";
 import useToggle from "../hooks/useToggle";
 import DOMPurify from "dompurify";
+import { useRef } from "react";
 
 function Login() {
   const { user } = useSelector(state => state.auth);
@@ -28,10 +29,11 @@ function Login() {
    });
 
   const [isOpen, toggle] = useToggle();
+  const abortControllerRef = useRef(null);
 
   const loginMutation = useMutation({
     mutationKey: ["login"],
-    mutationFn: (userData) => authenticateUser(userData)
+    mutationFn: ({ data, signal }) => authenticateUser({ data, signal })
   });
 
   const registerMutation = useMutation({
@@ -44,23 +46,40 @@ function Login() {
     data.password = DOMPurify.sanitize(data.password);
 
     if (!data.email) {
-      return setError("email", {type: "custom", message: "Please enter a valid email adress"});
-    }
+      return setError("email", {type: "custom", message: "Please enter a valid email adress"})
+    };
     if (data.password === "") {
-      return setError("password", {type: "custom", message: "Please enter a valid password"});
-    }
+      return setError("password", {type: "custom", message: "Please enter a valid password"})
+    };
 
-    loginMutation.mutate(data);
+    if(abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    };
+    abortControllerRef.current = new AbortController;
+    const { signal } = abortControllerRef.current;
+
+    loginMutation.mutate({ data, signal });
+
     if (loginMutation.isError) {
       setError("password", {
         type: "custom",
         message: loginMutation.error.response?.data?.message || loginMutation.error.message
-      })
+      });
     };
-    loginMutation.isSuccess && dispatch(login(loginMutation.data));
+    if (loginMutation.isSuccess) {
+      dispatch(login(loginMutation.data));
+    };
+
+    abortControllerRef.current = null;
   }
 
   const registerUser = (data) => {
+    if (abortControllerRef.current) {
+      console.log("aborted")
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     data.email = DOMPurify.sanitize(data.email);
     data.password = DOMPurify.sanitize(data.password);
     data.verifyPassword = DOMPurify.sanitize(data.verifyPassword);
@@ -68,36 +87,35 @@ function Login() {
     data.role = DOMPurify.sanitize(data.role);
 
     if (!data.email) {
-      return setError("email", { type: "custom", message: "Please enter a valid email adress" });
-    }
+      return setError("email", { type: "custom", message: "Please enter a valid email adress" })
+    };
     if (!data.password) {
-      return setError("password", { type: "custom", message: "Please enter a valid password" });
-    }
+      return setError("password", { type: "custom", message: "Please enter a valid password" })
+    };
     if (!data.name) {
-      return setError("name", { type: "custom", message: "Please enter a valid name"});
-    }
+      return setError("name", { type: "custom", message: "Please enter a valid name"})
+    };
     if (!data.role) {
-      return setError("role", { type: "custom", message: "Please enter a valid role"});
-    }
+      return setError("role", { type: "custom", message: "Please enter a valid role"})
+    };
 
     if (data.password !== data.verifyPassword) {
-      return setError("password", {
-        type: "custom",
-        message: "passwords don't match"
-      })
-    }
+      return setError("password", { type: "custom", message: "passwords don't match" })
+    };
     registerMutation.mutate(data);
     if (registerMutation.isError) {
       setError("email", {
         type: "custom",
         message: registerMutation.error.response?.data?.message || registerMutation.error.message
       })
-    }
+    };
     if (registerMutation.isSuccess) {
       reset();
       toggle();
-    }
-  }
+    };
+
+    abortControllerRef.current = null;
+  };
  
   return user 
   ? ( <Navigate to="/dashboard" replace /> ) 
