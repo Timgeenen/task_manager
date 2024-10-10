@@ -36,8 +36,8 @@ export const logoutUser = async () => {
   return res.data;
 }
 
-export const createUser = async (userData) => {
-  const res = await axios.post("/register", userData);
+export const createUser = async ({ data, signal }) => {
+  const res = await axios.post("/register", { data, signal });
   return res.data;
 };
 

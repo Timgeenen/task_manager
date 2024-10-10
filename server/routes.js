@@ -56,7 +56,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { name, role, email, password } = req.body;
+  const { name, role, email, password } = req.body.data;
   const registered = await User.where({
     email: email,
   })

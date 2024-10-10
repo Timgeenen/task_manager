@@ -38,7 +38,7 @@ function Login() {
 
   const registerMutation = useMutation({
     mutationKey: ["register"],
-    mutationFn: (userData) => createUser(userData)
+    mutationFn: ({ data, signal }) => createUser({ data, signal })
   });
 
   const loginUser = (data) => {
@@ -74,12 +74,6 @@ function Login() {
   }
 
   const registerUser = (data) => {
-    if (abortControllerRef.current) {
-      console.log("aborted")
-      abortControllerRef.current.abort();
-    }
-    abortControllerRef.current = new AbortController();
-
     data.email = DOMPurify.sanitize(data.email);
     data.password = DOMPurify.sanitize(data.password);
     data.verifyPassword = DOMPurify.sanitize(data.verifyPassword);
@@ -102,7 +96,15 @@ function Login() {
     if (data.password !== data.verifyPassword) {
       return setError("password", { type: "custom", message: "passwords don't match" })
     };
-    registerMutation.mutate(data);
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const { signal } = abortControllerRef.current;
+
+    registerMutation.mutate({ data, signal });
+    
     if (registerMutation.isError) {
       setError("email", {
         type: "custom",
