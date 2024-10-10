@@ -11,6 +11,8 @@ import { useSocket } from "../context/SocketProvider";
 import { QueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import MembersTag from "./MembersTag";
+import useToggle from "../hooks/useToggle";
+import PopupMessage from "./PopupMessage";
 
 function TaskEdit({
   teamId,
@@ -28,6 +30,7 @@ function TaskEdit({
   const queryClient = new QueryClient();
 
   const { user } = useSelector(state => state.auth);
+  const [open, toggleOpen] = useToggle();
 
   const {
     register,
@@ -124,6 +127,16 @@ function TaskEdit({
     }
   }
 
+  const deleteTask = () => {
+    socket.emit("deleteTask", taskId, ((response) => {
+      if (response.error) {
+        console.error(response.error.message);
+      } else {
+        console.log(response)
+      }
+    }))
+  }
+
   if (isDirty) { submitError && setSubmitError(null)};
 
   return (
@@ -171,6 +184,22 @@ function TaskEdit({
           <SubmitButton
           disabled={isCompleted || !canEdit}
           />
+          {
+            managerId === user._id &&
+            <>
+              <button
+              className="bg-red-600 rounded-full p-1 pl-5 pr-5 text-white"
+              onClick={toggleOpen}
+              >Delete Task
+              </button>
+              <PopupMessage
+              open={open}
+              toggleOpen={toggleOpen}
+              proceed={deleteTask}
+              message={`Are you sure you want to delete this task?`}
+              />
+            </>
+          }
         </div>
         {submitError && <div className={clsx("text-center", errorMessage)}>{submitError}</div>}
         </div>
