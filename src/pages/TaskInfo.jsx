@@ -41,7 +41,7 @@ function TaskInfo() {
       status={data?.status}
       workingOnTask={data?.workingOnTask}
       teamMembers={data?.assignedTo}
-      managerId={data?.managerId}
+      managerId={data?.assignedTeam.managerId}
       />
       <Chatroom
       socketId={taskId}
