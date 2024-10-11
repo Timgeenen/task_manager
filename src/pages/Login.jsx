@@ -115,10 +115,19 @@ function Login() {
     registerMutation.mutate({ data, signal });
     
     if (registerMutation.isError) {
-      setError("email", {
-        type: "custom",
-        message: registerMutation.error.response?.data?.message || registerMutation.error.message
-      })
+      if (Array.isArray(registerMutation.error.response.data)) {
+        registerMutation.error.response.data.map(error => {
+          setError(error.path.split(".")[1], {
+            type: "custom",
+            message: error.msg
+          })
+        })
+      } else {
+        setError("email", {
+          type: "custom",
+          message: registerMutation.error.response?.data?.message || registerMutation.error.message
+        });
+      }
     };
     if (registerMutation.isSuccess) {
       reset();

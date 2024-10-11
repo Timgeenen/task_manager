@@ -14,13 +14,13 @@ const createPasswordChain = () =>
     .isLength({ min: 8, max: 24 })
     .withMessage("Password must be between 8 and 24 characters long");
 const createNameChain = () =>
-  body("name")
+  body("data.name")
     .trim()
     .escape()
     .isAlphanumeric()
     .withMessage("Name cannot contain any special characters");
 const createRoleChain = () =>
-  body("role")
+  body("data.role")
     .trim()
     .escape()
     .isAlphanumeric()
@@ -97,6 +97,13 @@ router.post(
   createNameChain(),
   createRoleChain(),
   async (req, res) => {
+    const { errors } = validationResult(req);
+    if (errors.length > 0) {
+      res.status(403);
+      return res.send(errors);
+    };
+
+
     const { name, role, email, password } = req.body.data;
     const registered = await User.where({
       email: email,
