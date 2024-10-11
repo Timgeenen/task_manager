@@ -3,93 +3,135 @@ const func = require("./functions");
 const { authMiddleware } = require("./functions");
 const express = require("express");
 const router = express.Router();
+const { body, validationResult } = require("express-validator");
+
+const createEmailChain = () =>
+  body("data.email").isEmail().withMessage("Invalid email");
+const createPasswordChain = () =>
+  body("data.password")
+    .trim()
+    .escape()
+    .isLength({ min: 8, max: 24 })
+    .withMessage("Password must be between 8 and 24 characters long");
+const createNameChain = () =>
+  body("name")
+    .trim()
+    .escape()
+    .isAlphanumeric()
+    .withMessage("Name cannot contain any special characters");
+const createRoleChain = () =>
+  body("role")
+    .trim()
+    .escape()
+    .isAlphanumeric()
+    .withMessage("Role cannot contain any special characters");
 
 //user api calls
-router.post("/login", async (req, res) => {
-  const { password, email } = req.body.data;
-  try {
-    const match = await User.findOne(
-      {
-        email: email,
-      },
-      {
-        password: 1,
-      }
-    );
-    if (!match) {
-      res.status(404);
-      res.send({ message: "email and password don't match" });
-    } else {
-      const valid = func.verifyPassword(match.password, password);
-      if (valid) {
-        const user = await User.findById(match._id, {
-          password: 0,
-          notifications: 0,
-        });
+router.post(
+  "/login",
+  createEmailChain(),
+  createPasswordChain(),
+  async (req, res) => {
+    const { errors } = validationResult(req);
+    if (errors.length > 0) {
+      console.log(errors);
+      res.status(403);
+      return res.send(errors);
+    }
 
-        const token = func.generateAccessToken(user._id);
-        const refreshToken = func.generateRefreshToken(user._id);
+    const { password, email } = req.body.data;
 
-        res.cookie("accessToken", token, {
-          httpOnly: true,
-          // secure: false, //TODO: set true
-          maxAge: 1000 * 60 * 15,
-          sameSite: "Strict",
-        });
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          // secure: false, //TODO: set true
-          maxAge: 1000 * 60 * 60 * 24 * 7,
-          sameSite: "Strict",
-        });
-
-        res.send(user);
-      } else {
+    try {
+      const match = await User.findOne(
+        {
+          email: email,
+        },
+        {
+          password: 1,
+        }
+      );
+      if (!match) {
         res.status(404);
         res.send({ message: "email and password don't match" });
+      } else {
+        const valid = func.verifyPassword(match.password, password);
+        if (valid) {
+          const user = await User.findById(match._id, {
+            password: 0,
+            notifications: 0,
+          });
+
+          const token = func.generateAccessToken(user._id);
+          const refreshToken = func.generateRefreshToken(user._id);
+
+          res.cookie("accessToken", token, {
+            httpOnly: true,
+            // secure: false, //TODO: set true
+            maxAge: 1000 * 60 * 15,
+            sameSite: "Strict",
+          });
+
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            // secure: false, //TODO: set true
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            sameSite: "Strict",
+          });
+
+          res.send(user);
+        } else {
+          res.status(404);
+          res.send({ message: "email and password don't match" });
+        }
+      }
+    } catch (err) {
+      res.send(err);
+    }
+  }
+);
+
+router.post(
+  "/register",
+  createEmailChain(),
+  createPasswordChain(),
+  createNameChain(),
+  createRoleChain(),
+  async (req, res) => {
+    const { name, role, email, password } = req.body.data;
+    const registered = await User.where({
+      email: email,
+    })
+      .findOne()
+      .then((user) => {
+        return user ? true : false;
+      })
+      .catch((err) => res.send(err));
+
+    if (registered) {
+      res.status(401);
+      res.send({ message: "email adress is already in use" });
+    } else {
+      try {
+        const hashedPassword = await func.hashPassword(password);
+        const newDate = func.newDate();
+        await User.create({
+          name: name,
+          role: role,
+          email: email,
+          password: hashedPassword,
+          createdAt: newDate,
+          updatedAt: newDate,
+          teams: [],
+          connections: [],
+          notifications: [],
+        });
+        res.send({ message: "succesfully created account" });
+      } catch (error) {
+        res.send(error);
       }
     }
-  } catch (err) {
-    res.send(err);
   }
-});
-
-router.post("/register", async (req, res) => {
-  const { name, role, email, password } = req.body.data;
-  const registered = await User.where({
-    email: email,
-  })
-    .findOne()
-    .then((user) => {
-      return user ? true : false;
-    })
-    .catch((err) => res.send(err));
-
-  if (registered) {
-    res.status(401);
-    res.send({ message: "email adress is already in use" });
-  } else {
-    try {
-      const hashedPassword = await func.hashPassword(password);
-      const newDate = func.newDate();
-      await User.create({
-        name: name,
-        role: role,
-        email: email,
-        password: hashedPassword,
-        createdAt: newDate,
-        updatedAt: newDate,
-        teams: [],
-        connections: [],
-        notifications: [],
-      });
-      res.send({ message: "succesfully created account" });
-    } catch (error) {
-      res.send(error);
-    }
-  }
-});
+);
 
 router.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
@@ -251,7 +293,6 @@ router.get("/get-team:teamId", authMiddleware, async (req, res) => {
     res.send(error);
   }
 });
-
 
 //general api calls
 router.get("/comments:id/:type", authMiddleware, async (req, res) => {

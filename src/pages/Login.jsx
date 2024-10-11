@@ -61,10 +61,19 @@ function Login() {
     loginMutation.mutate({ data, signal });
 
     if (loginMutation.isError) {
-      setError("password", {
-        type: "custom",
-        message: loginMutation.error.response?.data?.message || loginMutation.error.message
-      });
+      if (Array.isArray(loginMutation.error.response.data)) {
+        loginMutation.error.response.data.map(error => {
+          setError(error.path.split(".")[1], {
+            type: "custom",
+            message: error.msg
+          })
+        })
+      } else {
+        setError("password", {
+          type: "custom",
+          message: loginMutation.error.response?.data?.message || loginMutation.error.message
+        });
+      }
     };
     if (loginMutation.isSuccess) {
       dispatch(login(loginMutation.data));
