@@ -13,7 +13,7 @@ function TaskGraph({ data, selectedTeam }) {
   }, [selectedTeam]);
 
   return (
-    <BarChart width={300} height={320} data={graphData}>
+    <BarChart width={280} height={320} data={graphData}>
       <CartesianGrid strokeDasharray="3 3"/>
       <XAxis dataKey="priority" color="red"/>
       <YAxis />

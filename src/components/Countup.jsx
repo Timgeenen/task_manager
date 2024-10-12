@@ -6,7 +6,7 @@ function Countup({actual, total, parameter, radius, color}) {
   const offset = radius / 5;
   const boxSize = (radius * 2) + (offset * 2)
   return (
-    <div className="flex items-center gap-2 border-slate-300 p-1 w-36">
+    <div className="flex flex-col md:flex-row items-center md:gap-2 border-slate-300 p-1 w-36">
       <CountUp
       isCounting
       end={actual}

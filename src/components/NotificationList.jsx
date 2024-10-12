@@ -37,9 +37,9 @@ function NotificationList() {
   if(isError) {console.log(error.message)};
 
   return (
-    <div className="min-w-96 border-2 relative rounded-lg">
+    <div className="min-w-72 border-2 relative rounded-lg">
       {isLoading && <Loading />}
-      <div className="grid grid-cols-6 p-2 bg-blue-400 font-semibold rounded-t-md">
+      <div className="hidden sm:grid grid-cols-6 p-2 bg-blue-400 font-semibold rounded-t-md">
         <span className="col-span-1">Title</span>
         <span className="col-span-1">Type</span>
         <span className="col-span-1">Received</span>
@@ -97,27 +97,27 @@ const CustomLink = React.memo(({
 
   return (
     <button
-        className={clsx("rounded-lg mt-1 mb-1 grid grid-cols-6 w-full p-2 border-2 gap-2 hover:bg-blue-300 text-start text-sm h-16 items-center", {"font-semibold bg-yellow-100": !isRead})}
+        className={clsx("rounded-lg mt-1 mb-1 grid grid-cols-6 w-full p-2 border-2 gap-2 hover:bg-blue-300 text-start text-sm h-16 items-center font-semibold", {"bg-yellow-100": !isRead})}
         key={notificationId}
         onClick={handleClick}
         >
       <span
-      className={clsx(ellipsis, "col-span-1")}
+      className={clsx(ellipsis, "col-span-2 sm:col-span-1")}
       >
         {title}
       </span>
       <span
-      className={clsx(ellipsis, "col-span-1")}
+      className={clsx(ellipsis, "col-span-2 sm:col-span-1")}
       >
         {type}
       </span>
       <span
-      className={clsx(ellipsis, "col-span-1")}
+      className={clsx(ellipsis, "col-span-2 sm:col-span-1")}
       >
         {getTimePassed(createdAt)} ago
       </span>
       <span
-      className={clsx(ellipsis, "col-span-3")}
+      className={clsx(ellipsis, "col-span-6 sm:col-span-3 font-normal sm:font-semibold")}
       >
         {message}
       </span>

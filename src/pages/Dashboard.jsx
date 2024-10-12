@@ -29,6 +29,10 @@ function Dashboard() {
         {isPending && <Loading />}
         {data &&
         <>
+        <Stats
+        selectedTeam={selectedTeam}
+        data={data}
+        />
         <div className="flex flex-col items-center">
           <TaskGraph
           selectedTeam={selectedTeam}
@@ -47,10 +51,6 @@ function Dashboard() {
             ))}
           </select>
         </div>
-        <Stats
-        selectedTeam={selectedTeam}
-        data={data}
-        />
         </>
         }
           <NotificationList />

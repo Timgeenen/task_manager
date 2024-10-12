@@ -19,7 +19,7 @@ function Stats({ data, selectedTeam }) {
   }, [selectedTeam]);
 
   return (
-    <div className="min-w-max">
+    <div className="min-w-72">
       
       <div className="w-full flex justify-around border-t-2 border-b-2 border-slate-300 mb-2">
         {

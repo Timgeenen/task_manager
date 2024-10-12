@@ -22,15 +22,15 @@ function TasksListSmall({ data, selectedTeam }) {
 
   return (
     <div
-    className="w-full h-68"
+    className="w-full max-h-68"
     >
-      <span className="grid grid-flow-col auto-cols-fr p-1 text-center border-2 rounded-full font-semibold bg-blue-400 mb-1">
+      <span className="grid grid-flow-col auto-cols-fr p-1 text-center border-2 text-sm sm:text-md rounded-full font-semibold bg-blue-400 mb-1">
         <span>Title</span>
         <span>Priority</span>
         <span>Status</span>
         <span>Deadline</span>
       </span>
-      <div className="flex flex-col h-48 overflow-y-scroll gap-1 mt-1 mb-4 pb-2">
+      <div className="flex flex-col text-sm sm:text-md max-h-48 overflow-y-scroll gap-1 mt-1 mb-4 pb-2">
       {sorted.map((task, i) => {
         if (!showCompleted && task.status === "completed") { return }
         const overdue = getHoursLeft(task.deadline) < 0;

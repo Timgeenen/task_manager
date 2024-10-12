@@ -140,12 +140,12 @@ function Login() {
   return user 
   ? ( <Navigate to="/dashboard" replace /> ) 
   : (
-    <div className="w-screen h-screen flex flex-col justify-center gap-20 items-center">
-      <h1 className="text-5xl font-bold text-blue-600">Welcome Back!</h1>
+    <div className="w-screen p-4 pl-1 pr-1 min-h-screen flex gap-4 md:gap-8  flex-col justify-center items-center">
+      <h1 className="text-3xl sm:text-5xl font-bold text-blue-600">Welcome Back!</h1>
       <form 
-      className="flex flex-col justify-center gap-4 border p-8 rounded-md"
+      className="flex flex-col justify-center shadow-lg gap-2 sm:gap-4 border p-8 rounded-md"
       onSubmit={handleSubmit(isOpen ? registerUser : loginUser)}>
-        <h3 className="text-xl font-medium text-blue-600">{isOpen ? "Register" : "Login"}</h3>
+        <h3 className="text-lg sm:text-xl font-medium text-blue-600">{isOpen ? "Register" : "Login"}</h3>
         {registerMutation.isSuccess && <div className="text-xs text-green-400">succesfully registered new account</div>}
         <Textbox 
         label="Email Adress"
