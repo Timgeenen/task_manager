@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { FaArrowRight } from "react-icons/fa";
 import { memo } from "react";
 import { getHoursLeft, getTimeDiff } from "../library/helperfunctions";
 import { useNavigate } from "react-router-dom";
@@ -23,38 +22,34 @@ function TaskList({data, status, from, to, team, priority}) {
   }, [status, from, to, team, priority]);
 
   return (
-    <div className="h-96 overflow-y-scroll rounded-b-xl shadow-lg bg-blue-100">
+    <div
+    className="h-96 pl-1 pr-1 overflow-y-scroll rounded-t-xl md:rounded-t-none rounded-b-xl shadow-lg bg-blue-100">
       {filteredData.map((task) => {
         const overDue = 
         getHoursLeft(task.deadline) < 0 & task.status !== "completed"
         ? true : false;
         return (
-        <div
+        <button
+        onClick={() => navigate(`/task-info/${task._id}`)}
         key={task._id}
-        className={clsx(`grid grid-flow-col auto-cols-fr items-center border m-1 h-10 rounded-full bg-opacity-75 hover:shadow-md hover:bg-opacity-100 `, overDue && "bg-red-300 border-red-600 font-extrabold", task.status === "completed" ? "bg-green-400" : "bg-white")}
+        className={clsx(`grid w-full grid-cols-6 items-center border mt-1 mb-1 text-start text-sm sm:text-md sm:h-10 rounded-lg md:rounded-full bg-opacity-75 hover:shadow-md hover:bg-opacity-100 `, overDue && "bg-red-300 border-red-600 font-extrabold", task.status === "completed" ? "bg-green-400" : "bg-white")}
         >
-          <button
-          onClick={() => navigate("/task-info/" + task._id)}
-          className="flex items-center p-2"
-          >
-            <span className={ellipsis}>{task.title}</span>
-            <FaArrowRight className="ml-1" size={12}/>
-          </button>
+          <span className={clsx("p-2 pb-0 sm:pb-2 col-span-4 sm:col-span-1", ellipsis)}>{task.title}</span>
           <span
-          className={clsx("p-2", ellipsis, overDue && "text-red-600 font-extrabold")}
+          className={clsx("p-2 pb-0 sm:pb-2 col-span-2 sm:col-span-1", task.priority === "high" ? "text-red-600" : task.priority === "low" ? "text-green-600" : "text-yellow-300")}
+          >{task.priority}</span>
+          <span
+          className={clsx("p-2 pt-0 col-span-4 sm:col-span-1", ellipsis, overDue && "text-red-600 font-extrabold")}
           >
             {task.deadline.split("T")[0]}
             {overDue && <span className="text-2xl ml-2"> !</span>}
           </span>
-          <span
-          className={clsx("p-2", task.priority === "high" ? "text-red-600" : task.priority === "low" ? "text-green-600" : "text-yellow-300")}
-          >{task.priority}</span>
-          <span className={clsx("p-2", ellipsis)}>{task.status}</span>
-          <span className={clsx("p-2", ellipsis)}>{task.assignedTeam.name}</span>
-          <span className="ml-6 p-2">
+          <span className={clsx("p-2 pt-0 sm:pt-2 col-span-2 sm:col-span-1", ellipsis)}>{task.status}</span>
+          <span className={clsx("p-2 hidden sm:block sm:col-span-1", ellipsis)}>{task.assignedTeam.name}</span>
+          <span className="ml-6 p-2 hidden sm:block sm:col-span-1">
             {task.assignedTo.length}
           </span>
-        </div>
+        </button>
       )})}
       </div>
   )

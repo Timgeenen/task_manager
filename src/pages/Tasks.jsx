@@ -37,7 +37,7 @@ function Tasks () {
   const currentTeam = watch("team");
   const currentPriority = watch("priority");
 
-  const headers = ["Title", "Deadline", "Priority", "Status", "Team", "Members"];
+  const headers = ["Title", "Priority", "Deadline", "Status", "Team", "Members"];
   const status = ["in progress", "pending", "completed"];
   const priority = ["high", "medium", "low"];
 
@@ -49,7 +49,6 @@ function Tasks () {
   return (
     <div className="w-5/6 max-w-3xl m-auto mt-10">
       <div className="flex flex-wrap gap-2 justify-center">
-        {/* <div className="grid grid-flow-col auto-cols-fr mt-2 mb-2 gap-4"> */}
           <DateSelect
           control={control}
           text="From"
@@ -71,8 +70,6 @@ function Tasks () {
           defaultValue="all"
           classes={paramClasses}
           />
-        {/* </div>
-        <div className="grid grid-flow-col auto-cols-fr mt-2 mb-2 gap-4"> */}
           <Optionbox
           options={priority}
           register={register("priority")}
@@ -95,14 +92,13 @@ function Tasks () {
             className="ml-2"
             >Reset Filters</span>
           </button>
-        {/* </div> */}
       </div>
       <div className="m-2">
         <div className="sticky grid grid-flow-col auto-cols-fr items-center bg-blue-400 rounded-t-xl pl-2 pr-2 font-semibold">
           {
             headers.map((item, i) => (
               <span
-              className="p-2"
+              className="p-2 hidden sm:block"
               key={`header-${i}`}
               >{item}</span>
             ))
