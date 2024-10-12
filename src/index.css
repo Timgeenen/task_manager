@@ -16,6 +16,10 @@ body {
   scrollbar-width: none;
 }
 
+a:hover {
+  cursor: pointer;
+}
+
 #spinner {
   animation: spinner;
   animation-duration: 3s;

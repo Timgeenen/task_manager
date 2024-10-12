@@ -48,7 +48,7 @@ function CreateTeam() {
   return (
     <div className="w-full h-full flex">
       <form 
-      className="flex flex-col mt-10 w-2/3 min-w-72 max-w-xl m-auto items-center p-2 rounded-xl shadow-lg bg-blue-100"
+      className="flex flex-col mt-10 w-2/3 min-w-72 max-w-xl m-auto items-center p-2 rounded-xl shadow-lg bg-blue-300"
       onSubmit={handleSubmit(createTeam)}>
         {newTeam && <div className="text-xs text-green-400">
           Succesfully created new team: {newTeam}</div>}
@@ -61,7 +61,7 @@ function CreateTeam() {
           error={errors.name ? errors.name.message : ""}
           />
         </div>
-        <div className="flex border ml-auto mr-auto p-2 flex-wrap flex-grow-0 flex-shrink-0 gap-2 w-5/6">
+        <div className="flex ml-auto mr-auto p-2 flex-wrap flex-grow-0 flex-shrink-0 gap-2 w-5/6">
         {user.connections.map((member) => (
           <Checkbox
           value={member.name}

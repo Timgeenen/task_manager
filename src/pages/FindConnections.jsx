@@ -47,23 +47,23 @@ function FindConnections() {
   console.log(getFilteredConnections(data))
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center overflow-y-scroll">
       {isSuccess && <div className="text-xs text-green-400">Succesfully added connection</div>}
-       <div className="w-full m-auto mt-10 flex flex-wrap justify-center gap-4">
-      {updateError && <div className={errorMessage}>{updateError}</div>}
-      {getFilteredConnections(data)?.map((item, i) => (
-        <UserInfo
-        name={item.name}
-        email={item.email}
-        role={item.role}
-        isActive={item.isActive}
-        lastOnline={item.updatedAt}
-        userId={item._id}
-        isFriend={false}
-        onClick={() => addFriend(item._id)}
-        />
-      ))}
-    </div>
+      <div className="mr-auto ml-auto pt-10 pb-28 flex flex-wrap justify-center gap-4">
+        {updateError && <div className={errorMessage}>{updateError}</div>}
+        {getFilteredConnections(data)?.map((item, i) => (
+          <UserInfo
+          name={item.name}
+          email={item.email}
+          role={item.role}
+          isActive={item.isActive}
+          lastOnline={item.updatedAt}
+          userId={item._id}
+          isFriend={false}
+          onClick={() => addFriend(item._id)}
+          />
+        ))}
+      </div>
     </div>
   )
 }
