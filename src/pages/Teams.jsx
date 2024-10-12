@@ -21,20 +21,20 @@ function Teams() {
 
   return (
     <div
-    className="w-auto mr-auto ml-auto flex flex-wrap justify-center items-center max-w-fit overflow-y-scroll pt-16 pb-28"
+    className="w-screen mr-auto ml-auto flex flex-wrap justify-center items-center max-w-fit overflow-y-scroll pt-16 pb-28 gap-2"
     >
       {data && 
-        <div className="flex justify-center w-auto absolute top-16 p-2 rounded-full filter backdrop-blur-sm shadow-xl">
+        <div className="flex justify-center w-auto absolute top-20 p-2 rounded-full filter backdrop-blur-sm shadow-xl">
           <button
           onClick={prev}
-          className="border-2 w-28 p-1 rounded-full bg-blue-600 text-white"
+          className="border-2 w-16 sm:w-28 p-1 rounded-full bg-blue-600 text-white"
           >
             Prev
           </button>
           <span className="text-center mt-auto mb-auto ml-2 mr-2 bg-transparent text-gray-500">{page}/{lastPage}</span>
           <button
           onClick={next}
-          className="border-2 w-28 p-1 rounded-full bg-blue-600 text-white"
+          className="border-2 w-16 sm:w-28 p-1 rounded-full bg-blue-600 text-white"
           >
             Next
           </button>
@@ -51,10 +51,10 @@ function Teams() {
           return (
           <button
           key={team.id}
-          className="flex p-2 m-2 border-2 rounded-xl h-60 hover:bg-blue-300 shadow-lg"
+          className="flex p-1 max-w-max sm:p-2 border-2 rounded-xl h-60 hover:bg-blue-300 shadow-lg"
           onClick={() => navigate(`/team-info/${team._id}`)}
           >
-            <div className="flex flex-col w-52 items-start text-left gap-6 border-r-2 p-1">
+            <div className="flex flex-col w-40 sm:w-52 items-start text-left gap-6 border-r-2 p-1">
               <div className="text-2xl font-semibold w-48 inline-block overflow-ellipsis overflow-hidden whitespace-nowrap">
                 {team.name}
               </div>
@@ -65,15 +65,22 @@ function Teams() {
               </span>
               <span>
                 <div className="font-semibold">Team Members</div>
-                {team.members.map((member, index) => (
+                {team.members.map((member, index) => {
+                  if (index >= 5) {
+                    return
+                  }
+                  return (
                   <MembersTag 
                   member={member.name}
                   index={index}
                   memberId={member.id} />
-                ))}
+                )})}
+                {team.members.length > 5 && 
+                  <span className="ml-5">+{team.members.length - 5}</span>
+                }
               </span>
             </div>
-            <div className="flex flex-col m-auto gap-2 p-1">
+            <div className="flex flex-col m-auto gap-2 items-center min-w-28">
               <div className="flex">
                 <div>
                   {priority.map((item) => (
@@ -86,7 +93,7 @@ function Teams() {
                     />
                   ))}
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   {status.map((item) => (
                     <Countup
                     actual={item.count}
@@ -97,7 +104,7 @@ function Teams() {
                   ))}
                 </div>
               </div>
-              <div className="m-auto text-start">
+              <div className="hidden sm:block m-auto text-start">
                 <div className="text-sm">
                   <span className="font-extrabold">{urgent.thisWeek} </span>
                   Task(s) have to be finished this week
