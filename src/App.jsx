@@ -8,6 +8,7 @@ import { setOpenSidebar } from "./redux/state/authSlice";
 import SocketProvider from "./context/SocketProvider";
 import { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
+import Footer from "./components/Footer";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const CreateTask = lazy(() => import("./pages/CreateTask"));
@@ -95,7 +96,7 @@ function Layout() {
 
   return user ? (
     <SocketProvider>
-      <div className="h-screen overflow-y-hidden">
+      <div className="relative min-h-screen overflow-y-hidden">
         <Navbar />
         <div className="h-full flex w-screen">
           {
@@ -108,6 +109,7 @@ function Layout() {
           }
           <Outlet />
         </div>
+        <Footer />
       </div>
     </SocketProvider>
   ) : (
