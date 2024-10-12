@@ -1,5 +1,5 @@
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { ellipsis, gridCols } from "../library/styles";
+import { ellipsis } from "../library/styles";
 import { getTimePassed } from "../library/helperfunctions";
 import clsx from "clsx";
 import { FaPlus } from "react-icons/fa";
@@ -9,7 +9,7 @@ function UserInfo({ name, email, role, isActive, lastOnline, userId, onClick, is
   return (
       <div
       key={userId}
-      className="flex w-52 hover:bg-blue-400 bg-blue-50 rounded-md shadow-lg p-2">
+      className="flex w-52 hover:bg-blue-400 border rounded-md shadow-lg p-2 overflow-auto">
         <div className="flex flex-col p-2 font-semibold">
           <span>Name</span>
           {isFriend && <span>Email</span>}
@@ -22,7 +22,7 @@ function UserInfo({ name, email, role, isActive, lastOnline, userId, onClick, is
             }
           </button>
         </div>
-        <div className="flex flex-col p-2">
+        <div className="flex flex-col p-2 w-36">
           <span className={ellipsis}>{name}</span>
           {isFriend && <span className={ellipsis}>{email}</span>}
           <span className={ellipsis}>{role}</span>
