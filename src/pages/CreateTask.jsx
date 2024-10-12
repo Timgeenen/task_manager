@@ -10,7 +10,7 @@ import DateSelect from "../components/DateSelect";
 import { useState } from "react";
 import { useSocket } from "../context/SocketProvider";
 import DOMPurify from "dompurify";
-import { errorMessage } from "../library/styles";
+import { errorMessage, inputStyle } from "../library/styles";
 
 function CreateTask() {
   const { user } = useSelector(state => state.auth);
@@ -98,10 +98,10 @@ function CreateTask() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col mt-10 items-center">
+    <div className="w-full h-full flex flex-col pt-10 pb-24 items-center overflow-y-scroll">
       {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
-      className="flex flex-col gap-4 p-8 rounded-lg bg-blue-100 w-3/4 min-w-72 max-w-xl"
+      className="flex flex-col gap-4 p-8 rounded-lg bg-blue-300 w-3/4 min-w-72 max-w-xl"
       onSubmit={handleSubmit(submitHandler)}
       >
 
@@ -159,6 +159,7 @@ function CreateTask() {
         <textarea 
         type="text"
         placeholder="Add Task Description"
+        className="shadow-lg p-1 pl-2 pr-2 rounded-md text-sm"
         {...register("description", {required: "Description is required"})}
         />
         {errors.description && <p className={errorMessage}>{errors.description.message}</p>}
