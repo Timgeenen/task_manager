@@ -44,7 +44,6 @@ function FindConnections() {
       }
     }))
   };
-  console.log(getFilteredConnections(data))
 
   return (
     <div className="w-full flex flex-col items-center overflow-y-scroll">
