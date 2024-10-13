@@ -6,6 +6,7 @@ import { logout } from "../redux/state/authSlice";
 import { getInitials } from "../library/helperfunctions";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../api/Event";
+import { QueryClient } from "@tanstack/react-query";
 
 function UserTag() {
   const { user } = useSelector(state => state.auth);
@@ -17,6 +18,7 @@ function UserTag() {
     setInitials(userInitials);
   }, [user]);
 
+  const queryClient = new QueryClient;
 
   const [visible, setVisible] = useState(false);
   const show = () => setVisible(true);
@@ -27,6 +29,7 @@ function UserTag() {
   const handleClick = async () => {
     logoutUser();
     dispatch(logout());
+    queryClient.clear();
   };
 
   const navigateProfile = () => {
