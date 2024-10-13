@@ -10,7 +10,7 @@ import DateSelect from "../components/DateSelect";
 import { useState } from "react";
 import { useSocket } from "../context/SocketProvider";
 import DOMPurify from "dompurify";
-import { errorMessage, inputStyle } from "../library/styles";
+import { errorMessage } from "../library/styles";
 import { useQueryClient } from "@tanstack/react-query";
 
 function CreateTask() {

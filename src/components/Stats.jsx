@@ -3,9 +3,6 @@ import { countTasksByStatus, sortTasksByDeadline } from "../library/helperfuncti
 import { useEffect, useState } from "react";
 import TasksListSmall from "./TasksListSmall";
 
-const taskStyle = "text-nowrap overflow-hidden p-1 border-2 border-gray-300 border-black"
-const titleStyle = "pt-1"
-
 function Stats({ data, selectedTeam }) {
 
   const [statusData, setStatusData] = useState([]);

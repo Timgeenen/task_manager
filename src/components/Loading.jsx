@@ -13,7 +13,6 @@ function Loading() {
         stroke="url(#myGradient)"
         fill="none"
         strokeWidth={10}
-        // strokeDasharray={100}
         strokeLinecap="round"
         />
         <linearGradient

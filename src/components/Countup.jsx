@@ -1,5 +1,4 @@
 import { CountUp } from "use-count-up";
-//TODO: change styles to tailwind
 
 function Countup({actual, total, parameter, radius, color}) {
   const circumference = radius * 2 * Math.PI;

@@ -34,8 +34,6 @@ function NotificationList() {
     })
   };
 
-  if(isError) {console.log(error.message)};
-
   return (
     <div className="min-w-72 border-2 relative rounded-lg">
       {isLoading && <Loading />}
