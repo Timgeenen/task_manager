@@ -26,8 +26,6 @@ function Commentbox({ socketId, submitHandler, socketType }) {
 
     if (data.message.length > 0) {
       submitHandler(data)
-    } else {
-      console.log("please enter valid message");
     }
 
     reset();
@@ -41,7 +39,6 @@ function Commentbox({ socketId, submitHandler, socketType }) {
       <input 
       type="text"
       placeholder="Type your message here..."
-      required
       {...register("message")}
       className="focus:outline-none w-4/5"
       />
