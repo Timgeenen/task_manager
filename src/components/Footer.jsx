@@ -1,7 +1,7 @@
 
 function Footer() {
   return (
-    <div className="absolute bottom-0 h-12 flex items-center justify-center p-1 gap-4 sm:justify-around text-xs z-50 bg-blue-100 w-screen">
+    <div className="absolute -bottom-12 h-16 flex items-center justify-center p-1 gap-4 sm:justify-around text-xs z-50 bg-blue-100 w-screen">
       <div>
         <span>Designed and coded by: </span>
         <a

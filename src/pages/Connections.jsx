@@ -19,7 +19,7 @@ function Connections() {
   if (isError) { console.error(error.message) };
 
   return (
-    <div className="w-full flex flex-wrap mr-auto pb-32 ml-auto pt-10 justify-center gap-4 overflow-y-scroll">
+    <div className="w-full h-max flex flex-wrap mr-auto pb-32 ml-auto pt-10 justify-center gap-4 overflow-y-scroll">
       {isLoading && <Loading />}
       {
         data?.map(item => (

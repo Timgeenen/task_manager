@@ -96,9 +96,9 @@ function Layout() {
 
   return user ? (
     <SocketProvider>
-      <div className="relative min-h-screen overflow-y-hidden">
+      <div className="h-screen overflow-y-hidden">
         <Navbar />
-        <div className="h-full flex w-screen">
+        <div className="h-full flex w-screen pb-8">
           {
           isSidebarOpen ? 
           <Sidebar /> : 
@@ -108,8 +108,8 @@ function Layout() {
           onClick={() => { dispatch(setOpenSidebar(true)) }}/>
           }
           <Outlet />
+          <Footer />
         </div>
-        <Footer />
       </div>
     </SocketProvider>
   ) : (
