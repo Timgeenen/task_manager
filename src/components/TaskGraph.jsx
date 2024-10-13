@@ -15,8 +15,8 @@ function TaskGraph({ data, selectedTeam }) {
   return (
     <BarChart width={280} height={320} data={graphData}>
       <CartesianGrid strokeDasharray="3 3"/>
-      <XAxis dataKey="priority" color="red"/>
-      <YAxis />
+      <XAxis dataKey="priority" color="red" />
+      <YAxis allowDecimals={false}/>
       <Tooltip content={<CustomTooltip />}/>
       <Bar 
       dataKey="tasks">
