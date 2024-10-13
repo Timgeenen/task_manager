@@ -5,7 +5,6 @@ import clsx from "clsx";
 import { FaPlus } from "react-icons/fa";
 
 function UserInfo({ name, email, role, isActive, lastOnline, userId, onClick, isFriend }) {
-  console.log(role)
   return (
       <div
       key={userId}
