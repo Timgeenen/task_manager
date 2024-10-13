@@ -1,13 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { QueryCache } from "@tanstack/react-query";
-
 
 const initialState = {
   user: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
-
-  cache: new QueryCache(),
   
   isSidebarOpen: false
 }
@@ -29,7 +25,6 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isSidebarOpen = false;
-      state.cache.clear();
       localStorage.removeItem('userInfo');
     },
 
