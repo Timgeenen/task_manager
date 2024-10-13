@@ -17,7 +17,7 @@ function Tasks () {
 
   const { isLoading, isError, isSuccess, error, data } = useQuery({
     queryKey: ["all-tasks"],
-    queryFn: () => getAllTasks(),
+    queryFn: () => getAllTasks(teams),
   });
 
   const defaultValues = {

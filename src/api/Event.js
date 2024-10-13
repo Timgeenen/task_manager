@@ -73,8 +73,8 @@ export const getTaskById = async (taskId) => {
   return res.data;
 };
 
-export const getAllTasks = async () => {
-  const teamIds = getTeamIdArray(user.teams);
+export const getAllTasks = async (teams) => {
+  const teamIds = getTeamIdArray(teams);
   const res = await axios.post("/get-all-tasks", teamIds);
   return res.data;
 };
