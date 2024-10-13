@@ -14,7 +14,7 @@ function Dashboard() {
 
   const { isError, isPending, data, error} = useQuery({
     queryKey: ["tasks"],
-    queryFn: getAllTasks
+    queryFn: () => getAllTasks(user.teams)
   });
 
   const changeTeam = (e) => {
