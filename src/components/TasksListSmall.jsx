@@ -65,4 +65,4 @@ function TasksListSmall({ data, selectedTeam }) {
   )
 }
 
-export default TasksListSmall
+export default memo(TasksListSmall)

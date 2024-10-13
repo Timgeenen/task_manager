@@ -153,9 +153,7 @@ const initializeSocket = (httpServer) => {
         );
 
         io.to(team.id).emit("receiveNotification", notificationObj);
-        callback({
-          message: "succesfully created task",
-        });
+        callback(newTask);
       } catch (err) {
         callback({
           error: err,

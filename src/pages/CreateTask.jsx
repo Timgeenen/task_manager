@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useSocket } from "../context/SocketProvider";
 import DOMPurify from "dompurify";
 import { errorMessage, inputStyle } from "../library/styles";
+import { useQueryClient } from "@tanstack/react-query";
 
 function CreateTask() {
   const { user } = useSelector(state => state.auth);
@@ -38,6 +39,7 @@ function CreateTask() {
   });
 
   const selectedTeam = watch("team");
+  const queryClient = useQueryClient();
 
   const submitHandler = (formData) => {
     if (formData.team === "") { 
@@ -91,6 +93,7 @@ function CreateTask() {
         const { error } = response
         return console.error(`Creating task failed.\nError message: ${error.message}.\nStatus:${error.status}`);
       } else {
+        queryClient.setQueryData(["tasks"], (prevData) => [...prevData, response])
         setNewTask(formData.title);
         reset();
       }
