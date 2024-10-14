@@ -34,8 +34,9 @@ app.use(bodyParser.json());
 app.use("/api", router);
 
 const httpServer = createServer(app);
+const port = process.env.PORT || 4040;
 
-const server = httpServer.listen(process.env.PORT || 8080, () => {
+const server = httpServer.listen(port, () => {
   console.log(`Server is running ${!process.env.PORT && "on port 8080"}`);
 });
 

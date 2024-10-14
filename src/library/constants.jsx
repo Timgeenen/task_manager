@@ -1,4 +1,4 @@
-export const BACKEND = import.meta.env.PORT;
+export const BACKEND = import.meta.env.BACKEND_URL;
 export const COLORS = [
   "#109648",
   "#8AF3FF",
