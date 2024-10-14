@@ -13,7 +13,7 @@ const router = require("./routes");
 const app = express();
 
 const corsOptions = {
-  origin: "https://sienna-ape-700339.hostingersite.com",
+  origin: "*",
   credentials: true,
 };
 
