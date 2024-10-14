@@ -83,14 +83,14 @@ router.post(
 
           res.cookie("accessToken", token, {
             httpOnly: true,
-            secure: false, 
+            secure: true, 
             maxAge: 1000 * 60 * 15,
             sameSite: "None",
           });
 
           res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: false, 
+            secure: true, 
             maxAge: 1000 * 60 * 60 * 24 * 7,
             sameSite: "None",
           });
