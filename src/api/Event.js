@@ -7,8 +7,6 @@ import { logout } from "../redux/state/authSlice";
 axios.defaults.baseURL = BACKEND + "/api";
 axios.defaults.withCredentials = true
 
-const user = store.getState().auth.user;
-
 axios.interceptors.response.use(
   response => response,
   error => {
