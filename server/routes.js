@@ -44,6 +44,11 @@ const createTypeChain = () =>
     .isAlpha()
     .withMessage("Type can only contain alphabetic characters");
 
+//Return index.html file to prevent page 404
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/build/index.html'));
+});
+
 //user api calls
 router.post(
   "/login",

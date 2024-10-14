@@ -11,6 +11,7 @@ const initializeSocket = require("./socket");
 const router = require("./routes");
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'build')));
 
 const corsOptions = {
   origin: "https://sienna-ape-700339.hostingersite.com",
