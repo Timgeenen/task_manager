@@ -7,7 +7,7 @@ const initializeSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
       origin: "https://sienna-ape-700339.hostingersite.com",
-      methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: true
     },
     connectionStateRecovery: {
       maxDisconnectionDuration: 1000 * 60 * 5,
