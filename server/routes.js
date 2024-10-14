@@ -157,18 +157,11 @@ router.post(
 );
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-  });
+  res.clearCookie("accessToken");
 
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-  });
+  res.clearCookie("refreshToken");
 
+  res.end();
   res.send({ message: "succesfully logged out user" });
 });
 
