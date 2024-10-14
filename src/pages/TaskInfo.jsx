@@ -21,7 +21,7 @@ function TaskInfo() {
   });
 
   if (isPending) { return ( <Loading /> ) };
-  if (error.status === 404) { return ( <PageNotFound message="Please check if the task you are looking for hasn't been deleted"/> ) };
+  if (isError && error?.status === 404) { return ( <PageNotFound message="Please check if the task you are looking for hasn't been deleted"/> ) };
 
   return (
     <div className="w-10/12 flex flex-col justify-between m-auto border-2">
