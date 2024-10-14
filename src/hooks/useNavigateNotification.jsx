@@ -13,7 +13,7 @@ function useNavigateNotification({ teamId, taskId, userId, notificationId, updat
     socket.emit("readNotification", notificationId, (response) => {
       if (response.error) { return console.error(response.error.message) };
       if (updateFn) { updateFn() };
-      navigate(route);
+      id && navigate(route);
     });
   }, [userId, notificationId, updateFn]);
   
