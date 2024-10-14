@@ -248,12 +248,33 @@ const initializeSocket = (httpServer) => {
       }
 
       try {
-        const updatedTeam = await Team.findByIdAndUpdate(task.assignedTeam.id, {
-          $pull: { tasks: { $elemMatch: { id: taskId } } },
+        const team = await Team.findByIdAndUpdate(task.assignedTeam.id, {
+          $pull: { tasks: { id: taskId } },
         });
+
+        const notificationObj = {
+          nType: "Task Deleted",
+          task: {
+            name: task.title,
+          },
+          message: `${task.title} has been deleted from ${task.assignedTeam.name}`,
+        };
+
+        const ids = task.assignedTo.map(user => user.id);
+        ids.push(task.assignedTeam.managerId);
+
+        const users = await User.updateMany(
+          { _id: { $in: ids } },
+          {
+            $push: {
+              notifications: { $each: [notificationObj], $position: 0 },
+            },
+          }
+        );
 
         await Task.findByIdAndDelete(taskId);
 
+        io.to(task.assignedTeam.id).emit("receiveNotification", notificationObj);
         socket.to(taskId).emit("taskDeleted");
         return callback({ message: "Succesfully deleted task" });
       } catch (error) {
