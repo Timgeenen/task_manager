@@ -23,7 +23,7 @@ const limiter = rateLimit({
   message: "maximum number of requests reached, please try again in 10 minutes",
   legacyHeaders: true,
   standardHeaders: "draft-7",
-})
+});
 
 app.use(helmet());
 app.use(cors(corsOptions));
@@ -36,8 +36,8 @@ app.use("/api", router);
 const httpServer = createServer(app);
 const port = process.env.PORT || 4040;
 
-const server = httpServer.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running ${port}`);
+const server = httpServer.listen(port, "0.0.0.0", () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 const io = initializeSocket(server);

@@ -85,14 +85,14 @@ router.post(
             httpOnly: true,
             secure: false, 
             maxAge: 1000 * 60 * 15,
-            sameSite: "Strict",
+            sameSite: "None",
           });
 
           res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: false, 
             maxAge: 1000 * 60 * 60 * 24 * 7,
-            sameSite: "Strict",
+            sameSite: "None",
           });
 
           res.send(user);
@@ -160,13 +160,13 @@ router.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
     secure: true,
-    sameSite: "Strict",
+    sameSite: "None",
   });
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: true,
-    sameSite: "Strict",
+    sameSite: "None",
   });
 
   res.send({ message: "succesfully logged out user" });

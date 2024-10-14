@@ -38,7 +38,7 @@ const authMiddleware = (req, res, next) => {
               httpOnly: true,
               secure: true,
               maxAge: 1000 * 60 * 15,
-              sameSite: "Strict",
+              sameSite: "None",
             });
 
             req.user = data;
@@ -66,7 +66,7 @@ const authMiddleware = (req, res, next) => {
           httpOnly: true,
           secure: true,
           maxAge: 1000 * 60 * 15,
-          sameSite: "Strict",
+          sameSite: "None",
         });
 
         req.user = data;
