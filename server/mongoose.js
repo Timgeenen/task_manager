@@ -8,16 +8,6 @@ const userSchema = new mongoose.Schema(
       required: [true, "name is required"],
       minLength: [3, "name must be at least 3 characters"],
       maxLength: [50, "name can be a maximum of 50 characters"],
-      // match: [
-      //   "/^[A-Za-z]+(?:s+[A-Za-z]+)+$/",
-      //   "name can't contain any numbers or special characters",
-      // ],
-      // validate: {
-      //   validator: (value) => {
-      //     return value.split().length > 1;
-      //   },
-      //   message: "name must contain first and last name",
-      // },
       immutable: true,
     },
     role: {
@@ -25,10 +15,6 @@ const userSchema = new mongoose.Schema(
       required: [true, "role is required"],
       minLength: [3, "role must be at least 3 characters"],
       maxLength: [50, "role can be a maximum of 50 characters"],
-      // match: [
-      //   "/^[A-Za-z0-9 ]*$/",
-      //   "role cannot contain any special characters",
-      // ],
       trim: true,
       immutable: true,
     },
@@ -39,10 +25,6 @@ const userSchema = new mongoose.Schema(
       minLength: [6, "email adress must be at least 6 characters long"],
       maxLength: [254, "email adress can be a maximum of 254 characters long"],
       trim: true,
-      // match: [
-      //   "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/",
-      //   "this is not a valid email adress",
-      // ],
       immutable: true,
     },
     password: {
@@ -63,7 +45,7 @@ const userSchema = new mongoose.Schema(
       {
         name: {
           type: String,
-          // required: true,
+          required: true,
           trim: true,
         },
         id: {
@@ -75,29 +57,29 @@ const userSchema = new mongoose.Schema(
         managerId: {
           type: String,
           ref: "User",
-          // required: true,
+          required: true,
           trim: true,
         },
         members: [
           {
             name: {
               type: String,
-              // required: true,
+              required: true,
               trim: true,
             },
             role: {
               type: String,
-              // required: true,
+              required: true,
               trim: true,
             },
             email: {
               type: String,
-              // required: true,
+              required: true,
               trim: true,
             },
             id: {
               type: String,
-              // required: true,
+              required: true,
               trim: true,
               ref: "User",
             },
@@ -137,7 +119,7 @@ const userSchema = new mongoose.Schema(
       {
         nType: {
           type: String,
-          // required: true,
+          required: true,
           trim: true,
           enum: {
             values: [
@@ -145,11 +127,12 @@ const userSchema = new mongoose.Schema(
               "New Task",
               "Task Updated",
               "Task Completed",
+              "Task Deleted",
               "New Connection",
               "New Message",
             ],
             message:
-              "type must be one of the following: 'New Task', 'New Team', 'Task Updated', 'New Connection', 'New Message'",
+              "type must be one of the following: 'New Task', 'New Team', 'Task Updated', 'Task Deleted', 'New Connection', 'New Message'",
           },
         },
         team: {
@@ -205,10 +188,6 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    // refreshToken: {
-    //   type: String,
-    //   default: null,
-    // },
   },
   { timestamps: true }
 );
@@ -218,7 +197,6 @@ const teamSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      // match: ["/^[A-Za-z0-9 ]*$/", "name cannot contain any special characters"],
       minLength: [8, "team name must be at least 8 characters long"],
       maxLength: [50, "team name can be a maximum of 50 characters long"],
       trim: true,
@@ -344,10 +322,6 @@ const taskSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      // match: [
-      //   "/^[A-Za-z0-9 ]*$/",
-      //   "task name cannot contain any special characters",
-      // ],
       minLength: [8, "task name must be at least 8 characters long"],
       maxLength: [50, "task name can be a maximum of 50 characters long"],
     },
