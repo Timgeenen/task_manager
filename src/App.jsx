@@ -9,6 +9,7 @@ import SocketProvider from "./context/SocketProvider";
 import { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
 import Footer from "./components/Footer";
+import PageNotFound from "./pages/PageNotFound";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const CreateTask = lazy(() => import("./pages/CreateTask"));
@@ -25,7 +26,7 @@ function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Navigate to="/dashboard" />} index />
+        <Route exact path="/" element={<Navigate to="/dashboard" />} index />
         <Route path="/dashboard" element={
           <Suspense fallback={<Loading />}>
             <Dashboard />
@@ -82,6 +83,7 @@ function App() {
             </Suspense>
             } />
         </Route>
+        <Route path="*" element={<PageNotFound />} />
       </Route>
       <Route path="/login" element={
         <Login />} />
