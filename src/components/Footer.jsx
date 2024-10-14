@@ -11,8 +11,8 @@ function Footer() {
         >Tim Geenen</a>
       </div>
       <div className="flex gap-2 sm:gap-4">
-        <a className="w-4 sm:w-6"><img src="../../public/linkedin_logo.png"/></a>
-        <a className="w-4 sm:w-6"><img src="../../public/github_logo.png" className="bg-white rounded-full"/></a>
+        <a className="w-4 sm:w-6"><img src="../../linkedin_logo.png"/></a>
+        <a className="w-4 sm:w-6"><img src="../../github_logo.png" className="bg-white rounded-full"/></a>
       </div>
     </div>
   )
