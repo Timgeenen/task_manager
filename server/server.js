@@ -13,7 +13,7 @@ const router = require("./routes");
 const app = express();
 
 const corsOptions = {
-  origin: "*",
+  origin: "https://sienna-ape-700339.hostingersite.com",
   credentials: true,
 };
 
@@ -36,8 +36,8 @@ app.use("/api", router);
 const httpServer = createServer(app);
 const port = process.env.PORT || 4040;
 
-const server = httpServer.listen(port, () => {
-  console.log(`Server is running ${!process.env.PORT && "on port 8080"}`);
+const server = httpServer.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running ${port}`);
 });
 
 const io = initializeSocket(server);

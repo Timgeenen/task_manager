@@ -6,7 +6,7 @@ const { Server } = require("socket.io");
 const initializeSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "https://sienna-ape-700339.hostingersite.com",
       methods: ["GET", "POST", "PUT", "DELETE"],
     },
     connectionStateRecovery: {
