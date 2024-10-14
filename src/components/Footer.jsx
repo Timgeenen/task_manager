@@ -1,11 +1,11 @@
 
 function Footer() {
   return (
-    <div className="absolute -bottom-12 h-16 flex items-center justify-center p-1 gap-4 sm:justify-around text-xs z-50 bg-blue-100 w-screen">
+    <div className="absolute -bottom-12 h-16 flex items-center justify-center p-1 gap-4 sm:justify-around text-xs z-50 bg-blue-300 w-screen">
       <div>
         <span>Designed and coded by: </span>
         <a
-        className="text-blue-600 font-medium"
+        className="text-blue-700 font-medium"
         href="https://www.timgeenen.com"
         target="blank"
         >Tim Geenen</a>
