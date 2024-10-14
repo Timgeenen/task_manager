@@ -46,12 +46,12 @@ function CreateTeam() {
   }
 
   return (
-    <div className="w-full h-full flex">
+    <div className="w-full h-full flex flex-col">
+      {newTeam && <div className=" self-center text-xs text-green-400 mt-2">
+          Succesfully created new team: {newTeam}</div>}
       <form 
       className="flex flex-col mt-10 w-2/3 min-w-72 max-w-xl m-auto items-center p-2 rounded-xl shadow-lg bg-blue-300"
       onSubmit={handleSubmit(createTeam)}>
-        {newTeam && <div className="text-xs text-green-400">
-          Succesfully created new team: {newTeam}</div>}
         <div className="p-4">
           <Textbox
           label="Team Name"
