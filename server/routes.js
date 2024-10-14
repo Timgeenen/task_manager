@@ -3,8 +3,9 @@ const func = require("./functions");
 const { authMiddleware } = require("./functions");
 const express = require("express");
 const router = express.Router();
-const { body, validationResult } = require("express-validator");
+const { body, param, validationResult } = require("express-validator");
 
+//express validator chains
 const createEmailChain = () =>
   body("data.email").isEmail().withMessage("Invalid email");
 const createPasswordChain = () =>
@@ -13,28 +14,44 @@ const createPasswordChain = () =>
     .escape()
     .isLength({ min: 8, max: 24 })
     .withMessage("Password must be between 8 and 24 characters long");
-const createNameChain = () =>
-  body("data.name")
-    .trim()
-    .escape()
-    .isAlphanumeric()
-    .withMessage("Name cannot contain any special characters");
+const createNameChain = () => body("data.name").trim().escape();
 const createRoleChain = () =>
   body("data.role")
     .trim()
     .escape()
     .isAlphanumeric()
     .withMessage("Role cannot contain any special characters");
+const createIdArrayChain = () => [
+  body("data.idArray")
+    .isArray({ min: 1 })
+    .withMessage("Must be an array containing at least 1 item"),
+  body("data.idArray.*")
+    .trim()
+    .escape()
+    .isAlphanumeric()
+    .withMessage("Id's cannot contain any special characters"),
+];
+const createIdChain = () =>
+  param("id")
+    .trim()
+    .escape()
+    .isAlphanumeric()
+    .withMessage("Id cannot contain any special characters");
+const createTypeChain = () =>
+  param("type")
+    .trim()
+    .escape()
+    .isAlpha()
+    .withMessage("Type can only contain alphabetic characters");
 
 //user api calls
 router.post(
   "/login",
   createEmailChain(),
-  createPasswordChain(),
+  // createPasswordChain(),
   async (req, res) => {
     const { errors } = validationResult(req);
     if (errors.length > 0) {
-      console.log(errors);
       res.status(403);
       return res.send(errors);
     }
@@ -101,8 +118,7 @@ router.post(
     if (errors.length > 0) {
       res.status(403);
       return res.send(errors);
-    };
-
+    }
 
     const { name, role, email, password } = req.body.data;
     const registered = await User.where({
@@ -173,20 +189,25 @@ router.get("/connections", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/get-connected", authMiddleware, async (req, res) => {
-  const idArray = req.body;
-  try {
-    const users = await User.find(
-      { _id: { $in: idArray } },
-      { name: 1, role: 1, email: 1, updatedAt: 1, isActive: 1 }
-    );
-    res.send(users);
-  } catch (error) {
-    res.send(error);
+router.post(
+  "/get-connected",
+  createIdArrayChain(),
+  authMiddleware,
+  async (req, res) => {
+    const idArray = req.body;
+    try {
+      const users = await User.find(
+        { _id: { $in: idArray } },
+        { name: 1, role: 1, email: 1, updatedAt: 1, isActive: 1 }
+      );
+      res.send(users);
+    } catch (error) {
+      res.send(error);
+    }
   }
-});
+);
 
-router.get("/user:id", authMiddleware, async (req, res) => {
+router.get("/user:id", createIdChain(), authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { myId } = req.user;
 
@@ -249,25 +270,34 @@ router.get("/notifications", authMiddleware, async (req, res) => {
 });
 
 //task api calls
-router.get("/task:id", authMiddleware, async (req, res) => {
+router.get("/task:id", createIdChain(), authMiddleware, async (req, res) => {
   const { id } = req.params;
   try {
     const task = await Task.findById(id);
+    if (!task) {
+      res.status(404);
+      return res.send({ message: "Invalid task id" });
+    }
     res.send(task);
   } catch (err) {
     res.send(err);
   }
 });
 
-router.post("/get-all-tasks", authMiddleware, async (req, res) => {
-  const teamIds = req.body;
-  try {
-    const tasks = await Task.find({ "assignedTeam.id": { $in: teamIds } });
-    res.send(tasks);
-  } catch (err) {
-    res.send(err);
+router.post(
+  "/get-all-tasks",
+  createIdArrayChain(),
+  authMiddleware,
+  async (req, res) => {
+    const teamIds = req.body;
+    try {
+      const tasks = await Task.find({ "assignedTeam.id": { $in: teamIds } });
+      res.send(tasks);
+    } catch (err) {
+      res.send(err);
+    }
   }
-});
+);
 
 //team api calls
 router.get("/get-all-teams", authMiddleware, async (req, res) => {
@@ -283,12 +313,12 @@ router.get("/get-all-teams", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/get-team:teamId", authMiddleware, async (req, res) => {
+router.get("/get-team:id", authMiddleware, async (req, res) => {
   const { myId } = req.user;
-  const { teamId } = req.params;
+  const { id } = req.params;
 
   try {
-    const team = await Team.findById(teamId);
+    const team = await Team.findById(id);
     const valid = team.members.find((member) => member.id === myId);
     if (valid) {
       res.send(team);
@@ -302,26 +332,32 @@ router.get("/get-team:teamId", authMiddleware, async (req, res) => {
 });
 
 //general api calls
-router.get("/comments:id/:type", authMiddleware, async (req, res) => {
-  const { id, type } = req.params;
+router.get(
+  "/comments:id/:type",
+  createIdChain(),
+  createTypeChain(),
+  authMiddleware,
+  async (req, res) => {
+    const { id, type } = req.params;
 
-  try {
-    const query = { comments: 1, _id: 0 };
-    let comments;
+    try {
+      const query = { comments: 1, _id: 0 };
+      let comments;
 
-    if (type === "task") {
-      comments = await Task.findById(id, query);
+      if (type === "task") {
+        comments = await Task.findById(id, query);
+      }
+
+      if (type === "team") {
+        comments = await Team.findById(id, query);
+      }
+
+      res.send(comments);
+    } catch (err) {
+      res.send(err);
     }
-
-    if (type === "team") {
-      comments = await Team.findById(id, query);
-    }
-
-    res.send(comments);
-  } catch (err) {
-    res.send(err);
   }
-});
+);
 
 router.get("/authorize", authMiddleware, (req, res) => {
   res.send({ message: "Succesfully authorized user" });
