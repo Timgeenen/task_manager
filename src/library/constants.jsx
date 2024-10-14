@@ -1,4 +1,4 @@
-export const BACKEND = import.meta.env.BACKEND_URL;
+export const BACKEND = 'https://task-manager-71tb.onrender.com';
 export const COLORS = [
   "#109648",
   "#8AF3FF",
