@@ -48,7 +48,7 @@ const createTypeChain = () =>
 router.post(
   "/login",
   createEmailChain(),
-  // createPasswordChain(),
+  createPasswordChain(),
   async (req, res) => {
     const { errors } = validationResult(req);
     if (errors.length > 0) {
@@ -83,14 +83,14 @@ router.post(
 
           res.cookie("accessToken", token, {
             httpOnly: true,
-            // secure: false, //TODO: set true
+            secure: false, 
             maxAge: 1000 * 60 * 15,
             sameSite: "Strict",
           });
 
           res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            // secure: false, //TODO: set true
+            secure: false, 
             maxAge: 1000 * 60 * 60 * 24 * 7,
             sameSite: "Strict",
           });
@@ -159,13 +159,13 @@ router.post(
 router.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: false, //TODO: set to true,
+    secure: true,
     sameSite: "Strict",
   });
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: false, //TODO: set to true,
+    secure: true,
     sameSite: "Strict",
   });
 

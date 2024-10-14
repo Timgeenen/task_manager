@@ -36,7 +36,7 @@ const authMiddleware = (req, res, next) => {
 
             res.cookie("accessToken", newToken, {
               httpOnly: true,
-              // secure: false TODO: set to true
+              secure: true,
               maxAge: 1000 * 60 * 15,
               sameSite: "Strict",
             });
@@ -64,7 +64,7 @@ const authMiddleware = (req, res, next) => {
 
         res.cookie("accessToken", newToken, {
           httpOnly: true,
-          // secure: false TODO: set to true
+          secure: true,
           maxAge: 1000 * 60 * 15,
           sameSite: "Strict",
         });
@@ -84,7 +84,7 @@ const authMiddleware = (req, res, next) => {
 
 const generateAccessToken = (id) => {
   const token = jwt.sign({ myId: id }, process.env.JWT_SECRET, {
-    expiresIn: "10s",
+    expiresIn: "15m",
   });
   return token;
 };
