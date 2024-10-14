@@ -5,6 +5,7 @@ import Chatroom from "../components/Chatroom";
 import TaskEdit from "../components/TaskEdit";
 import TaskOverview from "../components/TaskOverview";
 import Loading from "../components/Loading";
+import PageNotFound from "./PageNotFound";
 
 function TaskInfo() {
   const { taskId } = useParams();
@@ -20,7 +21,7 @@ function TaskInfo() {
   });
 
   if (isPending) { return ( <Loading /> ) };
-  if (isError) { return ( <div>{ error.message }</div> ) };
+  if (error.status === 404) { return ( <PageNotFound message="Please check if the task you are looking for hasn't been deleted"/> ) };
 
   return (
     <div className="w-10/12 flex flex-col justify-between m-auto border-2">
