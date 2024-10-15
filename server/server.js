@@ -9,7 +9,6 @@ const cookieParser = require("cookie-parser");
 const { rateLimit } = require("express-rate-limit");
 const initializeSocket = require("./socket");
 const router = require("./routes");
-const path = require("path");
 
 const app = express();
 
@@ -33,12 +32,6 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/api", router);
-
-//Return index.html file to prevent page 404
-app.use(express.static(path.join(__dirname, 'build')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/build/index.html'));
-});
 
 const httpServer = createServer(app);
 const port = process.env.PORT || 4040;
