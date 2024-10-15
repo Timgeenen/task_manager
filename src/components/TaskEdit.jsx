@@ -142,17 +142,18 @@ function TaskEdit({
   return (
     <div>
       {updateSuccess && <div className="text-xs text-green-500 text-center">Succesfully updated task</div>}
-      {isCompleted && <div className="text-center pt-5 text-3xl font-semibold text-green-500">Completed!</div>}
-      <div className="flex items-center">
+      {isCompleted && <div className="text-center pt-5 text-xl sm:text-3xl font-semibold text-green-500">Completed!</div>}
+      
+      <div className="flex flex-col sm:flex-row items-start sm:items-center">
         <button
-        className={clsx("ml-6 mt-2 p-1 pl-3 pr-3 border font-medium rounded-md text-nowrap bg-blue-600 text-white", (canEdit || isCompleted) && "bg-gray-300")}
+        className={clsx("sm:ml-6 mt-1 sm:mt-2 p-1 sm:pl-3 sm:pr-3 border text-sm sm:text-md font-medium rounded-md text-nowrap bg-blue-600 text-white", (canEdit || isCompleted) && "bg-gray-300")}
         onClick={addActiveWorker}
         disabled={canEdit}
         >
           Start working on task
         </button>
-        <div className="flex ml-8 items-center w-full">
-          <span className="font-medium mr-2">Active Workers</span>
+        <div className="flex sm:ml-8 items-center h-8 w-full">
+          <span className="text-xs sm:text-md font-medium mr-2">Active Workers</span>
           {activeWorkers.map((member, i) => (
             <MembersTag
             member={member.name}
@@ -163,48 +164,25 @@ function TaskEdit({
           ))}
         </div>
       </div>
+      
       <form
-      className="flex gap-8"
+      className="flex flex-col sm:gap-8"
       onSubmit={handleSubmit(submitHandler)}
       disabled={isCompleted || !canEdit}
       >
-      <div className="w-full">
+      <div className="flex flex-col sm:flex-row">
+      <div className="w-full sm:flex">
         <textarea 
         defaultValue={description}
         {...register("description")}
         disabled={isCompleted || !canEdit}
-        className="w-full m-6 mt-2 p-2 border-2 rounded-lg h-96 text-lg"
+        className="w-full sm:w-full sm:m-6 mt-1 sm:mt-2 p-2 border-2 rounded-lg h-40 sm:h-96 text-sm md:text-md"
         ></textarea>
-        <div className="flex items-center justify-center">
-          <Checkbox
-          register={register("completed")}
-          text="Complete Task"
-          disabled={isCompleted || !canEdit}
-          />
-          <SubmitButton
-          disabled={isCompleted || !canEdit}
-          />
-          {
-            managerId === user._id &&
-            <>
-              <button
-              className="bg-red-600 rounded-full p-1 pl-5 pr-5 text-white"
-              onClick={toggleOpen}
-              >Delete Task
-              </button>
-              <PopupMessage
-              open={open}
-              toggleOpen={toggleOpen}
-              proceed={deleteTask}
-              message={`Are you sure you want to delete this task?`}
-              />
-            </>
-          }
-        </div>
+
         {submitError && <div className={clsx("text-center", errorMessage)}>{submitError}</div>}
         </div>
         <div>
-          <div className="h-96 overflow-y-scroll w-44 mr-6 mt-2 p-1 rounded-lg flex flex-col gap-1 mb-4 border">
+          <div className="max-h-40 sm:max-h-96 sm:w-44 sm:mr-6 mt-2 p-1 rounded-lg flex flex-col gap-1 mb-4 border">
             {fields.map((field, i) => {
               const task = subtasksArr[i];
               task._id && setValue(`subtasks.${i}._id`, task._id);
@@ -228,7 +206,7 @@ function TaskEdit({
               )
             })}
           </div>
-          <div className="w-44 flex flex-col">
+          <div className="w-full sm:w-44 flex flex-col">
             <input
             className="rounded-md border mb-1"
             id="taskEdit__newSubtask"
@@ -242,6 +220,35 @@ function TaskEdit({
             disabled={isCompleted || !canEdit}
             handleClick={addSubtask}
             />
+          </div>
+        </div>
+        </div>
+        <div className="flex flex-col pt-3 pb-3 gap-1 sm:gap-2 sm:flex-row items-center justify-center">
+          <Checkbox
+          register={register("completed")}
+          text="Complete Task"
+          disabled={isCompleted || !canEdit}
+          />
+          <div className="flex justify-around w-full">
+          <SubmitButton
+          disabled={isCompleted || !canEdit}
+          />
+          {
+            managerId === user._id &&
+            <>
+              <button
+              className="bg-red-600 rounded-full p-1 pl-5 pr-5 text-white text-nowrap"
+              onClick={toggleOpen}
+              >Delete Task
+              </button>
+              <PopupMessage
+              open={open}
+              toggleOpen={toggleOpen}
+              proceed={deleteTask}
+              message={`Are you sure you want to delete this task?`}
+              />
+            </>
+          }
           </div>
         </div>
       </form>

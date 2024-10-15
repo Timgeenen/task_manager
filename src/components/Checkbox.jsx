@@ -5,7 +5,7 @@ function Checkbox({value, text, register, checked, disabled }) {
   return (
     <span
     key={value}
-    className={clsx("w-1/4 min-w-32 text-nowrap", ellipsis)}
+    className={clsx("w-full sm:w-1/4 min-w-32 text-nowrap", ellipsis)}
     >
       <input 
       className="mr-2"

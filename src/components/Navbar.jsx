@@ -9,7 +9,7 @@ import clsx from "clsx";
 function Navbar() {
   const linkSize = 30
   return (
-    <div className="w-full flex items-center justify-center sm:justify-between bg-blue-100 p-3">
+    <div className="relative w-full flex items-center justify-center sm:justify-between bg-blue-100 p-1 pl-14 sm:p-4 h-20 z-50">
       <img
       className={clsx("hidden", "sm:block")}
       src="../../logoipsum-297.svg" />

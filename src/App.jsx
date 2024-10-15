@@ -98,17 +98,17 @@ function Layout() {
 
   return user ? (
     <SocketProvider>
-      <div className="h-screen overflow-y-hidden">
+      <div className="relative h-screen overflow-hidden">
         <Navbar />
-        <div className="h-full flex w-screen pb-8">
-          {
-          isSidebarOpen ? 
-          <Sidebar /> : 
-          <RxHamburgerMenu 
-          className="left-4 top-20 absolute hover:cursor-pointer bg-blue-600 text-white p-2 rounded-full border z-50"
-          size={40}
-          onClick={() => { dispatch(setOpenSidebar(true)) }}/>
-          }
+        {
+        isSidebarOpen ? 
+        <Sidebar /> : 
+        <RxHamburgerMenu 
+        className="left-1 sm:left-4 top-5 sm:top-24 absolute hover:cursor-pointer bg-blue-600 text-white p-2 rounded-full border z-50"
+        size={40}
+        onClick={() => { dispatch(setOpenSidebar(true)) }}/>
+        }
+        <div className="flex overflow-y-scroll h-full pb-16 absolute top-0 left-0 pt-20 w-screen">
           <Outlet />
           <Footer />
         </div>

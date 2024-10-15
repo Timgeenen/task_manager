@@ -25,7 +25,7 @@ function Dashboard() {
 
   return (
     <div className="w-full overflow-y-scroll">
-      <div className="m-auto max-w-4xl p-2 pt-8 justify-center flex flex-wrap gap-2 pb-40">
+      <div className="m-auto max-w-4xl p-2 pt-8 justify-center flex flex-wrap gap-2 pb-8">
         {isPending && <Loading />}
         {data &&
         <>

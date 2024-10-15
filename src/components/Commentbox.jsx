@@ -34,13 +34,13 @@ function Commentbox({ socketId, submitHandler, socketType }) {
   return (
     <form 
     onSubmit={handleSubmit(submitFn)}
-    className="p-2 border-2 rounded-full bg-white flex justify-center shadow-xl"
+    className="p-1 ml-1 mr-1 border-2 rounded-full bg-white flex justify-center shadow-xl"
     >
       <input 
       type="text"
       placeholder="Type your message here..."
       {...register("message")}
-      className="focus:outline-none w-4/5"
+      className="text-sm sm:text-md focus:outline-none w-4/5"
       />
       <SubmitButton />
     </form>

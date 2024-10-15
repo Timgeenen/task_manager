@@ -21,7 +21,7 @@ function Teams() {
 
   return (
     <div
-    className="w-screen mr-auto ml-auto flex flex-wrap justify-center items-center max-w-fit overflow-y-scroll pt-16 pb-28 gap-2"
+    className="w-screen mr-auto ml-auto flex flex-wrap justify-center items-center max-w-fit overflow-y-scroll pt-16 pb-8 gap-2"
     >
       {data && 
         <div className="flex justify-center w-auto absolute top-20 p-2 rounded-full filter backdrop-blur-sm shadow-xl">

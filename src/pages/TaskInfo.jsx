@@ -24,7 +24,7 @@ function TaskInfo() {
   if (isError && error?.status === 404) { return ( <PageNotFound message="Please check if the task you are looking for hasn't been deleted"/> ) };
 
   return (
-    <div className="w-10/12 flex flex-col justify-between m-auto border-2">
+    <div className="w-full p-1 sm:w-10/12 max-w-5xl flex flex-col justify-between m-auto border-2">
       <TaskOverview
       teamName={data?.assignedTeam.name}
       teamMembers={data?.assignedTo}

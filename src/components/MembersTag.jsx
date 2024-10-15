@@ -18,7 +18,7 @@ function MembersTag({ member, index, memberId, isManager }) {
         color: isManager && "black",
       }}
       onClick={navigateToProfile}
-      className="relative rounded-full p-1 w-9 h-9 -mr-4 text-sm font-semibold border-2 border-black text-white"
+      className="relative rounded-full w-7 h-7 p-1 md:w-9 md:h-9 -mr-4 text-xs md:text-sm font-semibold border-2 text-nowrap overflow-clip border-black text-white"
       >
         {initials}
         {isManager && <MdAdminPanelSettings size={16} className="absolute -bottom-1 -right-1"/>}

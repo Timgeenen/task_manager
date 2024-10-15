@@ -36,7 +36,7 @@ function Sidebar() {
   }
 
   return (
-    <div className="bg-blue-100 absolute z-50 sm:relative inline-block h-full pl-2 pr-6">
+    <div className="bg-blue-100 absolute z-50 inline-block h-full pl-2 pr-6">
       <IoClose size={24} className="m-2 ml-1 hover:cursor-pointer" onClick={closeSidebar}/>
       {
         links.map((item, i) => (

@@ -11,7 +11,7 @@ function TaskOverview({
 }) {
   return (
     <div className="sm:flex">
-    <div className="flex justify-between items-center w-full border-2 border-r-0 p-1 pr-2 pl-2">
+    <div className="flex justify-between w-full border border-b-0 rounded-t-lg sm:rounded-tr-none sm:rounded-l-lg sm:border sm:border-r-0 p-1 pr-2 pl-2 gap-2 overflow-clip">
       <TaskDescription
       label="Title"
       value={title}
@@ -27,7 +27,7 @@ function TaskOverview({
         ))}
       />
     </div>
-    <div className="flex justify-between items-center w-full border-2 border-l-0 p-1 pr-2 pl-2">
+    <div className="flex justify-between rounded-b-lg sm:rounded-bl-none sm:rounded-r-lg w-full border border-t-0 sm:border sm:border-l-0 p-1 pr-2 gap-2 pl-2">
       <TaskDescription
       label="Deadline"
       value={deadline.split("T")[0]}
@@ -61,9 +61,9 @@ function TaskOverview({
 
 function TaskDescription({ label, value, textClass, className }) {
   return (
-    <div className={clsx(className, "flex flex-col gap-1")}>
-      <span className="text-sm">{label}</span>
-      <span className={clsx(textClass, "text-lg")}>{value}</span>
+    <div className={clsx(className, "w-1/3 flex flex-col gap-1")}>
+      <span className="text-xs font-semibold">{label}</span>
+      <span className={clsx(textClass, "text-xs sm:text-sm md:text-lg")}>{value}</span>
     </div>
   )
 }

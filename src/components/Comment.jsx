@@ -25,7 +25,7 @@ function Comment({
 
   return (
     <div 
-    className={clsx("flex flex-col items-start p-2 rounded-lg border-2", classes)}
+    className={clsx("max-w-1/3 min-w-max flex flex-col items-start p-2 rounded-lg border-2", classes)}
     key={commentId}
     >
       <button

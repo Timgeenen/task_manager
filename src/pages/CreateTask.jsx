@@ -101,7 +101,7 @@ function CreateTask() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col pt-10 pb-24 items-center overflow-y-scroll">
+    <div className="w-full h-full flex flex-col pt-10 pb-8 items-center overflow-y-scroll">
       {newTask && <div className="text-green-400 text-xs p-4">Succesfully created new task: {newTask}</div>}
       <form 
       className="flex flex-col gap-4 p-8 rounded-lg bg-blue-300 w-3/4 min-w-72 max-w-xl"

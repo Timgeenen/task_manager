@@ -68,7 +68,7 @@ function Chatroom({ socketId, socketType }) {
   if (isError) { console.error(error.message) };
   
   return (
-    <div className="bg-blue-50 p-2 rounded-lg shadow-lg">
+    <div className="bg-blue-50 border pt-2 rounded-lg shadow-lg">
       <Commentbox 
       socketId={socketId}
       submitHandler={addMessage}
