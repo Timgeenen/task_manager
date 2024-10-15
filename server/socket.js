@@ -6,8 +6,8 @@ const { Server } = require("socket.io");
 const initializeSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: "https://sienna-ape-700339.hostingersite.com",
-      credentials: true
+      origin: ["https://sienna-ape-700339.hostingersite.com", "localhost:3000"],
+      credentials: true,
     },
     connectionStateRecovery: {
       maxDisconnectionDuration: 1000 * 60 * 5,

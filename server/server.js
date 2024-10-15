@@ -9,12 +9,13 @@ const cookieParser = require("cookie-parser");
 const { rateLimit } = require("express-rate-limit");
 const initializeSocket = require("./socket");
 const router = require("./routes");
+const path = require("path");
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
 
 const corsOptions = {
-  origin: "https://sienna-ape-700339.hostingersite.com",
+  origin: ["https://sienna-ape-700339.hostingersite.com", "localhost:3000"],
   credentials: true,
 };
 

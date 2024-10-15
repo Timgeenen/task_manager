@@ -3,6 +3,7 @@ const func = require("./functions");
 const { authMiddleware } = require("./functions");
 const express = require("express");
 const router = express.Router();
+const path = require("path");
 const { body, param, validationResult } = require("express-validator");
 
 //express validator chains
@@ -45,7 +46,7 @@ const createTypeChain = () =>
     .withMessage("Type can only contain alphabetic characters");
 
 //Return index.html file to prevent page 404
-app.get('*', (req, res) => {
+router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/build/index.html'));
 });
 
