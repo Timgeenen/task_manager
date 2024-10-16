@@ -195,6 +195,9 @@ function Login() {
         </span>
         )}
       </form>
+      <p className="text-xs font-light max-w-60">
+        *Please note that the backend of this project is hosted on a free server. If the server is idle due to inactivity, the first attempt to connect might take up to 50 seconds.
+      </p>
     </div>
   )
 }
