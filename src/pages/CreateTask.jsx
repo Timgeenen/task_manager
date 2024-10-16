@@ -90,7 +90,15 @@ function CreateTask() {
     
     socket.emit("createTask", formData, (response) => {
       if (response.error) {
-        const { error } = response
+        const { error } = response;
+        console.log(error.errors)
+        if (error.errors) {
+          for (var key in error.errors) {
+            if (error.errors.hasOwnProperty(key)) {
+              setError(key, { type: "custom", message: error.errors[key].message});
+            }
+          }
+        };
         return console.error(`Creating task failed.\nError message: ${error.message}.\nStatus:${error.status}`);
       } else {
         queryClient.setQueryData(["tasks"], (prevData) => [...prevData, response])
