@@ -3,7 +3,6 @@ const func = require("./functions");
 const { authMiddleware } = require("./functions");
 const express = require("express");
 const router = express.Router();
-const path = require("path");
 const { body, param, validationResult } = require("express-validator");
 
 //express validator chains
