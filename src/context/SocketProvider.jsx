@@ -20,7 +20,14 @@ export const SocketProvider = ({ children }) => {
         withCredentials: true,
       });
       setSocket(newSocket);
-      return () => newSocket.close();
+      return () => {
+        newSocket.close();
+        setSocket(null);
+      }
+    }
+    if (!isAuthorized && socket) {
+      socket.close();
+      setSocket(null);
     }
   }, [isAuthorized]);
 
