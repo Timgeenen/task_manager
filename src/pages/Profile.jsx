@@ -25,7 +25,7 @@ function Profile() {
   if (isError) { console.error(error.message)};
 
   return (
-    <div className="w-full flex flex-col items-center mt-10">
+    <div className="w-full pb-8 flex flex-col items-center overflow-y-scroll">
       {isLoading && <Loading />}
       {data &&
         <div>
