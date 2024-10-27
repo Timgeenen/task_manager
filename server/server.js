@@ -14,7 +14,6 @@ const app = express();
 
 const corsOptions = {
   origin: "https://sienna-ape-700339.hostingersite.com",
-  // origin: "localhost:3000",
   credentials: true,
 };
 
