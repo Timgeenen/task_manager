@@ -1,4 +1,5 @@
-export const BACKEND = "http://localhost:8080" || 'https://task-manager-71tb.onrender.com';
+export const BACKEND = 'https://task-manager-71tb.onrender.com';
+// export const BACKEND = "http://localhost:8080"
 export const COLORS = [
   "#109648",
   "#8AF3FF",

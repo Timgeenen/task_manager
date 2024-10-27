@@ -6,7 +6,8 @@ const { Server } = require("socket.io");
 const initializeSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: ["https://sienna-ape-700339.hostingersite.com", "localhost:3000"],
+      origin: "https://sienna-ape-700339.hostingersite.com",
+      // origin: "localhost:3000",
       credentials: true,
     },
     connectionStateRecovery: {
@@ -260,7 +261,7 @@ const initializeSocket = (httpServer) => {
           message: `${task.title} has been deleted from ${task.assignedTeam.name}`,
         };
 
-        const ids = task.assignedTo.map(user => user.id);
+        const ids = task.assignedTo.map((user) => user.id);
         ids.push(task.assignedTeam.managerId);
 
         const users = await User.updateMany(
@@ -274,7 +275,10 @@ const initializeSocket = (httpServer) => {
 
         await Task.findByIdAndDelete(taskId);
 
-        io.to(task.assignedTeam.id).emit("receiveNotification", notificationObj);
+        io.to(task.assignedTeam.id).emit(
+          "receiveNotification",
+          notificationObj
+        );
         socket.to(taskId).emit("taskDeleted");
         return callback({ message: "Succesfully deleted task" });
       } catch (error) {
