@@ -11,6 +11,7 @@ function MembersTag({ member, index, memberId, isManager }) {
     navigate(`/profile/${memberId}`)
   };
   return (
+    <div className="relative w-7 h-7 md:w-9 md:h-9">
       <button
       key={memberId}
       style={{
@@ -18,11 +19,12 @@ function MembersTag({ member, index, memberId, isManager }) {
         color: isManager && "black",
       }}
       onClick={navigateToProfile}
-      className="relative rounded-full w-7 h-7 p-1 md:w-9 md:h-9 -mr-4 text-xs md:text-sm font-semibold border-2 text-nowrap overflow-clip border-black text-white"
+      className="rounded-full w-7 h-7 p-1 md:w-9 md:h-9 -mr-4 text-xs md:text-sm font-semibold border-2 text-nowrap overflow-clip border-black text-white"
       >
         {initials}
-        {isManager && <MdAdminPanelSettings size={16} className="absolute -bottom-1 -right-1"/>}
       </button>
+      {isManager && <MdAdminPanelSettings size={16} className="absolute -bottom-1 -right-0"/>}
+    </div>
   )
 }
 
