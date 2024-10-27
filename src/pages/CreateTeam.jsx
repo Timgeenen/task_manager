@@ -31,6 +31,9 @@ function CreateTeam() {
       reset();
       return setError("name", { type: "custom", message: "Please enter valid team name" });
     }
+    if (!data.members) {
+      return setError("members", { type: "custom", message: "Please select at least 1 team member"});
+    }
     newTeam && setNewTeam(null);
     const teamData = getTeamDataObj(data, user);
     socket.emit("createTeam", teamData, (response) => {
@@ -69,6 +72,7 @@ function CreateTeam() {
           register={register("members")}
           />
         ))}
+        {errors.members && <span className="text-xs text-red-600">{errors.members.message}</span>}
         </div>
 
         <div className="p-4">
