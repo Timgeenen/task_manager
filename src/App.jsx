@@ -10,6 +10,8 @@ import { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
 import Footer from "./components/Footer";
 import PageNotFound from "./pages/PageNotFound";
+import README from "./components/README";
+import useToggle from "./hooks/useToggle";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const CreateTask = lazy(() => import("./pages/CreateTask"));
@@ -95,16 +97,22 @@ function Layout() {
   const { user } = useSelector(state => state.auth);
   const { isSidebarOpen } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+  const [isOpen, setInstructionsOpen] = useToggle();
 
   return user ? (
     <SocketProvider>
       <div className="relative h-screen overflow-hidden">
-        <Navbar />
+        <README
+        handleClick={setInstructionsOpen}
+        isOpen={isOpen} />
+        <Navbar
+        openInstructions={setInstructionsOpen}
+        />
         {
         isSidebarOpen ? 
         <Sidebar /> : 
         <RxHamburgerMenu 
-        className="left-1 sm:left-4 top-5 sm:top-24 absolute hover:cursor-pointer bg-blue-600 text-white p-2 rounded-full border z-50"
+        className="left-1 sm:left-4 top-5 sm:top-24 absolute hover:cursor-pointer bg-blue-600 text-white p-2 rounded-full border z-40"
         size={40}
         onClick={() => { dispatch(setOpenSidebar(true)) }}/>
         }

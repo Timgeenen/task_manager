@@ -5,15 +5,19 @@ import { IoPersonAddOutline } from "react-icons/io5";
 import { VscNewFile } from "react-icons/vsc";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import clsx from "clsx";
+import { FaRegQuestionCircle } from "react-icons/fa";
 
-function Navbar() {
+function Navbar({ openInstructions }) {
   const linkSize = 30
   return (
-    <div className="relative w-full flex items-center justify-center sm:justify-between bg-blue-100 p-1 pl-14 sm:p-4 h-20 z-50">
+    <div className="relative w-full flex items-center justify-center sm:justify-between bg-blue-100 p-1 sm:pl-14 sm:p-4 h-20 z-40">
       <img
       className={clsx("hidden", "sm:block")}
       src="../../logoipsum-297.svg" />
       <div className="flex w-96 justify-between sm:gap-6 sm:w-auto">
+        <button onClick={openInstructions}>
+          <FaRegQuestionCircle size={linkSize}/>
+        </button>
         <NavbarLink
         icon={<VscNewFile size={linkSize} />}
         path="/create-task"
