@@ -161,7 +161,6 @@ router.post("/logout", (req, res) => {
 
   res.clearCookie("refreshToken");
 
-  res.end();
   res.send({ message: "succesfully logged out user" });
 });
 
